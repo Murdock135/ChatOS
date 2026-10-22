@@ -6,7 +6,7 @@ updated: 2026-10-22
 ---
 # Start here
 
-This is your Chief of Staff's operating workspace. The assistant manages it; you use it as a reference and give direction through chat.
+This is your shared workspace with the Chief of Staff. The assistant handles routine upkeep; you can inspect the sources, history, capture gaps, and changes behind your chats, skills, and memory. Transparency and provenance are core purposes, alongside helping you resume projects.
 
 Start with **[Current state](../STATE.md)** and **[What happens when I chat?](What%20happens%20when%20I%20chat.md)**. The archive contains 220 Codex and 31 partial ChatGPT records. Complete cross-app capture and the first unattended maintenance run remain unverified; Muse is deferred.
 

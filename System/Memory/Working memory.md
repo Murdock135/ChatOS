@@ -15,7 +15,7 @@ Vault-owned durable notes explicitly requested by Zayan. This file is separate f
 - Confirmed additional source: Muse. Initial chat-OS runtime should run on Zayan's Mac only; no always-on remote host is requested.
 - Zayan is considering VS Code and a standard repository as the primary interface; no migration decision has been finalized.
 - Zayan wants the Chief of Staff to be the main entry point for all projects and to file project-relevant material in the relevant projects without repeated manual direction.
-- This workspace is primarily for the assistant to manage, sync, and maintain. Zayan will mainly use it as a reference to inspect current state, memory, skills, logs, and related records; routine upkeep belongs to the assistant.
+- Clarified on 2026-10-22: this workspace is for both Zayan and the assistant. Zayan wants transparent provenance over chats, skills, memory, and their changes. The assistant still owns routine management, sync, and maintenance; human inspectability is a core requirement.
 
 Source: [[2026-10-22 Chief of Staff and chat archive]].
 

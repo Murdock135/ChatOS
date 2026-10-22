@@ -2,7 +2,7 @@
 
 This vault is intended to hold the Chief of Staff's conversations and the accessible files that shape its behavior: skills, memory, instructions, configuration records, rules, and automation definitions.
 
-The Chief of Staff manages this workspace: maintenance, synchronization, organization, index freshness, logs, and recovery are agent responsibilities within the available execution/access scope. Zayan primarily consults it as a reference for current state, memory, skills, logs, and work. Routine upkeep should not be handed back as instructions for Zayan to execute. Use `STATE.md` as the status entry point and distinguish the last verified state from continuously running automation.
+The Chief of Staff manages this workspace: maintenance, synchronization, organization, index freshness, logs, and recovery are agent responsibilities within the available execution/access scope. The repository also serves Zayan directly as a transparent provenance record for chats, skills, memory, and system changes. Keep original evidence, derived summaries, revisions, capture gaps, and live versus archived behavior distinguishable and inspectable. Routine upkeep should not be handed back as instructions for Zayan to execute. Use `STATE.md` as the status entry point and distinguish the last verified state from continuously running automation.
 
 Scheduled tasks are a first-class part of this system. Maintain [[Scheduled tasks]] with source, purpose, schedule, enabled state, target, and run evidence when available. Keep saved configuration distinct from verified execution. Include ChatGPT and other app schedules as those sources become accessible.
 
