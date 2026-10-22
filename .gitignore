@@ -1,0 +1,22 @@
+# User data and generated runtime files stay local. No remote is configured.
+System/State/
+System/Logs/
+System/Imports/
+System/Backups/
+System/Snapshots/
+System/Skills/inventory.json
+System/Skills/Index.md
+System/Projects/Automatic routing queue.md
+System/Projects/Automatic filing receipts.md
+/Conversations/
+/Projects/
+Topics/Index.md
+Topics/Semantic groups.md
+Humans/dashboard.html
+STATUS.md
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+.obsidian/
