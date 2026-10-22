@@ -2,6 +2,8 @@
 
 Scheduled tasks are part of this vault's operating system. Preserve their purpose, instructions, source app, schedule, enabled state, target chat or project, and available run evidence.
 
+**Current generated view:** [Codex schedules](Schedules/Index.md) reads saved definitions and host-reported timing/run metadata on each sync. The original inspection below is historical.
+
 ## Locally verified Codex definitions
 
 Inspected on 2026-10-22. Both definitions were already included in the initial system snapshot, and their automation cards were opened through the app's supported view action.
@@ -23,8 +25,14 @@ The native five-minute launch agent was blocked by macOS privacy and disabled. I
 
 Live definitions: `/Users/zayan/.codex/automations/*/automation.toml`.
 
-The [snapshot script](Scripts/snapshot_codex_state.py) preserves saved Codex task definitions on each manual refresh. Use [[Latest snapshot]] for the newest archive. This inventory records the initial inspection; reconcile it when tasks change. Modify live tasks through the supported automation tools, then refresh their vault records. Editing archived definitions does not change scheduled execution.
+The [snapshot script](Scripts/snapshot_codex_state.py) preserves saved Codex task definitions when ordinary sync detects changed behavior files. Use [[Latest snapshot]] for the newest archive. This inventory records the initial inspection; reconcile it when tasks change. Modify live tasks through the supported automation tools, then refresh their vault records. Editing archived definitions does not change scheduled execution.
 
 ## Cross-app coverage
 
 The intended scope also includes ChatGPT scheduled tasks and scheduled agent work in other chat apps. These sources have not been inventoried or connected here. The two rows above describe local Codex files only and do not establish a complete cross-app task list.
+
+## 2026-10-22 — Maintenance update and target failure
+
+The hourly maintenance prompt now includes bounded ChatGPT desktop refresh, usage checks between phases, and explicit Muse deferral. Optional embedding builds are not automatic. Its first unattended result remains unverified.
+
+The daily news digest target (01a10c46-e763-76b2-826c-b1a68da0f92f) returned a missing-source-rollout history error through read_thread. No fallback visible-history rows were available for that ID. This is a verified history/target access problem; delivery/execution remains unknown. The incident is recorded in the event ledger. No replacement target was invented.

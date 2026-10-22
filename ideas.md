@@ -8,7 +8,7 @@ status: exploratory
 
 Each proposal below says **what we would build, where it would live, and how you would use it**. Paths are proposed locations, not files that already exist. These ideas are not approved implementation tasks; required work is in [IMPLEMENTATION.md](IMPLEMENTATION.md).
 
-Current progress: a project-briefing skill, offline dashboard, keyword/experimental LSA topic views, VS Code tasks, and local sync/retry checks now exist. These are bounded initial implementations; the descriptions below remain proposals for their fuller versions. Decision-history records and a new MCP server have not been built.
+Current progress: a project-briefing skill, offline dashboard, keyword/experimental LSA topic views, VS Code tasks, and local sync/retry checks now exist. These are bounded initial implementations; the descriptions below remain proposals for their fuller versions. A first chat-OS decision record now exists in System/Decisions.md; automatic extraction and a new MCP server have not been built. Cited passage retrieval and a provisional 2D map also exist; their quality/coverage limits are in STATE.md.
 
 ## What the implementation terms mean
 
@@ -149,13 +149,15 @@ This means keeping a readable record of explicit decisions so we can answer “w
 
 ## 13. Semantic map with a time view
 
+**Requirement update, 2026-10-22:** Zayan explicitly wants an interactive 2D clustering visualization and RAG search eventually. The 2D explorer is now a future requirement, rather than merely an optional graph idea. See implementation roadmap section 6.
+
 **Form:** a visualization over the retrieval index, with topic links retained in files.
 
 **Build:** once semantic indexing works, add a graph/list view to the local UI with time filters and source links. Render clusters from indexed data rather than inferring them from folder names alone.
 
 **Use:** explore conversations related to a research idea across dates and apps.
 
-**Check:** topic groups are useful on representative imported chats, and a conversation can appear in several groups. An interactive map is optional; core semantic organization remains required work in the roadmap.
+**Check:** topic groups are useful on representative imported chats; the 2D view supports pan/zoom, filtering, and opening source conversations. RAG search returns evidence-linked answers. Current keyword/LSA groups do not establish that either requirement is complete.
 
 ## 14. Conversation-to-artifact trail
 

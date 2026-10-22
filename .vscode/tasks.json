@@ -1,8 +1,64 @@
 {
   "version": "2.0.0",
   "tasks": [
-    {"label":"Chat OS: sync","type":"process","command":"/usr/bin/python3","args":["-m","chatos","sync"],"options":{"cwd":"/Users/zayan/Documents/obsidian_vaults/chats"},"problemMatcher":[]},
-    {"label":"Chat OS: status","type":"process","command":"/usr/bin/python3","args":["-m","chatos","status"],"options":{"cwd":"/Users/zayan/Documents/obsidian_vaults/chats"},"problemMatcher":[]},
-    {"label":"Chat OS: tests","type":"process","command":"/usr/bin/python3","args":["-m","unittest","discover","-s","tests","-v"],"options":{"cwd":"/Users/zayan/Documents/obsidian_vaults/chats"},"problemMatcher":[]}
+    {
+      "label": "Chat OS: sync",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-m",
+        "chatos",
+        "sync"
+      ],
+      "options": {
+        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Chat OS: status",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-m",
+        "chatos",
+        "status"
+      ],
+      "options": {
+        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Chat OS: tests",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "options": {
+        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Chat OS: doctor",
+      "type": "process",
+      "command": "/usr/bin/python3",
+      "args": [
+        "-m",
+        "chatos",
+        "doctor"
+      ],
+      "options": {
+        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+      },
+      "problemMatcher": []
+    }
   ]
 }

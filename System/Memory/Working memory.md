@@ -18,3 +18,13 @@ Vault-owned durable notes explicitly requested by Zayan. This file is separate f
 - This workspace is primarily for the assistant to manage, sync, and maintain. Zayan will mainly use it as a reference to inspect current state, memory, skills, logs, and related records; routine upkeep belongs to the assistant.
 
 Source: [[2026-10-22 Chief of Staff and chat archive]].
+
+## 2026-10-22 — Later search and visualization requirements
+
+- Zayan eventually wants an interactive 2D clustering visualization and RAG search for the chat-OS. These are future requirements, not implemented capabilities. The current keyword/LSA groups are provisional.
+
+## 2026-10-22 — Desktop source and current priority
+
+- Zayan uses the ChatGPT/Codex desktop app.
+- Muse export is explicitly deferred; focus on essential operation and stop when that work is done.
+- Continue to preserve the 30 percent remaining threshold in the five-hour account window.

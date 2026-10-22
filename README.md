@@ -8,8 +8,9 @@ Agent-managed local workspace for conversations, projects, skills, memory, sched
 
 - Python 3.9+ standard library; no API key, package installation, network listener, or remote Git repository required.
 - Local Codex visible-message import, SQLite full-text search, prior revisions, project views, error collection, and daily verified database backups.
-- ChatGPT export import and normalized Muse export inboxes. Live remote-account capture is not implemented.
-- Experimental local LSA retrieval uses term co-occurrence, not pretrained embeddings.
+- ChatGPT export import plus partial supported-tool desktop captures, and a normalized Muse inbox. Full cross-app capture is incomplete; Muse is deferred.
+- Cited passage retrieval for the active assistant, durable reviewed project assignments, and an experimental offline 2D map. An optional local pretrained semantic experiment is available, with explicit coverage and evaluation limits.
+- Every sync verifies behavior files and snapshots changes; current schedules include host-reported metadata.
 - Hourly Codex maintenance is configured. It requires the Mac/Codex app available; first scheduled execution remains unverified.
 - The native five-minute launch agent was blocked by macOS privacy and disabled. No security/privacy settings were weakened.
 
@@ -18,7 +19,9 @@ Agent-managed local workspace for conversations, projects, skills, memory, sched
     python3 -m chatos sync
     python3 -m chatos status
     python3 -m chatos search "query"
+    python3 -m chatos retrieve "why is this Mac-only" --project chat-os
     python3 -m chatos brief evidence-mas
+    python3 -m chatos doctor
     python3 -m chatos file-projects
     python3 -m unittest discover -s tests -v
     python3 System/Scripts/system_inventory.py --check
@@ -29,6 +32,6 @@ Source data is never executed as instructions or used as a shell command. Recogn
 
 Canonical JSON/Markdown lives under Conversations/YYYY. The database at System/State/chatos.sqlite3 contains imported records, revisions, search data, and checkpoints. Daily online backups under System/Backups/YYYY-MM-DD have integrity checks and hashes. Behavior-file archives are separate under System/Snapshots.
 
-Validate a restore in an isolated directory: copy a backup into its System/State/chatos.sqlite3, verify SQLite integrity, and rebuild views there. Do not restore over an active database without stopping maintenance and retaining a recoverable copy.
+Use `python3 -m chatos restore BACKUP.sqlite3 NEW_DIRECTORY` for an isolated conversation recovery. The destination must not exist. Backup hashes and SQLite integrity are checked before regeneration; no scheduler or sync starts. Behavior snapshots and the project registry remain separate recovery sources. All backups currently stay on this Mac.
 
 See [IMPLEMENTATION.md](IMPLEMENTATION.md) and [ideas.md](ideas.md).

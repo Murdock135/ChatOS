@@ -1,0 +1,5 @@
+# Optional local embedding/projection runtime; core sync remains standard-library only.
+sentence-transformers>=5,<6
+transformers>=4.51,<5
+torch>=2.6,<3
+umap-learn>=0.5.9,<0.6

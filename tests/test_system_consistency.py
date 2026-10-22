@@ -7,6 +7,7 @@ import multiprocessing
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[1] / 'System/Scripts'
 sys.path.insert(0, str(SCRIPTS))
@@ -101,6 +102,43 @@ class InventoryTests(unittest.TestCase):
         resource.write_text('New reference\n')
         report = inventory.check(self.vault, self.codex)
         self.assertIn(str(resource), report['snapshot_source_missing'])
+
+    def test_credential_named_support_files_are_excluded(self):
+        secret=self.vault/'System/Skills/router/.env'
+        secret.write_text('SECRET VALUE')
+        self.assertNotIn(secret,inventory.workspace_files(self.vault))
+        self.assertNotIn(secret,list(inventory.walk_files(secret.parent)))
+
+    def test_configuration_view_corruption_is_detected(self):
+        from snapshot_codex_state import create_snapshot
+        self.codex.mkdir()
+        result=create_snapshot(self.vault,self.codex)
+        settings=Path(result['snapshot'])/'Configuration/settings-inventory.json'
+        settings.write_text('Corrupted settings view')
+        self.assertIn('Configuration/settings-inventory.json',inventory.check(self.vault,self.codex)['snapshot_integrity_errors'])
+
+    def test_failed_snapshot_preserves_published_pointer(self):
+        from snapshot_codex_state import create_snapshot
+        self.codex.mkdir()
+        pointer=self.vault/'System/Latest snapshot.md'
+        original=pointer.read_text()
+        read=Path.read_bytes
+        def fail(path):
+            if path==self.vault/'AGENTS.md':
+                raise OSError('Simulated read failure')
+            return read(path)
+        with patch.object(Path,'read_bytes',fail):
+            with self.assertRaises(OSError):
+                create_snapshot(self.vault,self.codex)
+        self.assertEqual(pointer.read_text(),original)
+        self.assertFalse(list((self.vault/'System/Snapshots').glob('.staging-*')))
+
+    def test_discovery_does_not_follow_symlinked_directories(self):
+        external=self.root/'private';external.mkdir()
+        (external/'SKILL.md').write_text('Never archive this')
+        (self.vault/'System/Skills/linked').symlink_to(external,target_is_directory=True)
+        self.assertFalse(any('linked' in str(p) for p in inventory.workspace_files(self.vault)))
+        self.assertFalse(any('linked' in s['entrypoint'] for s in inventory.discover_skills(self.vault,self.codex)))
 
 
 class LogTests(unittest.TestCase):

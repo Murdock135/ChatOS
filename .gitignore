@@ -8,11 +8,14 @@ System/Skills/inventory.json
 System/Skills/Index.md
 System/Projects/Automatic routing queue.md
 System/Projects/Automatic filing receipts.md
+System/Schedules/Index.md
+System/Feedback/Review queue.md
 /Conversations/
 /Projects/
 Topics/Index.md
 Topics/Semantic groups.md
 Humans/dashboard.html
+Humans/explorer.html
 STATUS.md
 __pycache__/
 *.pyc
@@ -20,3 +23,5 @@ __pycache__/
 .env
 .env.*
 .obsidian/
+.venv/
+System/Models/

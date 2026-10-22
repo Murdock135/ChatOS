@@ -9,6 +9,7 @@ import os
 import re
 import sqlite3
 import tempfile
+from .visibility import clean_text,origin_hint
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -106,6 +107,7 @@ class Store:
         CREATE TABLE IF NOT EXISTS revisions (
           source TEXT, conversation_id TEXT, content_hash TEXT, record_json TEXT, saved_at TEXT,
           PRIMARY KEY(source,conversation_id,content_hash));
+        CREATE TABLE IF NOT EXISTS feedback_reviews (identity TEXT PRIMARY KEY, review_json TEXT NOT NULL);
         ''')
         self.db.commit()
 
@@ -117,6 +119,14 @@ class Store:
         return json.loads(p.read_text()).get('projects', []) if p.exists() else []
 
     def project_ids(self, record):
+        path = self.root/'System/Projects/overrides.json'
+        overrides = json.loads(path.read_text()).get('assignments',{}) if path.exists() else {}
+        assignment = overrides.get(record['source'] + ':' + str(record['id']))
+        if assignment:
+            known = {p['id'] for p in self.registry()}
+            if not set(assignment['projects']) <= known:
+                raise ValueError('Reviewed project assignment references unknown owner')
+            return assignment['projects'], 'reviewed_assignment'
         # Exact workspace ownership beats conversational keyword matches.
         cwd = record.get('workspace')
         owners = []
@@ -149,15 +159,23 @@ class Store:
             raise ValueError('Record needs source ID and messages')
         record = json.loads(json.dumps(record))
         record['schema_version'] = 1
-        record['title'] = title(record.get('title'))
+        record['title'] = redact(title(record.get('title')))
+        visible=[]
         for i, message in enumerate(record['messages']):
             if message.get('role') not in ['user', 'assistant']:
                 raise ValueError('Only visible user/assistant messages may be archived')
-            if message.get('phase') in ['analysis', 'reasoning']:
+            if message.get('phase') in ['analysis', 'reasoning', 'summary']:
                 raise ValueError('Private reasoning is excluded')
-            message['text'] = redact(str(message.get('text', '')))
+            text=clean_text(message['role'],str(message.get('text','')))
+            if text is None:continue
+            message['text'] = redact(text)
             message.setdefault('id', f'message-{i}')
+            message.update(origin_hint(message['role'],message['text']))
+            visible.append(message)
+        record['messages']=visible
         record['projects'], record['project_evidence'] = self.project_ids(record)
+        # Generated paths are not source content. Reimporting a canonical record is idempotent.
+        record.pop('file_path', None)
         clean_hash = digest(record)
         current = self.db.execute('SELECT * FROM conversations WHERE source=? AND id=?',
                                   (record['source'], record['id'])).fetchone()
@@ -185,7 +203,7 @@ class Store:
                                  '\n'.join(m['text'] for m in record['messages'])))
         return changed
 
-    def render(self, record):
+    def render(self, record, write=True):
         fields = {'type': 'conversation', 'source_app': record['source'], 'source_id': record['id'],
                   'created_at': record.get('created_at'), 'updated_at': record.get('updated_at'),
                   'model': record.get('model'), 'projects': record.get('projects', []),
@@ -201,12 +219,18 @@ class Store:
             label = message['role'].capitalize()
             if message.get('phase'):
                 label += ' / ' + title(message['phase'])
+            if message.get('origin_hint'):
+                label += ' / source hint: ' + title(message['origin_hint'])
             lines += ['## ' + label, '', 'Message ID: `' + safe_id(message['id']) + '`', '']
+            if message.get('export_node_id'):
+                lines+=['Export node: '+str(message['export_node_id'])+'; parent node: '+str(message.get('parent_id')),'']
             body = message['text']
             ticks = max([len(m) for m in re.findall(r'`+', body)] + [2]) + 1
             fence = '`' * ticks
             lines += [fence + 'text', body, fence, '']
-        atomic(self.root / record['file_path'], '\n'.join(lines))
+        content='\n'.join(lines)
+        if not write:return content
+        atomic(self.root / record['file_path'], content)
 
     def records(self):
         return [json.loads(row[0]) for row in self.db.execute(

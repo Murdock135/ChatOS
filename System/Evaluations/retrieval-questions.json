@@ -1,0 +1,67 @@
+{
+  "cases": [
+    {
+      "id": "coding-style",
+      "question": "What software engineering style do I prefer?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a16435-1257-7270-86dc-6f2708b70030",
+        "contains": "simplicity and readability"
+      }
+    },
+    {
+      "id": "output-contracts",
+      "question": "What input output contracts do I like in code?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a16435-1257-7270-86dc-6f2708b70030",
+        "contains": "pydantic"
+      }
+    },
+    {
+      "id": "job-fit",
+      "question": "What did I ask about checking my qualifications before recommending jobs?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a0fe02-cdda-7be3-9a04-e12d45e7e10e",
+        "contains": "judge whether my background is good enough"
+      }
+    },
+    {
+      "id": "minimal-tracker",
+      "question": "How minimal did I want the job application tracker?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a0fdfe-7a2e-7823-88c8-542a967841b0",
+        "contains": "MOST MINIMAL JOB APPLICATION TRACKER"
+      }
+    },
+    {
+      "id": "local-runtime",
+      "question": "Where did I say the initial system should run?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a16442-0b52-7260-8019-a855dff30567",
+        "contains": "just on my mac for now"
+      }
+    },
+    {
+      "id": "muse-optional",
+      "question": "Did I want Muse to replace my established Obsidian workflow?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a154f1-64db-70f3-bfb4-6375f4a93cea",
+        "contains": "internalized and rationalized my own workflow"
+      }
+    },
+    {
+      "id": "ideas-form",
+      "question": "What was unclear about the decision history idea?",
+      "expected": {
+        "source": "codex",
+        "conversation_id": "01a16442-0b52-7260-8019-a855dff30567",
+        "contains": "are you proposing making a python script"
+      }
+    }
+  ]
+}

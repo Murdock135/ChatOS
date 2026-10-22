@@ -72,19 +72,24 @@ def query(index,text,limit=15):
             scored.append(dict(index['documents'][i],similarity=score,latent_similarity=latent,term_similarity=lexical))
     return sorted(scored,key=lambda r:r['similarity'],reverse=True)[:limit]
 
-def refresh(store):
-    records=store.records()
-    signature=digest([(r['source'],r['id'],r.get('updated_at'),r['title'],len(r['messages'])) for r in records])
-    target=store.state/'semantic.json'
-    if signature==store.signature('maintenance','semantic') and target.exists():return
-    index=build(records)
-    write_json(target,index)
+def clusters(index):
     groups=[]
     for i,point in enumerate(index['coordinates']):
         best=max([(dot(normalize(point),normalize(index['coordinates'][g[0]])),g) for g in groups],
                  key=lambda pair:pair[0],default=(-1,None))
         if best[0]>=0.70:best[1].append(i)
         else:groups.append([i])
+    return groups
+
+
+def refresh(store):
+    records=store.records()
+    signature=digest(['lsa-v2',records])
+    target=store.state/'semantic.json'
+    if signature==store.signature('maintenance','semantic') and target.exists():return
+    index=build(records)
+    write_json(target,index)
+    groups=clusters(index)
     lines=['# Suggested semantic groups','','Local latent semantic analysis over conversation titles and sampled user text.',
            'Exploratory co-occurrence groups, not verified project assignments or pretrained-model interpretations.','']
     for group in sorted(groups,key=len,reverse=True):

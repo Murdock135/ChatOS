@@ -37,6 +37,41 @@ class ImportTests(unittest.TestCase):
         self.assertNotIn('PRIVATE',json.dumps(r))
         self.assertNotIn('AGENTS.md',json.dumps(r))
 
+    def test_sync_reports_parse_warnings_and_retries_without_checkpoint(self):
+        with self.session.open('a') as stream:
+            stream.write('{"incomplete":')
+        archive=self.root/'archive'
+        first=sync(archive,self.home)
+        self.assertEqual(first['status'],'partial')
+        self.assertEqual(len(first['source_warnings']),1)
+        second=sync(archive,self.home)
+        self.assertEqual(second['unchanged'],0)
+        self.assertEqual(len(second['source_warnings']),1)
+
+    def test_missing_source_root_fails_visibly(self):
+        result=sync(self.root/'archive',self.root/'missing')
+        self.assertEqual(result['status'],'failed')
+        self.assertEqual(result['sources']['codex']['status'],'failed')
+
+    def test_sync_captures_behavior_changes_and_does_not_repeat_snapshot(self):
+        archive=self.root/'archive';archive.mkdir()
+        (archive/'AGENTS.md').write_text('Original instruction')
+        (self.home/'config.toml').write_text('model = "observed-model"\napi_key = "NEVER COPY THIS"\n')
+        (self.home/'memories').mkdir()
+        memory=self.home/'memories/summary.md';memory.write_text('Original memory')
+        one=sync(archive,self.home)
+        self.assertEqual(one['system_sync']['status'],'verified')
+        self.assertTrue(one['system_sync']['snapshot_created'])
+        two=sync(archive,self.home)
+        self.assertFalse(two['system_sync']['snapshot_created'])
+        memory.write_text('Updated memory')
+        three=sync(archive,self.home)
+        self.assertTrue(three['system_sync']['snapshot_created'])
+        snapshot=Path(three['system_sync']['snapshot'])
+        self.assertEqual((snapshot/'Memory/memories/summary.md').read_text(),'Updated memory')
+        self.assertNotIn('NEVER COPY THIS',(snapshot/'Configuration/settings-inventory.json').read_text())
+        self.assertFalse(any(p.suffix=='.sqlite3' for p in snapshot.rglob('*')))
+
     def test_sync_idempotence_catchup_and_missing_history(self):
         first=sync(self.root/'archive',self.home)
         self.assertEqual(first['changed'],1)

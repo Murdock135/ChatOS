@@ -3,10 +3,37 @@ from pathlib import Path
 import json
 import re
 import sqlite3
+import zipfile
 from .core import timestamp
 
-HARNESS = ('# AGENTS.md instructions', '<environment_context>', '<external_codex_apps_open_page>',
-           '<permissions instructions>', '<collaboration_mode>', '<system_reminder>')
+from .visibility import clean_text, origin_hint
+
+
+def read_export_file(path, source):
+    """Read one bounded export payload without extracting ZIP members to disk."""
+    path=Path(path)
+    if path.is_symlink():raise ValueError('Export inbox symlinks are not imported')
+    maximum=128*1024*1024
+    if path.suffix.lower()=='.zip':
+        if source!='chatgpt':raise ValueError('Raw Muse ZIP export needs a verified schema adapter')
+        with zipfile.ZipFile(path) as archive:
+            members=[item for item in archive.infolist() if Path(item.filename).name=='conversations.json']
+            if len(members)!=1:raise ValueError('ZIP must contain exactly one conversations.json payload')
+            item=members[0]
+            if item.file_size>maximum:raise ValueError('Export JSON exceeds the 128 MiB import bound')
+            if item.flag_bits & 1:raise ValueError('Encrypted export requires a supported decoded export')
+            with archive.open(item) as stream:
+                raw=stream.read(maximum+1)
+            if len(raw)>maximum:raise ValueError('Export JSON exceeds the import bound')
+    else:
+        if path.stat().st_size>maximum:raise ValueError('Export JSON exceeds the 128 MiB import bound')
+        raw=path.read_bytes()
+    data=json.loads(raw)
+    if source=='chatgpt' and isinstance(data,list) and (not data or isinstance(data[0],dict) and 'mapping' in data[0]):
+        return read_chatgpt_export(data)
+    records=data if isinstance(data,list) else [data]
+    if not all(isinstance(record,dict) for record in records):raise ValueError('Export records must be objects')
+    return records
 
 
 def read_codex(path, info=None):
@@ -35,28 +62,22 @@ def read_codex(path, info=None):
             elif kind == 'response_item' and payload.get('type') == 'message':
                 role = payload.get('role')
                 phase = payload.get('phase') or payload.get('channel')
-                if role not in ['user','assistant'] or phase in ['analysis','reasoning']:
+                if role not in ['user','assistant'] or phase in ['analysis','reasoning','summary'] or payload.get('recipient') not in [None,'all']:
                     continue
                 pieces = [p.get('text', '') for p in payload.get('content', [])
                           if p.get('type') in ['input_text','output_text','text']]
                 text = '\n'.join(pieces)
                 attachments = [dict(type=p.get('type'), reference=p.get('image_url') or p.get('image_path'))
                                for p in payload.get('content', []) if p.get('type') in ['input_image','image']]
-                if role == 'user' and text.lstrip().startswith(HARNESS):
-                    continue
-                if text.startswith('<send_user_message_question_reply>'):
-                    try:
-                        answers = json.loads(re.sub(r'</?send_user_message_question_reply>', '', text).strip())
-                        text = '\n'.join(str(x.get('question','')) + '\n' + str(x.get('answer','')) for x in answers)
-                    except (ValueError, TypeError):
-                        pass
+                text = clean_text(role,text)
+                if text is None:continue
                 if not text and not attachments:
                     continue
                 messages.append({'id': payload.get('id') or f'line-{line_number}', 'role': role,
                                  'phase': phase, 'text': text, 'timestamp': last_time, 'turn_id': turn_id,
                                  'model': model if role == 'assistant' else None,
                                  'reasoning_effort': effort if role == 'assistant' else None,
-                                 'attachments': attachments})
+                                 'attachments': attachments, **origin_hint(role,text)})
             elif kind == 'event_msg' and payload.get('type') in ['task_complete','turn_aborted','task_started']:
                 runs.append({'event': payload['type'], 'turn_id': payload.get('turn_id'),
                              'timestamp': last_time, 'started_at': payload.get('started_at'),
@@ -141,22 +162,91 @@ def read_chatgpt_export(data):
                 continue
             role = message.get('author',{}).get('role')
             channel = message.get('channel')
-            if role not in ['user','assistant'] or channel in ['analysis','reasoning']:
+            if role not in ['user','assistant'] or channel in ['analysis','reasoning','summary'] or message.get('recipient') not in [None,'all']:
                 continue
-            text = '\n'.join(p for p in message.get('content',{}).get('parts',[]) if isinstance(p,str))
-            if not text:
+            parts=message.get('content',{}).get('parts',[])
+            text = '\n'.join(p for p in parts if isinstance(p,str))
+            attachments=[{'type':p['content_type'],'reference':p.get('asset_pointer')}
+                         for p in parts if isinstance(p,dict) and p.get('content_type')=='image_asset_pointer']
+            if not text and not attachments:
                 continue
             metadata = message.get('metadata') or {}
-            messages.append({'id': message.get('id') or node_id, 'parent_id': node.get('parent'),
+            messages.append({'id': message.get('id') or node_id, 'export_node_id':node_id,'parent_id': node.get('parent'),
                              'role': role, 'phase': channel, 'text': text,
                              'timestamp': timestamp(message.get('create_time')),
-                             'model': metadata.get('model_slug') if role=='assistant' else None})
+                             'model': metadata.get('model_slug') if role=='assistant' else None,
+                             'reasoning_effort':metadata.get('reasoning_effort') if role=='assistant' else None,
+                             'attachments':attachments})
+        by_id={m['id']:m for m in messages}
+        current=conversation.get('current_node');branch=[];seen=set()
+        while current in mapping and current not in seen:
+            seen.add(current)
+            node=mapping[current];message=node.get('message') or {}
+            identity=message.get('id') or current
+            if identity in by_id:branch.append(by_id[identity])
+            current=node.get('parent')
+        selected=next((m for m in branch if m.get('model')),None)
+        if not selected:
+            selected=max((m for m in messages if m.get('model')),key=lambda m:m.get('timestamp') or '',default=None)
         result.append({'source': 'chatgpt', 'id': conversation.get('id') or conversation.get('conversation_id'),
                        'title': conversation.get('title'), 'created_at': timestamp(conversation.get('create_time')),
                        'updated_at': timestamp(conversation.get('update_time')), 'workspace': None,
-                       'model': next((m['model'] for m in reversed(messages) if m.get('model')),None),
+                       'model':selected['model'] if selected else None,
                        'provider': 'openai', 'messages': messages, 'capture': 'exported_visible_branches',
-                       'evidence': {'parser': 'chatgpt-export-v1'},
+                       'evidence': {'parser': 'chatgpt-export-v2','current_node':conversation.get('current_node'),
+                                    'model_basis':'active_branch' if any(m is selected for m in branch) else 'latest_timestamped_exported_assistant'},
                        'limits': ['Export snapshot, not live account synchronization.',
                                   'Branch parent IDs retained; parent-first rendering includes multiple branches.']})
     return result
+
+
+def read_codex_history(home, info):
+    """Recover projected visible messages when a retained rollout file is unavailable.
+
+    The projection is incomplete evidence; model fields are thread-level fallback only.
+    """
+    home=Path(home);path=home/'thread_history_1.sqlite'
+    if not path.is_file():return None
+    connection=sqlite3.connect(path.as_uri()+'?mode=ro',uri=True)
+    connection.row_factory=sqlite3.Row
+    try:
+        rows=connection.execute('''SELECT turn_id,item_id,rollout_ordinal,created_at_ms,item_json,item_type
+             FROM thread_items WHERE thread_id=? AND item_type IN ('userMessage','agentMessage')
+             ORDER BY rollout_ordinal,created_at_ms,item_id''',(info['id'],)).fetchall()
+        if not rows:return None
+        messages=[]
+        for row in rows:
+            item=json.loads(row['item_json'])
+            if item.get('type')!=row['item_type']:raise ValueError('History projection item type mismatch')
+            role='user' if row['item_type']=='userMessage' else 'assistant'
+            phase=item.get('phase') if role=='assistant' else None
+            if phase in ['analysis','reasoning','summary']:continue
+            if role=='assistant':text=item.get('text','');attachments=[]
+            else:
+                text='\n'.join(p.get('text','') for p in item.get('content',[]) if p.get('type')=='text')
+                attachments=[{'type':p.get('type'),'reference':p.get('path') or p.get('url')}
+                             for p in item.get('content',[]) if p.get('type') in ['image','localImage']]
+            text=clean_text(role,text)
+            if text is None:continue
+            if not text and not attachments:continue
+            messages.append({'id':row['item_id'],'role':role,'phase':phase,'text':text,
+                             'timestamp':timestamp(row['created_at_ms']),'turn_id':row['turn_id'],
+                             'model':None,'reasoning_effort':None,'attachments':attachments,
+                             'projection_ordinal':row['rollout_ordinal'],**origin_hint(role,text)})
+        if not messages:return None
+        runs=[{'turn_id':row['turn_id'],'status':row['status'],'started_at':timestamp(row['started_at']),
+               'completed_at':timestamp(row['completed_at'])} for row in connection.execute('''
+               SELECT turn_id,status,started_at,completed_at FROM thread_turns WHERE thread_id=?
+               ORDER BY rollout_ordinal''',(info['id'],))]
+    finally:connection.close()
+    return {'source':'codex','id':info['id'],'title':info.get('title') or 'Untitled',
+            'created_at':timestamp(info.get('created_at')),'updated_at':timestamp(info.get('updated_at')),
+            'model':info.get('model'),'provider':info.get('model_provider'),
+            'reasoning_effort':info.get('reasoning_effort'),'workspace':info.get('cwd'),
+            'messages':messages,'model_history':[],'runs':runs,'capture':'partial_history_projection',
+            'evidence':{'path':str(path),'table':'thread_items','parser':'codex-history-projection-v1',
+                        'missing_rollout':info.get('rollout_path'),
+                        'model_provenance':'Latest thread metadata only; per-message model and effort are unknown.'},
+            'limits':['Recovered visible-message projection because the original rollout file is unavailable.',
+                      'Projection coverage is not established as complete; hidden reasoning and tool payloads were not selected.',
+                      'Thread-level model fallback is not per-turn evidence; attachment references are not downloaded.']}

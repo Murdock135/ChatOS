@@ -39,3 +39,11 @@ If access or permissions prevent the write, retain a reviewable draft in [Routin
 ## Local activation
 
 This skill is invoked by this vault's root AGENTS.md. It is not globally installed or an always-on router for other apps. Source synchronization must supply those conversations before they can be routed. Recheck the registry when paths or project identities change.
+
+## Persist reviewed ownership
+
+For a captured conversation with verified ownership, use `python3 -m chatos assign SOURCE ID PROJECT_ID [PROJECT_ID ...] --reason "source evidence"`. This saves an independent reviewed assignment that survives reimports. Multiple owners are supported; zero project IDs explicitly leave a record unassigned. Do not resolve ambiguity using title similarity alone. Run sync to refresh local views, then file-projects for external context-index delivery where permitted. Correcting ownership does not create accepted tasks or decisions.
+
+## Decision record convention
+
+When a project has no existing decision format, use a stable ID, date, status, scope, authority (user instruction versus delegated implementation choice), exact supporting message/file, and supersession relationship. Preserve old decisions when an explicit revision replaces them. The chat-OS uses System/Decisions.md; other projects retain their existing ADR/research-note conventions. A discussion or assistant recommendation is not an adopted user decision.

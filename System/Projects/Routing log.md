@@ -56,3 +56,13 @@ Record verified project filing here. A receipt must identify source, project, it
 - Delivered: local importer/search/revisions, offline dashboard, project views, backup, scheduler fallback, maintenance/briefing skills, and tests.
 - External filing verified: SPARQ Scratch index (29 conversations) and evidence-combination Scratch index (19). Authored tasks and research content were preserved.
 - Limits: missing historical sources, pending Muse/ChatGPT access, first hourly execution unverified, experimental semantic retrieval.
+
+## 2026-10-22 — Future interactive 2D exploration and RAG
+
+- Project: chat-os; source conversation 01a16442-0b52-7260-8019-a855dff30567.
+- User requirement: eventually provide an interactive 2D clustering visualization and RAG search.
+- Filed in working memory, implementation roadmap section 6, and ideas.md section 13. Future requirement only; no implementation claimed.
+
+## 2026-10-22 — Historical recovery and expanded context filing
+
+Reviewed seven ownership assignments, registered two existing code repositories, and refreshed managed context notes. Verified deliveries: SPARQ 58 conversations; evidence combination 63; Finding a job 2; Organizing Myself 3. These are context links, not newly accepted tasks or decisions. Source receipts are in the generated automatic filing report; code-repository delivery conventions and uncertain ownership remain pending.

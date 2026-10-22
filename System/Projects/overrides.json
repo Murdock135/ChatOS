@@ -1,0 +1,57 @@
+{
+  "assignments": {
+    "codex:01a1643e-0431-7c83-89a3-962af8a7bbd9": {
+      "projects": [
+        "chat-os"
+      ],
+      "reason": "User explicitly requested a Chief of Staff ChatGPT project; this is source context for the current chat-OS.",
+      "reviewed_at": "2026-10-22T17:25:14.738752+00:00"
+    },
+    "codex:01a16435-dd95-7d12-a0ce-220d86e68e38": {
+      "projects": [
+        "organizing-myself"
+      ],
+      "reason": "User requested an organized ChatGPT workflow; reviewed against the Organizing Myself project Home.",
+      "reviewed_at": "2026-10-22T17:25:14.759538+00:00"
+    },
+    "codex:01a154f1-64db-70f3-bfb4-6375f4a93cea": {
+      "projects": [
+        "chat-os",
+        "organizing-myself"
+      ],
+      "reason": "User explicitly discussed integrating Obsidian, Muse and Codex for life management; relevant to both the personal organization owner and current chat-OS.",
+      "reviewed_at": "2026-10-22T17:25:14.767452+00:00"
+    },
+    "codex:01a154d4-ee3b-7d32-bae9-2143c51247f1": {
+      "projects": [
+        "chat-os",
+        "organizing-myself"
+      ],
+      "reason": "User explicitly described a DIY personal organization agent connecting Muse, ChatGPT and academic_life, then requested source-capability inspection.",
+      "reviewed_at": "2026-10-22T17:25:14.776059+00:00"
+    },
+    "codex:01a16435-1257-7270-86dc-6f2708b70030": {
+      "projects": [
+        "agentic-epidemiology",
+        "chat-os",
+        "evidence-mas"
+      ],
+      "reason": "User explicitly named both SPARQ and research-concerted_abduction and requested durable coding preferences; shared operating guidance, not a JAMIA-only research decision.",
+      "reviewed_at": "2026-10-22T17:25:14.786270+00:00"
+    },
+    "codex:01a0fdfe-7a2e-7823-88c8-542a967841b0": {
+      "projects": [
+        "finding-a-job"
+      ],
+      "reason": "User explicitly requested a job-application tracker; the existing Finding a job project owns this context.",
+      "reviewed_at": "2026-10-22T17:59:00.437752+00:00"
+    },
+    "codex:01a0fe02-cdda-7be3-9a04-e12d45e7e10e": {
+      "projects": [
+        "finding-a-job"
+      ],
+      "reason": "Reviewed user messages request weekly full-time AI job search, qualification screening, and Friday 9 AM Chicago scheduling; current saved automation targets this chat.",
+      "reviewed_at": "2026-10-22T17:59:00.478920+00:00"
+    }
+  }
+}

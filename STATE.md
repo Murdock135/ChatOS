@@ -8,37 +8,44 @@ maintenance_owner: Chief of Staff
 
 The Chief of Staff manages this local workspace. Zayan uses it as a reference.
 
-**Start with [sync status](STATUS.md), [the offline dashboard](Humans/dashboard.html), or [conversations](Conversations/Index.md).** Those generated views show their last scan time.
+**[Sync status](STATUS.md) · [Human guide](Humans/Start%20here.md) · [What happens when I chat?](Humans/What%20happens%20when%20I%20chat.md) · [Dashboard](Humans/dashboard.html) · [Conversation map](Humans/explorer.html)**
 
 ## Working and verified
 
-- 78 local Codex conversations imported with visible user/assistant messages, model history, source IDs, and dates. Original sources are read-only; private reasoning/tool payloads are excluded.
-- Incremental checkpoints, duplicate prevention, prior revisions, full-text search, project views, and offline HTML browsing.
-- Source-linked conversation indexes verified in the existing SPARQ and evidence-combination Scratch folders (29 and 19 conversations respectively). Ambiguous/unassigned items are queued; automatic context indexes do not create accepted tasks or decisions.
-- Daily online SQLite backup with integrity checks; restore content tested in isolation.
-- Local failure collection, skill inventory, workspace-inclusive behavior snapshots, and consistency checks.
-- Seventeen tests pass, covering imports, model changes, exports, privacy exclusions, retries, concurrency, backup integrity, and inventory drift.
-- Local Git repository initialized; no remote configured. Private data and runtime files are ignored.
+- 251 conversation records: 220 Codex (78 retained transcripts and 142 partial history-cache recoveries) plus 31 partial ChatGPT desktop captures. Two Codex histories remain uncaptured. Source IDs, available dates, provenance and model evidence are retained; unavailable per-turn models remain unknown. Original sources are read-only.
+- Incremental import, duplicate prevention, revisions, full-text search, and project views. Incomplete source lines remain visible as warnings and retry; a missing source root fails visibly.
+- Ordinary sync now refreshes skill discovery, checks live behavior-file hashes, snapshots changes, and verifies the result. Skills, file-based memory, instructions, rules, configuration inventory, saved schedules, and workspace behavior files are covered. Unchanged files do not cause a new full snapshot.
+- Passage-level retrieval with exact message IDs, offsets, and file/line citations. The archive-retrieval skill guides the active assistant's grounded answer. Retrieval is local BM25; it does not call an external model.
+- Seven reviewed project assignments persist across imports. Verified context indexes reach SPARQ (58), evidence combination (63), Finding a job (2), and Organizing Myself (3). Eleven existing project/repository owners are registered. Uncertain ownership and code-project delivery conventions remain queued.
+- A Chief of Staff skill is installed in the user skill location. Its bounded global instruction reference was observed loading into this conversation. Project instructions and filesystem permissions still govern actual filing.
+- Daily database backup is hash/integrity-checked on every sync. Isolated restore regenerates conversation files and refuses an existing destination. The doctor command checks database, canonical files, backup, freshness, and coverage warnings.
+- Conservative feedback cues are reviewed before being logged; six initial cues were reviewed, including one neutral bug report dismissed without negative labeling. Stable review identities prevent duplicate entries.
+- Schedule inventory now reads saved definitions and host-reported timing/run metadata without copying private result bodies. Curated failure collection and feedback records remain separate.
+- 50 tests pass, covering source filtering, model changes, import/retry health, ZIP handling, routing persistence, retrieval citations, backup corruption/restore, snapshot drift, concurrency, and projection data.
+- Local Git repository; no remote configured. Private archives/runtime data are ignored.
 
-## Scheduling and limitations
+## Explorer and retrieval limits
 
-Hourly **Maintain chat-OS** Codex automation is configured. It requires the Mac and app available; the first scheduled execution remains unverified. Its prompt defers agent work at 30 percent or less remaining in the five-hour window and stays quiet on unchanged state.
+The offline explorer has pan/zoom, project/source/date/group filters, source links and nearest conversations. An optional pinned Qwen embedding model, HDBSCAN and UMAP map were built locally. Its first 220-conversation map left 52 unclustered and retained about 38% of its own five-neighbor relationships. Ordinary sync preserves this dated map and flags input changes; new desktop captures currently await optional reindexing. Math/data/JavaScript checks pass; browser/visual verification remains pending because local-file preview was blocked. No bypass was attempted.
 
-The native five-minute launch agent was blocked by macOS Documents privacy and disabled. No privacy/security protections were weakened. Manual sync succeeds through Codex.
+On seven source-labeled questions, both lexical and optional hybrid retrieval found the exact supporting user message in the top eight for 4/7 cases. The new model has not demonstrated improvement on this small diagnostic and remains optional. Core lexical retrieval and sync remain independent of it. No SOTA quality claim is made. See [semantic implementation and evaluation](System/Semantic%20search.md).
 
-144 historical Codex database references have no retained local transcript file. The archive reports partial history. ChatGPT export import is implemented; live account sync is not. Muse's export control was found, but the Mac locked before download could complete. Normalized Muse import is supported; no verified raw Muse-export parser exists yet.
+## Scheduling and source gaps
 
-Keyword topic browsing and experimental local LSA groups/search are available. LSA uses term co-occurrence, not pretrained embeddings, and must not decide project ownership or factual confidence. Its first broad live query was too loose, so term-based anchoring was added; evaluation beyond small checks remains needed.
+Hourly **Maintain chat-OS** is configured and stays quiet on unchanged state. It requires the Mac and app available and defers at 30 percent or less remaining in the five-hour window. No last-run timestamp or completed unattended execution is recorded yet. Inspect [current schedules](System/Schedules/Index.md) for newer evidence.
 
-## Reference
+The native five-minute launch agent was privacy-blocked and disabled. Manual sync through Codex succeeds. No security/privacy protections were weakened.
 
-- [Working memory](System/Memory/Working%20memory.md)
-- [Skills](System/Skills/Index.md)
-- [Logs](System/Logs/Event%20log.md) and [sync runs](System/Logs/sync-runs.jsonl)
-- [Projects](Projects/Index.md), [pending routing](System/Projects/Automatic%20routing%20queue.md), [delivery receipts](System/Projects/Automatic%20filing%20receipts.md)
-- [Schedules](System/Scheduled%20tasks.md), [latest behavior archive](System/Latest%20snapshot.md)
-- [Remaining implementation work](IMPLEMENTATION.md)
+144 Codex rollout files are unavailable; 142 have partial visible-message recovery from the read-only history projection. The remaining two include the daily news digest target, whose history access failed with a missing-source-rollout error. Its execution/delivery outcome remains unknown.
 
-## Next work
+Zayan uses the ChatGPT/Codex desktop app. Supported tools supplied 86 visible messages across 31 recent/pinned ChatGPT chats and 34 unavailable message references. These are explicitly partial captures; models/effort unavailable from the source remain null. The hourly agent prompt now includes bounded refresh of changed desktop chats, but no unattended refresh is verified. Ordinary ChatGPT does not automatically read this repository. JSON/ZIP export import remains the fuller-history path.
 
-Verify the first scheduled maintenance result; complete Muse/ChatGPT source access; review queued routing; add source-reviewed decisions/tasks and stronger semantic retrieval evaluation. Finish outstanding work after the usage window allows it. The agent owns routine maintenance.
+Muse export is deferred at Zayan's request. Raw Muse parsing and ongoing capture remain unverified.
+
+Backups remain on the same Mac. Full recovery of behavior files, project registry and runtime together, plus off-device backup/retention choices, remains open.
+
+## Reference and next work
+
+[Memory](System/Memory/Working%20memory.md) · [Skills](System/Skills/Index.md) · [Decisions](System/Decisions.md) · [Logs](System/Logs/Event%20log.md) · [Routing](System/Projects/Automatic%20routing%20queue.md) · [Roadmap](IMPLEMENTATION.md)
+
+Verify the first unattended maintenance/desktop refresh, review meaningful queued project items, and retain explicit capture gaps. Muse resumes only when requested. Broader semantic evaluation, optional index refresh and visual verification remain later work. The agent owns routine maintenance.

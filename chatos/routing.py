@@ -12,7 +12,7 @@ def deliver(root=ROOT):
         records=store.records()
         for project in store.registry():
             matches=[r for r in records if project['id'] in r.get('projects',[])]
-            certain=[r for r in matches if r.get('project_evidence')=='workspace_path']
+            certain=[r for r in matches if r.get('project_evidence') in ['workspace_path','reviewed_assignment']]
             pending += [{'project':project['id'],'source':r['source'],'id':r['id'],
                          'reason':'Title match needs ownership review','conversation':r['file_path']}
                         for r in matches if r not in certain]
@@ -57,12 +57,12 @@ def deliver(root=ROOT):
             except (OSError,ValueError,RuntimeError) as exc:
                 pending.append({'project':project['id'],'destination':str(destination),
                                 'reason':type(exc).__name__+': '+str(exc)})
-        owned={r['id'] for r in records if r.get('projects')}
+        owned={(r['source'],r['id']) for r in records if r.get('projects')}
         pending += [{'source':r['source'],'id':r['id'],'conversation':r['file_path'],
                      'reason':'No registered owner inferred','title':r['title']}
-                    for r in records if r['id'] not in owned]
+                    for r in records if (r['source'],r['id']) not in owned]
         report={'checked_at':now(),'receipts':receipts,'pending':pending,
-                'limits':'Only exact-workspace context indexes are automatically delivered. Decisions/tasks require source review.'}
+                'limits':'Exact-workspace or reviewed-assignment context indexes are delivered. Decisions/tasks require source review.'}
         write_json(store.state/'routing.json',report)
         lines=['# Automatic routing queue','',f'Last processed: {report["checked_at"]}',
                '', 'Pending items are not delivered. Read sources before assigning an owner or creating commitments.','']
@@ -77,3 +77,26 @@ def deliver(root=ROOT):
         atomic(store.root/'System/Projects/Automatic filing receipts.md','\n'.join(lines)+'\n')
         return report
     finally:store.close()
+
+
+def assign(root, source, identity, projects, reason):
+    """Persist an evidence-backed ownership correction independently of imported content."""
+    root=Path(root)
+    if not reason.strip():raise ValueError('Assignment needs source evidence/reason')
+    with locked(root/'System/State/sync.lock',blocking=False):
+        store=Store(root)
+        try:
+            known={p['id'] for p in store.registry()}
+            if not set(projects)<=known:raise ValueError('Unknown project owner')
+            row=store.db.execute('SELECT record_json FROM conversations WHERE source=? AND id=?',
+                                 (source,identity)).fetchone()
+            if not row:raise ValueError('Conversation not captured')
+            path=root/'System/Projects/overrides.json'
+            state=json.loads(path.read_text()) if path.exists() else {'assignments':{}}
+            entry={'projects':sorted(set(projects)),'reason':reason,'reviewed_at':now()}
+            state['assignments'][source+':'+identity]=entry
+            write_json(path,state)
+            store.put(json.loads(row[0]))
+            return {'source':source,'id':identity,**entry,
+                    'delivery':'Ownership saved; run sync to refresh views and file-projects for external context indexes.'}
+        finally:store.close()

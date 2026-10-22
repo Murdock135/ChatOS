@@ -9,7 +9,7 @@ type: index
 
 Agent-managed operating workspace and conversation archive. The Chief of Staff maintains the records and infrastructure; Zayan uses them as a reference. Conversations are intended to span Codex, ChatGPT, and Muse, with navigation by topic and date.
 
-[Offline dashboard](Humans/dashboard.html) · [Sync status](STATUS.md) · [Conversations](Conversations/Index.md) · [Projects](Projects/Index.md)
+[What happens when I chat?](Humans/What%20happens%20when%20I%20chat.md) · [Conversation map](Humans/explorer.html) · [Offline dashboard](Humans/dashboard.html) · [Sync status](STATUS.md) · [Conversations](Conversations/Index.md) · [Projects](Projects/Index.md)
 
 ## Building the chat-OS
 
@@ -20,6 +20,7 @@ Agent-managed operating workspace and conversation archive. The Chief of Staff m
 
 - [[System/Index|System files]] — operating guidance, skills, memory, configuration, rules, and automations.
 - [[Working memory]] — vault-owned durable notes.
+- [Recorded decisions](System/Decisions.md) — source-reviewed choices and supersession history.
 - [[Scheduled tasks]] — task schedules, saved state, and archived definitions.
 - [[System logs]] — chat and scheduled-task incidents and recoveries.
 - [[Feedback log]] — negative feedback and how the assistant responds to it.

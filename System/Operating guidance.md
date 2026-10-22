@@ -12,7 +12,7 @@ Maintain [[Feedback log]] when Zayan expresses negative feedback about assistant
 
 Maintain [[Conversation metadata]] with every conversation, including verified model and source information, timestamps, and model history where available. Mark unavailable values explicitly and retain provenance.
 
-The initial runtime is Mac-only. Confirmed source scope is Codex, ChatGPT, and Muse; consult [[Sync sources]] for verified access and pending integrations. Hourly supported Codex maintenance is configured; first scheduled execution is unverified. A native launch agent was disabled after macOS privacy blocked Documents access.
+The initial runtime is Mac-only. Confirmed source scope is Codex, desktop ChatGPT, and Muse (Muse work is currently deferred); consult [[Sync sources]] for verified access and pending integrations. Hourly supported Codex maintenance is configured; first scheduled execution is unverified. A native launch agent was disabled after macOS privacy blocked Documents access.
 
 ## Responsibilities
 
@@ -38,7 +38,7 @@ Curated operational logs are stored separately in `System/Logs/`; the runtime da
 
 ## Refresh
 
-Run `python3 System/Scripts/snapshot_codex_state.py` from the vault to create a new snapshot. Each run preserves earlier snapshots and writes a manifest with hashes. Hourly agent maintenance is configured to run sync and reconcile changed behavior files; inspect run evidence before claiming unattended execution succeeds.
+Ordinary sync automatically checks behavior-file hashes, snapshots changes, and rechecks integrity. Run `python3 System/Scripts/snapshot_codex_state.py` from the vault only for an explicit additional snapshot. Each run preserves earlier snapshots and writes a manifest with hashes. Hourly agent maintenance is configured to run sync and reconcile changed behavior files; inspect run evidence before claiming unattended execution succeeds.
 
 Use [current skills inventory](Skills/Index.md) for discovered skills and [consistency audit](Audits/2026-10-22%20consistency%20audit.md) for known coverage limits. Refresh the inventory with `python3 System/Scripts/system_inventory.py`. Run `python3 System/Scripts/system_inventory.py --check` after behavior-file changes to detect omitted/changed skills, supporting files, workspace drift, or archive corruption. The command exits nonzero if the checked inventory/archive no longer matches its sources. It does not verify runtime activation or scheduled execution.
 

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src 'none'">
+<title>Conversation map</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.5 system-ui;background:#f5f3ed;color:#202d28}
+body{margin:0}main{max-width:1400px;margin:auto;padding:28px}h1{font-size:32px;margin:0}p{max-width:88ch}
+a{color:#20644e}button,input,select{font:inherit;border:1px solid #8d9a92;border-radius:6px;padding:8px;background:#fff;color:#202d28}
+button{cursor:pointer}button:hover{background:#e8eee9}label{display:flex;gap:4px;flex-direction:column;font-size:14px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0}.layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(250px,1fr);gap:20px}
+canvas{width:100%;height:580px;display:block;background:#fff;border:1px solid #b6c0b8;border-radius:10px;touch-action:none;cursor:grab}
+canvas:active{cursor:grabbing}aside{padding:16px;background:#e7ece6;border-radius:10px;overflow-wrap:anywhere}h2{font-size:21px;margin-top:0}
+#list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:16px}#list button{text-align:left;font-size:14px}
+#tooltip{position:fixed;pointer-events:none;background:#202d28;color:#fff;padding:8px;max-width:350px;border-radius:6px;font-size:13px;display:none}
+small{color:#526359}.muted{color:#526359}#summary{font-size:14px}.actions{display:flex;gap:8px;align-items:end}
+@media(max-width:800px){main{padding:18px}.layout{grid-template-columns:1fr}canvas{height:440px}}
+@media(prefers-color-scheme:dark){:root{background:#17221e;color:#e5eee6}canvas,button,input,select{background:#22332b;color:#e5eee6}aside{background:#283b30}a{color:#9dd5b5}.muted,small{color:#b6c6b9}button:hover{background:#344b3d}}
+</style></head><body><main>
+<h1>Conversation map</h1><p>Explore captured conversations. Select a dot or a title to inspect its source and nearby conversations. Drag to pan; scroll to zoom.</p>
+<p id="summary"></p><details><summary>Method and limits</summary><p id="method"></p><p id="limits"></p><p>Two dimensions lose information. Neighbor retention measures how many of each conversation's five nearest neighbors in the original representation remain among its five nearest dots. It does not measure whether the groups are useful or correct.</p></details>
+<div class="controls">
+<label>Find a title<input id="q" type="search" placeholder="Search titles"></label>
+<label>Project<select id="project"><option value="">All projects</option></select></label>
+<label>Source<select id="source"><option value="">All sources</option></select></label>
+<label>Suggested group<select id="group"><option value="">All groups</option></select></label>
+<label>Since<input id="since" type="date"></label><label>Until<input id="until" type="date"></label>
+<div class="actions"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="reset">Reset view</button></div>
+</div>
+<p id="count" aria-live="polite"></p>
+<div class="layout"><div><canvas id="map" aria-label="Conversation map. Use the title buttons below for keyboard selection."></canvas></div>
+<aside id="detail"><h2>Choose a conversation</h2><p>Colors identify suggested groups. Groups are provisional; project ownership is recorded separately.</p></aside></div>
+<div id="list" aria-label="Conversations"></div>
+<div id="tooltip"></div>
+</main><script type="application/json" id="data">__EXPLORER_DATA__</script><script>
+const data=JSON.parse(document.getElementById('data').textContent);
+const el=id=>document.getElementById(id),canvas=el('map'),ctx=canvas.getContext('2d');
+const palette=['#23765a','#446fc0','#b36a25','#995bb3','#b24f65','#45858b'];
+let zoom=1,panX=0,panY=0,selected=null,visible=[],positions=[],down=null,moved=false;
+function options(id,values){for(const value of values){const option=document.createElement('option');option.value=value;option.textContent=value;el(id).append(option)}}
+options('project',[...new Set(data.documents.flatMap(d=>d.projects))].sort());
+options('source',[...new Set(data.documents.map(d=>d.source))].sort());
+for(const [id,label] of Object.entries(data.groups).sort((a,b)=>a[1].localeCompare(b[1]))){const option=document.createElement('option');option.value=id;option.textContent=label;el('group').append(option)}
+el('summary').textContent='Captured '+data.checked_at+' · '+(data.variance_2d===null?'Nonlinear 2D projection':'2D variance retained '+Math.round(100*data.variance_2d)+'%')+' · Five-neighbor retention '+(data.neighbor_retention_5===null?'unavailable':Math.round(100*data.neighbor_retention_5)+'%')+(data.freshness_note?' · '+data.freshness_note:'')+(data.coverage?' · '+data.coverage.represented_conversations+'/'+data.coverage.total_conversations+' conversations; '+data.coverage.current_vectors+'/'+data.coverage.current_passages+' passages embedded':'');
+el('method').textContent=data.method;el('limits').textContent=data.limits;
+function color(d){if(d.group==='unclustered')return '#808880';let hash=0;for(const c of d.group)hash=(hash*31+c.charCodeAt(0))>>>0;return palette[hash%palette.length]}
+const xs=data.documents.map(d=>d.x),ys=data.documents.map(d=>d.y);
+const minX=xs.length?Math.min(...xs):0,maxX=xs.length?Math.max(...xs):0,minY=ys.length?Math.min(...ys):0,maxY=ys.length?Math.max(...ys):0;
+function xy(d){const width=canvas.clientWidth,height=canvas.clientHeight;const scale=Math.min((width-70)/(maxX-minX||1),(height-70)/(maxY-minY||1))*zoom;return [width/2+(d.x-(maxX+minX)/2)*scale+panX,height/2-(d.y-(maxY+minY)/2)*scale+panY]}
+function draw(){const ratio=window.devicePixelRatio||1;canvas.width=canvas.clientWidth*ratio;canvas.height=canvas.clientHeight*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);positions=[];for(const i of visible){const d=data.documents[i],[x,y]=xy(d);positions.push({i,x,y});ctx.beginPath();ctx.arc(x,y,i===selected?9:6,0,Math.PI*2);ctx.fillStyle=color(d);ctx.globalAlpha=i===selected?1:0.78;ctx.fill();if(i===selected){ctx.strokeStyle=getComputedStyle(document.documentElement).color;ctx.lineWidth=2;ctx.stroke()}}ctx.globalAlpha=1}
+function filter(){const words=el('q').value.toLowerCase().split(/\s+/).filter(Boolean);visible=data.documents.map((d,i)=>i).filter(i=>{const d=data.documents[i];return words.every(w=>d.title.toLowerCase().includes(w))&&(!el('project').value||d.projects.includes(el('project').value))&&(!el('source').value||d.source===el('source').value)&&(!el('group').value||d.group===el('group').value)&&(!el('since').value||d.date>=el('since').value)&&(!el('until').value||d.date&&d.date<=el('until').value)});el('count').textContent=visible.length+' of '+data.documents.length+' conversations shown';el('list').replaceChildren();for(const i of visible){const button=document.createElement('button');button.textContent=data.documents[i].title;button.addEventListener('click',()=>select(i));el('list').append(button)}draw()}
+function select(i){selected=i;const d=data.documents[i],pane=el('detail');pane.replaceChildren();const heading=document.createElement('h2');heading.textContent=d.title;const meta=document.createElement('p');meta.textContent=d.source+' · '+(d.date||'date unknown')+' · '+(d.projects.join(', ')||'unassigned');const link=document.createElement('a');link.textContent='Open source conversation';link.href=d.url;const group=document.createElement('p');group.textContent='Suggested group: '+data.groups[d.group];const h=document.createElement('h3');h.textContent='Nearest in the source representation';pane.append(heading,meta,link,group,h);for(const j of d.neighbors){const p=document.createElement('p'),button=document.createElement('button');button.textContent=data.documents[j].title;button.addEventListener('click',()=>select(j));p.append(button);pane.append(p)}draw()}
+function hit(event){const box=canvas.getBoundingClientRect(),x=event.clientX-box.left,y=event.clientY-box.top;return positions.filter(p=>(p.x-x)**2+(p.y-y)**2<144).sort((a,b)=>(a.x-x)**2+(a.y-y)**2-((b.x-x)**2+(b.y-y)**2))[0]}
+canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,panX,panY};moved=false;canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(down){const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>4)moved=true;panX=down.panX+dx;panY=down.panY+dy;draw();el('tooltip').style.display='none';return}const point=hit(e);el('tooltip').style.display=point?'block':'none';if(point){el('tooltip').textContent=data.documents[point.i].title;el('tooltip').style.left=Math.max(8,Math.min(e.clientX+12,window.innerWidth-370))+'px';el('tooltip').style.top=e.clientY+12+'px'}});
+canvas.addEventListener('pointerup',e=>{if(!moved){const point=hit(e);if(point)select(point.i)}down=null});
+canvas.addEventListener('pointercancel',()=>{down=null});canvas.addEventListener('pointerleave',()=>el('tooltip').style.display='none');
+function changeZoom(factor){zoom=Math.max(0.25,Math.min(zoom*factor,20));draw()}
+canvas.addEventListener('wheel',e=>{e.preventDefault();changeZoom(e.deltaY<0?1.12:1/1.12)},{passive:false});
+el('zoomIn').onclick=()=>changeZoom(1.25);el('zoomOut').onclick=()=>changeZoom(0.8);el('reset').onclick=()=>{zoom=1;panX=0;panY=0;draw()};
+for(const id of ['q','project','source','group','since','until'])el(id).addEventListener('input',filter);
+new ResizeObserver(draw).observe(canvas);filter();
+</script></body></html>

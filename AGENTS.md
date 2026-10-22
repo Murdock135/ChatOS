@@ -21,3 +21,7 @@
 - Zayan's other main Obsidian vaults include `PKM` and the work-management vault. On 2026-10-22 its existing path was verified as `/Users/zayan/Documents/obsidian_vaults/academic_life`; older context calls it `zayans_academic_life`. Verify current paths through the project registry. Do not relocate their content as part of chat archiving.
 
 - Use System/Skills/local-maintenance/SKILL.md for maintenance and System/Skills/project-briefing/SKILL.md to resume a project. Read README.md for runtime commands. STATUS.md is generated; STATE.md is the maintained capability summary. Keep these distinct from historical snapshots.
+
+- Use System/Skills/archive-retrieval/SKILL.md for questions about prior chats or recorded choices. The retrieve command provides cited evidence passages; the active assistant synthesizes the answer and checks later or conflicting evidence.
+
+- Use System/Skills/desktop-chat-capture/SKILL.md for bounded supported-tool ChatGPT desktop capture. Zayan uses the ChatGPT/Codex desktop app. Muse export is deferred until requested again. Preserve explicit partial coverage; content references are unavailable replies, not transcript text.

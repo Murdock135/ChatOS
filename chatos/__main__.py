@@ -12,13 +12,75 @@ def main():
     commands=parser.add_subparsers(dest='command',required=True)
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
     commands.add_parser('status')
+    commands.add_parser('doctor')
+    cmd=commands.add_parser('backup');cmd.add_argument('--fresh',action='store_true')
+    cmd=commands.add_parser('restore');cmd.add_argument('backup',type=Path);cmd.add_argument('destination',type=Path)
     commands.add_parser('install-scheduler')
     commands.add_parser('scheduler-status')
     commands.add_parser('disable-scheduler')
     commands.add_parser('file-projects')
     cmd=commands.add_parser('search');cmd.add_argument('query');cmd.add_argument('--limit',type=int,default=15);cmd.add_argument('--semantic',action='store_true')
     cmd=commands.add_parser('brief');cmd.add_argument('project')
+    cmd=commands.add_parser('assign');cmd.add_argument('source',choices=['codex','chatgpt','muse']);cmd.add_argument('identity');cmd.add_argument('projects',nargs='*');cmd.add_argument('--reason',required=True)
+    cmd=commands.add_parser('retrieve');cmd.add_argument('query');cmd.add_argument('--project');cmd.add_argument('--limit',type=int,default=8);cmd.add_argument('--hybrid',action='store_true')
+    cmd=commands.add_parser('dense-build');cmd.add_argument('--limit',type=int);cmd.add_argument('--batch-size',type=int,default=4)
+    commands.add_parser('dense-map')
+    cmd=commands.add_parser('feedback');cmd.add_argument('--limit',type=int,default=15)
+    cmd=commands.add_parser('review-feedback');cmd.add_argument('key');cmd.add_argument('classification',choices=['confirmed_feedback','uncertain','not_feedback']);cmd.add_argument('--reason',required=True);cmd.add_argument('--adjustment');cmd.add_argument('--already-logged',action='store_true')
     args=parser.parse_args()
+    if args.command=='dense-map':
+        from .dense_map import build
+        from .core import locked
+        with locked(args.root/'System/State/sync.lock',blocking=False):
+            store=Store(args.root)
+            try:print(json.dumps(build(store),indent=2))
+            finally:store.close()
+        return 0
+    if args.command=='dense-build':
+        from .dense import build
+        from .core import locked
+        if args.limit is not None and args.limit<0:parser.error('Limit must be nonnegative')
+        if not 1<=args.batch_size<=16:parser.error('Batch size must be between 1 and 16')
+        with locked(args.root/'System/State/sync.lock',blocking=False):
+            store=Store(args.root)
+            try:print(json.dumps(build(store,args.limit,args.batch_size),indent=2))
+            finally:store.close()
+        return 0
+    if args.command in ['feedback','review-feedback']:
+        from .feedback import candidates,review,refresh
+        store=Store(args.root)
+        try:
+            if args.command=='feedback':print(json.dumps(candidates(store)[:max(1,min(args.limit,100))],indent=2,ensure_ascii=False))
+            else:
+                print(json.dumps(review(store,args.key,args.classification,args.reason,args.adjustment,args.already_logged),indent=2,ensure_ascii=False))
+                refresh(store)
+        finally:store.close()
+        return 0
+    if args.command=='backup':
+        from .runtime import backup
+        from .core import locked
+        with locked(args.root/'System/State/sync.lock',blocking=False):
+            store=Store(args.root)
+            try:print(json.dumps(backup(store,args.fresh),indent=2))
+            finally:store.close()
+        return 0
+    if args.command=='doctor':
+        from .recovery import doctor
+        report=doctor(args.root);print(json.dumps(report,indent=2));return 0 if report['ok'] else 1
+    if args.command=='restore':
+        from .recovery import restore
+        print(json.dumps(restore(args.backup,args.destination),indent=2));return 0
+    if args.command=='assign':
+        from .routing import assign
+        print(json.dumps(assign(args.root,args.source,args.identity,args.projects,args.reason),indent=2));return 0
+    if args.command=='retrieve':
+        from .retrieval import retrieve,render
+        if args.hybrid:
+            from .dense import retrieve
+        store=Store(args.root)
+        try:print(render(retrieve(store,args.query,args.project,args.limit)))
+        finally:store.close()
+        return 0
     if args.command=='file-projects':
         from .routing import deliver
         report=deliver(args.root)

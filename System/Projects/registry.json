@@ -136,6 +136,34 @@
       "related_repositories": [],
       "mapping_status": "initial; verify ownership for each item",
       "verified_on": "2026-10-22"
+    },
+    {
+      "id": "grading-app",
+      "name": "Project 1 Grading Desk",
+      "kind": "code-project",
+      "parent_id": null,
+      "root": "/Users/zayan/Documents/code/mine/project-grading-app",
+      "entrypoint": "/Users/zayan/Documents/code/mine/project-grading-app/README.md",
+      "aliases": [
+        "project-grading-app"
+      ],
+      "related_repositories": [],
+      "mapping_status": "Existing repository and README purpose verified; external delivery convention not yet approved",
+      "verified_on": "2026-10-22"
+    },
+    {
+      "id": "code-vulnerability-analysis",
+      "name": "MegaVul Diff Analysis",
+      "kind": "code-project",
+      "parent_id": null,
+      "root": "/Users/zayan/Documents/code/mine/research-lm_error_analysis",
+      "entrypoint": "/Users/zayan/Documents/code/mine/research-lm_error_analysis/README.md",
+      "aliases": [
+        "research-lm_error_analysis"
+      ],
+      "related_repositories": [],
+      "mapping_status": "Existing repository and README purpose verified; external delivery convention not yet approved",
+      "verified_on": "2026-10-22"
     }
   ]
 }

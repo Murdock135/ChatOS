@@ -15,7 +15,7 @@ Record negative feedback Zayan expresses about the assistant's responses, action
 
 ## Coverage
 
-Established on 2026-10-22. Applies to feedback actually visible during work in this vault. No historical feedback audit or automatic cross-app sentiment monitoring has been performed.
+Established on 2026-10-22. A bounded phrase-cue sweep of the captured archive produced six review candidates: five explicit feedback items (two already logged) and one neutral dashboard bug report. These were reviewed against source context. This is not an exhaustive historical audit or automatic sentiment monitor; unseen cross-app history remains uncovered. Candidate and review state is in the local runtime database, with generated views under System/State and System/Feedback.
 
 ## Entries
 
@@ -47,3 +47,34 @@ Established on 2026-10-22. Applies to feedback actually visible during work in t
 - Outcome: unresolved, change applied, or user-confirmed resolution; cite evidence.
 Append later developments without overwriting the original feedback.
 -->
+
+<!-- feedback-review:4ab3ab45fbc57dad440cf809b0fb0b49cfdeccc1bdc38d3110c09254eb5ce5cd -->
+### 2026-10-22 — From my repos, sparq and research-concerted_abduction, understand my coding style and add them into memory. Call it my preferred coding style.    Pick only the good parts. If any part of my code does not follow good coding practice, do not
+
+- Source: [codex:01a16435-1257-7270-86dc-6f2708b70030](file:///Users/zayan/Documents/obsidian_vaults/chats/Conversations/2026/codex-01a16435-1257-7270-86dc-6f2708b70030.md); message msg_01a1643c-b6d0-7c60-a310-4d92d6c0438c
+- User wording: you only opened 'repository documentation may be outdated'
+- Interpretation: confirmed_feedback; The assistant said three files were queued; the user reported that only one was visible.
+- Adjustment: Distinguish queued/open acknowledgments from verified visibility when presenting multiple artifacts.
+- Outcome: Review recorded; user-confirmed resolution is unknown.
+
+<!-- feedback-review:71fe6a978b9075d7603aeccb55abb6e0457ffef497651e5e795ae8c74abaf2c0 -->
+### 2026-10-09 — Explain measured metrics
+
+- Source: [codex:01a11f02-1ce9-7113-a7e1-e18a383889e4](file:///Users/zayan/Documents/obsidian_vaults/chats/Conversations/2026/codex-01a11f02-1ce9-7113-a7e1-e18a383889e4.md); message item-19
+- User wording: i don't understand anything from the table you provided in manager_update.py
+- Interpretation: confirmed_feedback; The user explicitly identified an assistant-produced metrics table as incomprehensible.
+- Adjustment: On project resume, explain each metric, what was actually measured, and the limits of the experiment; historical code state is not revalidated here.
+- Outcome: Review recorded; user-confirmed resolution is unknown.
+
+<!-- feedback-review:3ba9ee1e6184a48588779edf1ce9872f6fdf61e56edef76731c97dcbdd670a56 -->
+### 2026-08-07 — what is this project about
+
+- Source: [codex:019fdd8b-262d-7712-b9e5-350ccecc8d69](file:///Users/zayan/Documents/obsidian_vaults/chats/Conversations/2026/codex-019fdd8b-262d-7712-b9e5-350ccecc8d69.md); message item-20
+- User wording: i don't understand the JSON example form. why doesn't it follow the ExtractorOutput schema in [types.py](src/concerted_abduction/types.py)
+- Interpretation: confirmed_feedback; The user pointed to an example that did not follow the declared output schema.
+- Adjustment: Read the actual input/output schema and validate examples against it before claiming contract compliance; historical source state is not revalidated here.
+- Outcome: Review recorded; user-confirmed resolution is unknown.
+
+## Review mechanics
+
+Ordinary sync produces a conservative [review queue](Feedback/Review%20queue.md). A cue remains unclassified until an agent checks its context. Confirmed/uncertain feedback can be recorded with the review-feedback command; neutral requests are dismissed without adding negative feedback. Stable source/message/text identities prevent repeated logging. No emotion or motive is inferred.
