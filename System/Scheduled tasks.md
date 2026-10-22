@@ -36,3 +36,7 @@ The intended scope also includes ChatGPT scheduled tasks and scheduled agent wor
 The hourly maintenance prompt now includes bounded ChatGPT desktop refresh, usage checks between phases, and explicit Muse deferral. Optional embedding builds are not automatic. Its first unattended result remains unverified.
 
 The daily news digest target (01a10c46-e763-76b2-826c-b1a68da0f92f) returned a missing-source-rollout history error through read_thread. No fallback visible-history rows were available for that ID. This is a verified history/target access problem; delivery/execution remains unknown. The incident is recorded in the event ledger. No replacement target was invented.
+
+## 2026-10-22 — First triggered core sync
+
+The maintain-chat-os heartbeat arrived at 18:30:09 UTC. With 32 percent of the five-hour allowance remaining, the agent ran only the bounded core sync. run_sync.py exited 0; run 12 completed at 18:30:23 UTC with status ok. This verifies this triggered core phase, not full source capture, desktop refresh, or recurring reliability. Existing partial-history and deferred Muse coverage remain unchanged.

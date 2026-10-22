@@ -12,7 +12,7 @@ Maintain [[Feedback log]] when Zayan expresses negative feedback about assistant
 
 Maintain [[Conversation metadata]] with every conversation, including verified model and source information, timestamps, and model history where available. Mark unavailable values explicitly and retain provenance.
 
-The initial runtime is Mac-only. Confirmed source scope is Codex, desktop ChatGPT, and Muse (Muse work is currently deferred); consult [[Sync sources]] for verified access and pending integrations. Hourly supported Codex maintenance is configured; first scheduled execution is unverified. A native launch agent was disabled after macOS privacy blocked Documents access.
+The initial runtime is Mac-only. Confirmed source scope is Codex, desktop ChatGPT, and Muse (Muse work is currently deferred); consult [[Sync sources]] for verified access and pending integrations. Hourly supported Codex maintenance is configured; the first heartbeat-triggered bounded core sync succeeded at 18:30:23 UTC on 2026-10-22; unattended desktop refresh and recurring reliability remain unverified. A native launch agent was disabled after macOS privacy blocked Documents access.
 
 ## Responsibilities
 

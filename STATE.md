@@ -32,7 +32,7 @@ On seven source-labeled questions, both lexical and optional hybrid retrieval fo
 
 ## Scheduling and source gaps
 
-Hourly **Maintain chat-OS** is configured and stays quiet on unchanged state. It requires the Mac and app available and defers at 30 percent or less remaining in the five-hour window. No last-run timestamp or completed unattended execution is recorded yet. Inspect [current schedules](System/Schedules/Index.md) for newer evidence.
+Hourly **Maintain chat-OS** is configured and stays quiet on unchanged state. It requires the Mac and app available and defers at 30 percent or less remaining in the five-hour window. The first heartbeat-triggered bounded core sync completed successfully on 2026-10-22 at 18:30:23 UTC (run 12, exit 0). This verifies the triggered core sync, not a full desktop refresh or a pattern of reliable recurring execution. Inspect [current schedules](System/Schedules/Index.md) for newer evidence.
 
 The native five-minute launch agent was privacy-blocked and disabled. Manual sync through Codex succeeds. No security/privacy protections were weakened.
 
@@ -48,4 +48,4 @@ Backups remain on the same Mac. Full recovery of behavior files, project registr
 
 [Memory](System/Memory/Working%20memory.md) · [Skills](System/Skills/Index.md) · [Decisions](System/Decisions.md) · [Logs](System/Logs/Event%20log.md) · [Routing](System/Projects/Automatic%20routing%20queue.md) · [Roadmap](IMPLEMENTATION.md)
 
-Verify the first unattended maintenance/desktop refresh, review meaningful queued project items, and retain explicit capture gaps. Muse resumes only when requested. Broader semantic evaluation, optional index refresh and visual verification remain later work. The agent owns routine maintenance.
+Verify recurring maintenance reliability and the first unattended desktop refresh, review meaningful queued project items, and retain explicit capture gaps. Muse resumes only when requested. Broader semantic evaluation, optional index refresh and visual verification remain later work. The agent owns routine maintenance.
