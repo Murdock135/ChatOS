@@ -19,6 +19,8 @@ def sync_system(root, codex_home):
     from System.Scripts.snapshot_codex_state import create_snapshot
     if not codex_home.is_dir():
         raise FileNotFoundError('Codex source root unavailable: ' + str(codex_home))
+    from .changes import snapshot_manifest, behavior_changes
+    previous = snapshot_manifest(root)
     refresh(root, codex_home)
     before = check(root, codex_home)
     captured = create_snapshot(root, codex_home) if not before['ok'] else None
@@ -27,6 +29,7 @@ def sync_system(root, codex_home):
         raise RuntimeError('Behavior archive changed during capture or failed integrity check; retry sync')
     return {'status': 'verified', 'checked_at': now(), 'snapshot_created': bool(captured),
             'snapshot': captured['snapshot'] if captured else None,
+            'changes': behavior_changes(previous, snapshot_manifest(root)),
             'detail': 'Skills, memory, instructions, rules, schedules, configuration inventory, and workspace files checked.'}
 
 
@@ -163,6 +166,8 @@ def sync(root=ROOT, codex_home=None, force=False):
     codex_home = Path(codex_home or Path.home()/'.codex').resolve()
     with locked(root/'System/State/sync.lock', blocking=False):
         store = Store(root)
+        from .changes import conversation_hashes, count_changes
+        previous_chats = conversation_hashes(store)
         start = now()
         # Holding sync.lock means a previous 'running' row can only be an interrupted run.
         store.db.execute("UPDATE runs SET status='interrupted' WHERE status='running'")
@@ -326,6 +331,8 @@ def sync(root=ROOT, codex_home=None, force=False):
                 status['sources']['codex']={'status':'failed','detail':'Source scan did not complete; see problems.'}
             status['errors'].append({'source':'sync','error':type(exc).__name__ + ': ' + str(exc)})
         finally:
+            status['changes'] = {'chats': count_changes(previous_chats, conversation_hashes(store))}
+            status['changes'].update(status.get('system_sync', {}).get('changes', {}))
             status['finished_at'] = now()
             previous_path = root/'System/State/status.json'
             previous = json.loads(previous_path.read_text()) if previous_path.exists() else {}

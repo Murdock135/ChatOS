@@ -1,0 +1,2 @@
+# Optional terminal formatting; core sync also works without this dependency.
+rich>=14.1,<15
