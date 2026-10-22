@@ -6,6 +6,8 @@ maintenance_owner: Chief of Staff
 ---
 # Current state
 
+**Top priority when work resumes:** rebuild the new-user explanation and documentation path from the ground up, clearly delineating what this repo offers and how. Explicitly deferred now; [verbatim user request](System/Feedback/2026-10-22-new-user-documentation.md).
+
 This is a shared workspace: the Chief of Staff manages routine upkeep, and Zayan uses it to inspect provenance across chats, skills, memory, and system changes. Transparency and traceability are core purposes.
 
 **[Sync status](STATUS.md) · [Human guide](Humans/Start%20here.md) · [What happens when I chat?](Humans/What%20happens%20when%20I%20chat.md) · [Dashboard](Humans/dashboard.html) · [Conversation map](Humans/explorer.html)**

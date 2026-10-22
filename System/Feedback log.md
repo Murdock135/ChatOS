@@ -87,3 +87,12 @@ Ordinary sync produces a conservative [review queue](Feedback/Review%20queue.md)
 - Interpretation: explicit correction of the assistant's documentation audience; high confidence. No emotional state inferred.
 - Adjustment: rewrote README for first-time readers with purpose, entry points, example questions, basic sync/health commands, and source/privacy limits. Moved maintainer commands and recovery details to System/Runtime reference.md and linked it from the system index.
 - Outcome: revision applied; local links, code fences, CLI command syntax, and diff whitespace verified. User-confirmed resolution remains unknown.
+
+## 2026-10-22 — New-user documentation still lacks foundations
+
+- Source: codex:01a16510-7f12-78b0-afa9-d5aee24d915b; [verbatim user feedback](Feedback/2026-10-22-new-user-documentation.md).
+- Wording: “you haven't really taught a new user from the ground up what this repo is for, what problem it solves, what features it provides and what its architecture or design is along with the concepts it uses.” Full wording retained in the linked note.
+- Assistant behavior: README rewrite and Start here still assumed concepts such as decisions and Chief of Staff, without a sufficiently organized explanation for a fresh clone.
+- Interpretation: explicit negative feedback about documentation audience, foundations, and organization; high confidence. No emotion inferred.
+- Adjustment: record verbatim and make documentation/conceptual organization the topmost next-resume priority. Respect explicit deferral now; no redesign performed.
+- Outcome: deferred requirement recorded, not resolved. Supersedes any implication that the earlier README revision satisfied onboarding.

@@ -107,3 +107,9 @@ Reviewed seven ownership assignments, registered two existing code repositories,
 - Status: verified pending changes and grouped skill navigation, CLI reports, and workspace documentation into separate commits.
 - Validation: all 57 tests passed with the vault interpreter; 19 CLI/import tests passed with system Python. Whitespace checks passed. Sync run 26 completed without errors, captured available conversation updates, and refreshed changed installed skill support files; the subsequent behavior consistency check passed.
 - Private conversations, runtime state, logs, and dated snapshot contents remain excluded from Git.
+
+## 2026-10-22 — New-user foundations made top resume priority
+
+- Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- Filed and reopened: verbatim request in System/Feedback/2026-10-22-new-user-documentation.md; priority pointers in STATE.md, IMPLEMENTATION.md, and working memory; feedback adjustment in the feedback log.
+- Explicitly note-only now. No redesign or new feature implementation; act on this first when the user asks to resume chat-OS work.

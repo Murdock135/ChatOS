@@ -7,6 +7,11 @@ updated: 2026-10-22
 
 The Chief of Staff owns implementation and upkeep. Zayan uses the workspace as a reference and directs work through chat. This is the current plan; Git retains earlier scaffold versions. [STATE.md](STATE.md) describes verified capabilities, and [STATUS.md](STATUS.md) reports the last sync.
 
+## Top priority on next resume — New-user documentation and conceptual design
+
+- [ ] Before other planned feature work, teach a newly cloned-repo user what chat-OS is for, what problem it solves, exactly what features it offers and how, its foundational concepts, architecture/design, setup, and usage. Define terms before using them and organize a coherent README-to-concepts learning path. Deferred now at the user's request; do not start until asked to resume.
+- Authoritative [verbatim feedback and resume requirements](System/Feedback/2026-10-22-new-user-documentation.md). The earlier README rewrite did not meet the user's stated need.
+
 ## 1. Local records and Codex capture
 
 - [x] Stable source/conversation identities; visible messages, message IDs, model/effort history, timestamps, attachment references, workspace and provenance.
