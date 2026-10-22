@@ -46,3 +46,7 @@ A saved active schedule or recorded run time does not prove completion. The nati
 Markdown/JSON conversations and the SQLite runtime database stay local. Skills, instructions, scripts, and documentation have local Git history. Private transcripts, imports, runtime logs, snapshots, and database backups are excluded from Git. No remote repository or external hosting is configured.
 
 Database recovery has been tested into a new isolated directory. It restores conversation records/revisions and regenerates source files. Behavior snapshots and the project registry are separate recovery material. All current copies remain on this Mac, so this is not protection against losing the entire device.
+
+## Coding preferences
+
+Your [preferred coding style](/Users/zayan/.codex/skills/preferred-coding-style/SKILL.md) is installed with a global Codex instruction to apply it when writing, changing, reviewing, or illustrating code. The trigger loaded into the setup chat. You can explicitly invoke `$preferred-coding-style`; if a future session does not show the new skill, restart Codex. This configures Codex, not ordinary ChatGPT sessions.

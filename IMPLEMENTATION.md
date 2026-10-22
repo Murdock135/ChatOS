@@ -86,6 +86,10 @@ Any new persistent sensitive access must be reviewed at the point it is enabled.
 - [ ] Choose an off-device backup destination and retention policy. Same-device copies do not protect against device loss.
 - [ ] Verify navigation in the user's preferred VS Code/Obsidian surface and real fresh-project behavior after the global entry reference.
 
+## Deferred future requirement — Chat application migration
+
+- [ ] Provide a way to use the accumulated archive and operating context when migrating to another chat application. Destination and scope are unspecified; note only, not authorization to implement or transfer data now. See [migration requirement](ideas.md#deferred--migration-to-another-chat-application).
+
 ## Next acceptance milestone
 
 Finish source access, verify the first unattended maintenance result, and run a representative project-resume → evidence retrieval → accepted outcome → verified filing cycle. Full three-source operation remains incomplete until ChatGPT and Muse updates work without overstating capture or weakening security.

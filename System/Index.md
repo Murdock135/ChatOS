@@ -7,6 +7,7 @@
 - [Implementation roadmap](../IMPLEMENTATION.md) — operational requirements and delivery order.
 - [Ideas](../ideas.md) — optional improvements and experiments.
 
+- [Runtime reference](Runtime%20reference.md) — maintainer commands, storage, and recovery.
 - [[Operating guidance]] — responsibilities, ownership, and runtime boundaries.
 - [[Working memory]] — vault-owned durable notes requested by Zayan.
 - [[Scheduled tasks]] — schedules, saved state, task instructions, and cross-app coverage.

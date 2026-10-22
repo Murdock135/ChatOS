@@ -38,3 +38,13 @@ Each entry has a stable ID, date, status, scope, authority, supporting source me
 - VS Code versus Obsidian as the preferred rendering interface: discussed, with no final selection recorded. The repository currently preserves Markdown/Obsidian compatibility and includes VS Code tasks.
 - Pretrained embedding model, clustering algorithm, and production RAG backend: not selected. The current LSA map is an experiment.
 - Unattended ChatGPT and Muse capture: required but source access is incomplete. No remote bridge or additional access permissions have been approved or enabled.
+
+## COS-2026-004 — Apply preferred coding style through a skill
+
+- Date: 2026-10-22
+- Status: adopted and installed
+- Authority: user instruction “make it” following the proposed skill plus global trigger.
+- Scope: coding, code reviews, and code examples; respect task scope and project conventions.
+- Source: [conversation](../Conversations/2026/codex-01a16510-7f12-78b0-afa9-d5aee24d915b.md).
+- Destination: `/Users/zayan/.codex/skills/preferred-coding-style/SKILL.md` and global `/Users/zayan/.codex/AGENTS.md`.
+- Supersedes: none; operationalizes the existing preference profile.

@@ -234,3 +234,27 @@ This means keeping a readable record of explicit decisions so we can answer “w
 After the first working import/sync, start with **decision records**, **project briefings**, and **filing previews**. These can improve everyday use with small changes to files and skills. Dashboard/graph work should follow reliable underlying data.
 
 When promoting any idea into the implementation backlog, specify its component type, affected files, invocation/trigger, dependencies, and acceptance check. Do not describe a benefit alone as if it were an implementable feature.
+
+## Deferred — Conversation preservation, compression, and retrieval
+
+User request (2026-10-22): eventually use state-of-the-art methods to store all accessible conversations, potentially including compression, and maintain an independently owned version. Explicitly deferred; no implementation authorized for this turn. ChatGPT's internal storage/compression methods are unknown here.
+
+Before implementation, research and compare concrete approaches: lossless compression for exact source retention; derived summaries or hierarchical memory for smaller context; and retrieval indexes for finding relevant passages. These solve different problems. Preserve available original messages and provenance; summaries must remain labeled derivatives rather than replacements. Record method/model/version, source spans, capture gaps, and transformations so Zayan can inspect how derived memory was produced.
+
+Potential deliverables: a benchmark and design decision first, followed only if justified by a storage script, versioned derived-memory format, and retrieval integration. Evaluate exact recoverability, information loss, retrieval quality, storage/context savings, privacy, and maintenance cost before claiming state-of-the-art quality.
+
+## Clarification — Semantic browsing before starting a chat
+
+User clarification (2026-10-22): clustering is a human navigation feature for personal chat history. Example: before starting a new discussion about LangChain deep agents, find previous discussions of that subject and explore semantically related chats. This does not require remembering exact titles or wording.
+
+Desired interaction: enter a concept or browse the map, inspect nearby conversations with titles, dates, source apps and supporting excerpts, open original records, then choose whether to resume an existing conversation or begin a new one with selected context. Project boundaries must not hide related conversations. Similarity suggests relevance, not agreement or a shared decision.
+
+Acceptance example: a search for LangChain deep agents should surface any captured prior discussion and useful related agent-framework chats; disclose missing capture coverage. Evaluate related-chat discovery and navigation usefulness, alongside retrieval accuracy. This clarification records the intended experience; no new feature is implemented by this entry.
+
+## Deferred — Migration to another chat application
+
+User request (2026-10-22): use the accumulated chat-OS archive and operating context to help migrate to a different chat application. Record for future work only; no migration or implementation is authorized now.
+
+Future scope to assess: exporting selected conversations, relevant project context, preferences/memory, skills/instructions, and task definitions in portable forms, with destination-specific conversion where supported. Preserve source IDs, provenance, capture gaps, and distinctions between original messages and derived summaries. Report what the destination can actually import or use; do not imply identical memory, skill execution, scheduling, or behavior across apps.
+
+The destination app and exact export scope remain unspecified. Candidate deliverable: a reviewable migration package and a compatibility report; implementation choices and any transfer into another service wait for a later request.

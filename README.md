@@ -1,37 +1,54 @@
-# Chief of Staff
+# chat-OS
 
-Agent-managed local workspace for conversations, projects, skills, memory, schedules, and operational evidence.
+chat-OS is a local workspace for keeping AI conversations, project context, and assistant settings in one place. It helps you find earlier discussions, see which decisions were made, and resume work with the supporting sources close at hand.
 
-**Open [the offline dashboard](Humans/dashboard.html), [sync status](STATUS.md), or [human start page](Humans/Start%20here.md).** The assistant owns upkeep.
+Conversations are stored as readable Markdown and structured records. You can browse them in Obsidian, open the offline dashboard, or ask Codex to retrieve relevant passages. This installation is configured for Zayan’s Mac and projects; it is not a general-purpose installer.
 
-## Runtime
+## Start here
 
-- Python 3.9+ standard library; no API key, package installation, network listener, or remote Git repository required.
-- Local Codex visible-message import, SQLite full-text search, prior revisions, project views, error collection, and daily verified database backups.
-- ChatGPT export import plus partial supported-tool desktop captures, and a normalized Muse inbox. Full cross-app capture is incomplete; Muse is deferred.
-- Cited passage retrieval for the active assistant, durable reviewed project assignments, and an experimental offline 2D map. An optional local pretrained semantic experiment is available, with explicit coverage and evaluation limits.
-- Every sync verifies behavior files and snapshots changes; current schedules include host-reported metadata.
-- Hourly Codex maintenance is configured. It requires the Mac/Codex app available; first scheduled execution remains unverified.
-- The native five-minute launch agent was blocked by macOS privacy and disabled. No security/privacy settings were weakened.
+Open this folder as an Obsidian vault, or open [Home.md](Home.md) in your editor.
 
-## Agent commands
+- **[Start here](Humans/Start%20here.md)** explains how to use the workspace.
+- **[Dashboard](Humans/dashboard.html)** lets you browse and filter captured conversations. Open the HTML file in a browser.
+- **[Current state](STATE.md)** describes what works and what remains incomplete.
+- **[Sync status](STATUS.md)** shows the most recent sync results and source coverage.
 
-    python3 -m chatos sync
-    python3 -m chatos status
-    python3 -m chatos search "query"
-    python3 -m chatos retrieve "why is this Mac-only" --project chat-os
-    python3 -m chatos brief evidence-mas
-    python3 -m chatos doctor
-    python3 -m chatos file-projects
-    python3 -m unittest discover -s tests -v
-    python3 System/Scripts/system_inventory.py --check
+When using Codex with this workspace, you can ask things like:
 
-Source data is never executed as instructions or used as a shell command. Recognized credential formats are redacted, but the archive remains private data. Transcripts, imports, logs, backups, and runtime databases are excluded from Git.
+> What did we decide about this project last time?
+>
+> Find the conversation where we discussed my coding preferences.
+>
+> Help me resume work on SPARQ, starting with the recorded decisions and open questions.
 
-## Recovery
+Answers can only use accessible records. Missing conversations and partial captures remain visible as coverage gaps.
 
-Canonical JSON/Markdown lives under Conversations/YYYY. The database at System/State/chatos.sqlite3 contains imported records, revisions, search data, and checkpoints. Daily online backups under System/Backups/YYYY-MM-DD have integrity checks and hashes. Behavior-file archives are separate under System/Snapshots.
+## Sync and check health
 
-Use `python3 -m chatos restore BACKUP.sqlite3 NEW_DIRECTORY` for an isolated conversation recovery. The destination must not exist. Backup hashes and SQLite integrity are checked before regeneration; no scheduler or sync starts. Behavior snapshots and the project registry remain separate recovery sources. All backups currently stay on this Mac.
+The core commands require Python 3.9 or later. They use the standard library and need no API key or package installation. Optional semantic-search tools have separate dependencies.
 
-See [IMPLEMENTATION.md](IMPLEMENTATION.md) and [ideas.md](ideas.md).
+From Terminal:
+
+```bash
+cd /Users/zayan/Documents/obsidian_vaults/chats
+python3 -m chatos sync
+python3 -m chatos doctor
+```
+
+`sync` imports accessible local records and refreshes the archive. `doctor` checks the database, conversation files, latest backup, and freshness, and reports coverage warnings. For the full last-sync report, run `python3 -m chatos status`.
+
+Reports show run metadata first, then counts of new and updated chats, skills, memory, and other captured changes. For Rich tables and colors, use `.venv/bin/python -m chatos sync` in this installation; `python3` also produces a readable report without Rich. Add `--json` to any command for machine-readable output, for example `python3 -m chatos status --json`.
+
+You can also search directly:
+
+```bash
+python3 -m chatos search "coding preferences"
+```
+
+## What is captured?
+
+Codex history is imported from available local files. ChatGPT supports export imports and partial desktop captures; a core sync does not fetch your entire ChatGPT account. Muse capture is deferred. The configured hourly Codex maintenance task can do additional agent work, but a saved schedule does not guarantee a completed run.
+
+The archive contains private conversation data. Recognized credential formats are redacted, but that does not make it safe to publish. Backups currently remain on the same Mac.
+
+For maintenance commands, storage locations, and recovery, see the [runtime reference](System/Runtime%20reference.md). Design details and planned work live in the [implementation roadmap](IMPLEMENTATION.md).

@@ -28,3 +28,9 @@ Source: [[2026-10-22 Chief of Staff and chat archive]].
 - Zayan uses the ChatGPT/Codex desktop app.
 - Muse export is explicitly deferred; focus on essential operation and stop when that work is done.
 - Continue to preserve the 30 percent remaining threshold in the five-hour account window.
+
+## 2026-10-22 — Future chat application migration
+
+- Zayan wants a future way to use the accumulated chat-OS archive and context to migrate to another chat application.
+- Explicitly note-only for now: no implementation, destination selection, or data transfer authorized. See [future migration requirement](../../ideas.md#deferred--migration-to-another-chat-application).
+- Source: codex:01a16510-7f12-78b0-afa9-d5aee24d915b, “we should also implement a way to use this treasure trove of stuff for migrating to a different chat application. just note this for future”.

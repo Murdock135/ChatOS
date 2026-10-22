@@ -28,3 +28,7 @@ The system area contains vault-owned operating guidance and working memory, plus
 
 - Which other apps should be included?
 - What import and ongoing capture mechanisms are available for each app?
+
+## Preferred coding style as reusable instructions
+
+The [coding-style conversation](../Conversations/2026/codex-01a16510-7f12-78b0-afa9-d5aee24d915b.md) moved from recalling explicit preferences to an authorized skill installation and global trigger. Installation and validation are complete; the detailed example-flow comment format remains open. See [decision COS-2026-004](../System/Decisions.md#cos-2026-004--apply-preferred-coding-style-through-a-skill).

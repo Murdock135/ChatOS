@@ -78,3 +78,12 @@ Append later developments without overwriting the original feedback.
 ## Review mechanics
 
 Ordinary sync produces a conservative [review queue](Feedback/Review%20queue.md). A cue remains unclassified until an agent checks its context. Confirmed/uncertain feedback can be recorded with the review-feedback command; neutral requests are dismissed without adding negative feedback. Stable source/message/text identities prevent repeated logging. No emotion or motive is inferred.
+
+## 2026-10-22 — README audience was wrong
+
+- Source: [conversation](../Conversations/2026/codex-01a16510-7f12-78b0-afa9-d5aee24d915b.md), codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- User wording: “it seems that you've written README for yourself. the README should be for new users”; followed by “you can move whatever you need somewhere else”.
+- Context: README led with agent ownership, runtime internals, an undifferentiated command list, and recovery details.
+- Interpretation: explicit correction of the assistant's documentation audience; high confidence. No emotional state inferred.
+- Adjustment: rewrote README for first-time readers with purpose, entry points, example questions, basic sync/health commands, and source/privacy limits. Moved maintainer commands and recovery details to System/Runtime reference.md and linked it from the system index.
+- Outcome: revision applied; local links, code fences, CLI command syntax, and diff whitespace verified. User-confirmed resolution remains unknown.

@@ -12,6 +12,10 @@ This is a shared workspace: the Chief of Staff manages routine upkeep, and Zayan
 
 ## Working and verified
 
+- Terminal commands show readable reports (optional Rich, plain-text fallback, explicit `--json`). Sync records separate new/updated chat counts and behavior-file changes below fundamental run metadata; initial captures and unavailable counts are labeled.
+
+- Preferred coding style: installed `/Users/zayan/.codex/skills/preferred-coding-style/SKILL.md`, validated, and referenced by global Codex instructions. The trigger was observed loading into the originating chat on 2026-10-22; cross-session adherence is not independently tested.
+
 - 251 conversation records: 220 Codex (78 retained transcripts and 142 partial history-cache recoveries) plus 31 partial ChatGPT desktop captures. Two Codex histories remain uncaptured. Source IDs, available dates, provenance and model evidence are retained; unavailable per-turn models remain unknown. Original sources are read-only.
 - Incremental import, duplicate prevention, revisions, full-text search, and project views. Incomplete source lines remain visible as warnings and retry; a missing source root fails visibly.
 - Ordinary sync now refreshes skill discovery, checks live behavior-file hashes, snapshots changes, and verifies the result. Skills, file-based memory, instructions, rules, configuration inventory, saved schedules, and workspace behavior files are covered. Unchanged files do not cause a new full snapshot.
@@ -21,7 +25,7 @@ This is a shared workspace: the Chief of Staff manages routine upkeep, and Zayan
 - Daily database backup is hash/integrity-checked on every sync. Isolated restore regenerates conversation files and refuses an existing destination. The doctor command checks database, canonical files, backup, freshness, and coverage warnings.
 - Conservative feedback cues are reviewed before being logged; six initial cues were reviewed, including one neutral bug report dismissed without negative labeling. Stable review identities prevent duplicate entries.
 - Schedule inventory now reads saved definitions and host-reported timing/run metadata without copying private result bodies. Curated failure collection and feedback records remain separate.
-- 50 tests pass, covering source filtering, model changes, import/retry health, ZIP handling, routing persistence, retrieval citations, backup corruption/restore, snapshot drift, concurrency, and projection data.
+- 57 tests pass, covering source filtering, model changes, import/retry health, ZIP handling, routing persistence, retrieval citations, backup corruption/restore, snapshot drift, concurrency, and projection data.
 - Local Git repository; no remote configured. Private archives/runtime data are ignored.
 
 ## Explorer and retrieval limits
