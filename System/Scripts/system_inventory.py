@@ -110,13 +110,23 @@ def refresh(vault=VAULT, codex=CODEX):
              'This is a generated inventory of configured file roots, not automatic background discovery.',
              'Run `python3 System/Scripts/system_inventory.py` to refresh, or `--check` to detect drift.',
              'Cached/imported files are not proof that a skill is installed or available in a chat.', '']
+    pointer = vault / 'System/Latest snapshot.md'
+    match = re.search(r'\]\((Snapshots/[^)]+/Index.md)\)', pointer.read_text()) if pointer.exists() else None
+    snapshot_root = (pointer.parent / match.group(1)).parent if match else None
+    lines += ['External skills open their live file outside Obsidian. Where available, '
+              '“archived copy” opens a dated captured version inside this vault; '
+              'editing that copy does not change the installed skill.', '']
     for scope in ['workspace', 'local', 'user', 'plugins', 'memory-skills']:
         group = [s for s in skills if s['scope'] == scope]
         lines += [f'## {scope} — {len(group)}', '']
         for s in group:
             entry = Path(s['entrypoint'])
-            link = quote(str(entry.relative_to(target)) if target in entry.parents else str(entry), safe='/')
-            lines.append(f'- [{s["name"]}]({link}) — {s["activation"]}.')
+            link = (quote(os.path.relpath(entry, target), safe='/')
+                    if entry.is_relative_to(vault) else entry.as_uri())
+            archived = snapshot_root / s['snapshot'] / 'SKILL.md' if snapshot_root else None
+            copy_link = (f' · [archived copy]({quote(os.path.relpath(archived, target), safe="/")})'
+                         if s['scope'] != 'workspace' and archived and archived.is_file() else '')
+            lines.append(f'- [{s["name"]}]({link}) — {s["activation"]}.{copy_link}')
         lines.append('')
     (target / 'Index.md').write_text('\n'.join(lines))
     return skills

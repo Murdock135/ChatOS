@@ -4,10 +4,12 @@ import hashlib
 import importlib.util
 import json
 import multiprocessing
+import re
 import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from urllib.parse import unquote, urlparse
 
 SCRIPTS = Path(__file__).resolve().parents[1] / 'System/Scripts'
 sys.path.insert(0, str(SCRIPTS))
@@ -66,6 +68,25 @@ class InventoryTests(unittest.TestCase):
         report = inventory.check(self.vault, self.codex)
         self.assertTrue(report['ok'], report)
         self.assertIn('router', (self.vault / 'System/Skills/Index.md').read_text())
+
+    def test_external_skill_links_open_live_file_and_vault_copy(self):
+        source = self.codex / 'skills/example skill/SKILL.md'
+        source.parent.mkdir(parents=True)
+        source.write_text('---\nname: example-skill\ndescription: Test\n---\n')
+        archived = self.snapshot / 'Skills/local/example skill/SKILL.md'
+        archived.parent.mkdir(parents=True)
+        archived.write_bytes(source.read_bytes())
+        inventory.refresh(self.vault, self.codex)
+        index = self.vault / 'System/Skills/Index.md'
+        links = dict(re.findall(r'\[([^\]]+)\]\(([^)]+)\)', index.read_text()))
+        live = urlparse(links['example-skill'])
+        self.assertEqual(live.scheme, 'file')
+        self.assertEqual(Path(unquote(live.path)), source)
+        copy = (index.parent / unquote(links['archived copy'])).resolve()
+        self.assertEqual(copy, archived.resolve())
+        self.assertEqual(copy.read_bytes(), source.read_bytes())
+        local = (index.parent / unquote(links['router'])).resolve()
+        self.assertEqual(local, (self.vault / 'System/Skills/router/SKILL.md').resolve())
 
     def test_new_skill_cannot_silently_disappear_from_indexes(self):
         self.add_skill('new-skill')
