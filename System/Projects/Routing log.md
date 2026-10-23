@@ -149,3 +149,10 @@ Reviewed seven ownership assignments, registered two existing code repositories,
 - User-authorized one-time 4:16 AM continuation saved and reopened; its future execution remains unknown. See System/Scheduled tasks.md.
 
 - Follow-through: bounded offline refresh embedded 357 passages (4,903/4,903 at the check); rebuilt map covered 254/254 conversations. Python 3.13 also passed the same 72 tests. No remote inference or replacement model was used.
+
+## 2026-10-23 — Workspace organization proposal and feature checklist
+
+- Owner/source: chat-os; codex:01a16510-7f12-78b0-afa9-d5aee24d915b, latest user instructions about meaningful folders, conventional app organization and README completed/planned features.
+- Filed: docs/proposals/0001-repository-and-workspace-layout.md; README feature checklist; docs index link; feedback requirement and implementation handoff updates. These are local writes in the owning project, not external delivery.
+- Status: structure proposed only; no live path migration or adopted-layout ADR. Existing keep-everything-visible direction retained. General-user setup remains planned, with the latest structural discussion recorded ahead of layout-dependent implementation.
+- Scheduled continuation: heartbeat received at 09:16:10.976Z; live five-hour usage 1 percent, weekly 32 percent, no reset credits used. Scheduled-task record updated with actual execution evidence.

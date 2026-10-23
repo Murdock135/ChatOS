@@ -71,3 +71,9 @@ Future setup must explain how a user can ask their own AI to prepare inspectable
 ## 2026-10-23 — Interface and overnight continuation
 
 The user selected “Include a dedicated chat-management interface now”, requested Apple-inspired design, and authorized working until done or until the current five-hour allowance is exhausted. They requested a one-time 4:16 AM America/Chicago allowance check and continuation. The saved heartbeat targets this chat. General-user setup/artifact prompting and independent setup tests remain the following phase.
+
+## 2026-10-23 — Human-readable organization and feature checklist
+
+Source: same conversation. User wording: “currently, it's very hard to figure out as a human, the organization of the project because it doesn't look standard” and “make sure you have a list of features in the README. check off ones done and also include ones planned”.
+
+The first statement explicitly identifies a continuing usability problem with the delivered layout; no emotion or broader dissatisfaction is inferred. The checklist is an added requirement. The assistant inspected current directory/path coupling and wrote [a proposed structure](../../docs/proposals/0001-repository-and-workspace-layout.md), preserving visible local storage and distinguishing platform records, shared context, and Chief of Staff workflows. README now checks implemented capabilities with scope limits and leaves planned work unchecked. Outcome: proposal and checklist delivered for review; no live migration or user-confirmed resolution.

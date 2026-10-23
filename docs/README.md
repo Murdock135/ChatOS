@@ -18,3 +18,5 @@ These pages explain the product. The [runtime reference](../System/Runtime%20ref
 The [implementation roadmap](../IMPLEMENTATION.md) tracks incomplete work. The [verification record](verification.md) states what was inspected and tested for this documentation pass.
 
 [Chat-library guide](chat-library.md) — browse, annotate, archive/restore, inspect context, and check health in the local browser app.
+
+[Repository and workspace structure proposal](proposals/0001-repository-and-workspace-layout.md) — proposed separation of application code, platform records, shared context, and Chief of Staff workflows. No migration has been performed.

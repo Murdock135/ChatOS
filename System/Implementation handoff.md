@@ -14,6 +14,14 @@ The seven-question exact-source lexical diagnostic still finds 4/7; this is not 
 
 ## Finish/continue safely
 
+### Latest human steering — structure and README, 2026-10-23
+
+The user subsequently identified the project layout as hard for humans to understand and requested a thoughtful structure using conventional source/docs directories, semantic `your_ais/<platform>/` organization, and a possible Chief of Staff folder. They also explicitly requested a README feature checklist with completed and planned items. These messages take precedence over the older scheduled prompt's implementation sequence.
+
+README now contains that checklist. [The structure proposal](../docs/proposals/0001-repository-and-workspace-layout.md) recommends `src/chatos/`, public docs, and one visible private `workspace/` containing `your_ais/`, `shared_context/`, `chief_of_staff/`, generated library views and explicit application state. It records path dependencies and a copy-first migration/verification sequence. This remains a proposal; no files or live integration paths have been migrated. Work on public initialization must account for this design discussion, rather than silently adopting proposed names or adding more personal defaults to the old layout.
+
+The scheduled heartbeat was actually received at 2026-10-23T09:16:10.976Z. Live limits showed the 300-minute window at 1 percent used (99 percent remaining), next reset 09:16:15 America/Chicago, and the weekly window at 32 percent used. No reset credits were used. This verifies the scheduled allowance check and resumed documentation/design work, not completion of general-user setup.
+
 1. Inspect current Git status, state, logs, inventory consistency and doctor output. Do not repeat completed broad work without a new change or unresolved concern.
 2. Current capture is intentionally incomplete: two unavailable Codex histories, partial desktop ChatGPT capture, export-based fuller history, and raw Muse work explicitly deferred. These require actual accessible source evidence, not invented recovery or security bypasses.
 3. Existing daily database backups can predate later edits; a fresh backup includes current library annotations. Behavior snapshots/project registry and attachments are separate recovery scopes. Off-device destination/retention remain unspecified.
