@@ -13,7 +13,7 @@ import uuid
 import webbrowser
 from typing import Optional, Union
 
-from .core import ROOT, Store, now
+from .core import ROOT, Store, digest, now
 from . import library
 from .changes import snapshot_manifest
 
@@ -315,9 +315,21 @@ class Handler(BaseHTTPRequestHandler):
                 '<script type="application/json" id="data">'
             )
             data = json.loads(text[start : text.index("</script>", start)])
+            captured_records = store.records()
             records = {
-                (record["source"], record["id"]): record for record in store.records()
+                (record["source"], record["id"]): record for record in captured_records
             }
+            if data.get("input_fingerprint"):
+                data["freshness_note"] = (
+                    "Matches current captured records."
+                    if data["input_fingerprint"] == digest(captured_records)
+                    else "Captured records changed; the map needs a refresh."
+                )
+            else:
+                data["freshness_note"] = (
+                    "Freshness is unverified; inspect the generation time."
+                )
+
             library.initialize(store)
             annotations = {
                 (row["source"], row["id"]): row["title"]

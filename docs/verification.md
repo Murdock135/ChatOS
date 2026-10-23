@@ -66,3 +66,9 @@ No clean-machine installation, general-user setup, public release, comprehensive
 At 05:30:57 UTC on October 23, the already-installed pinned Qwen model embedded 357 changed/new passages locally on CPU in 110.81 seconds, reaching 4,903/4,903 current vectors with zero remaining at that check. At 05:31:23 UTC, the rebuilt map represented 254/254 captured conversations, left 15 unclustered, and retained about 38.1% of its five-neighbor relationships. These are dated coverage/geometry observations, not evidence of answer accuracy or semantic grouping quality. Later captured records can require another refresh.
 
 The same 72 tests also passed under the installed Python 3.13 environment. Selected text/action color pairs were checked numerically (white on the action blue: 4.70:1; secondary gray on white: 5.07:1). This is not a comprehensive accessibility audit.
+
+## Final source-copy and reconnection checks
+
+Committed source at `1e14970` was extracted into a new temporary directory without runtime data or a virtual environment. The system-Python suite passed all 72 tests; the documented fictional initial sync reported one new chat, and the unchanged repeat reported zero new/updated chats, total one. This is source-copy verification on the same Mac, not general-user initialization or a clean-machine test.
+
+A later browser regression check restarted the fictional server on the same port, then opened its newly printed token URL in the already-open tab. The app reconnected without a page reload and retained access to the one-chat library. Map freshness is also checked against captured-record fingerprints at request time; current local titles/project associations are applied independently of the older coordinates. Map method/limits are available under About this map.

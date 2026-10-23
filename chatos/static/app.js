@@ -6,13 +6,17 @@ const node = (tag, text = "", className = "") => {
   if (className) result.className = className;
   return result;
 };
-const fragment = new URLSearchParams(location.hash.slice(1));
 const storageKey = "chatos-token:" + location.origin;
-let token = fragment.get("token") || sessionStorage.getItem(storageKey) || "";
-if (fragment.has("token")) {
+let token = sessionStorage.getItem(storageKey) || "";
+function acceptLaunchToken() {
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  if (!fragment.has("token")) return false;
+  token = fragment.get("token") || "";
   sessionStorage.setItem(storageKey, token);
   history.replaceState(null, "", location.pathname);
+  return true;
 }
+acceptLaunchToken();
 let overview,
   current,
   currentView = "chats",
@@ -569,8 +573,14 @@ function filterMap() {
     visibleMapDocuments.length +
     " of " +
     (mapData.documents || []).length +
-    " mapped conversations · " +
-    (mapData.freshness_note || mapData.limits || "Experimental representation");
+    " mapped conversations · Built " +
+    date(mapData.checked_at) +
+    " · " +
+    (mapData.freshness_note || "Run sync to generate the map.");
+  $("map-method").textContent =
+    (mapData.method || "Experimental representation") +
+    " " +
+    (mapData.limits || "");
   $("map-list").replaceChildren();
   for (const item of visibleMapDocuments) {
     const button = node("button", item.title);
@@ -774,3 +784,13 @@ $("backup").onclick = safely(async () => {
 
 $("map-query").oninput = filterMap;
 for (const id of ["map-project", "map-source"]) $(id).onchange = filterMap;
+
+window.addEventListener(
+  "hashchange",
+  safely(async () => {
+    if (!acceptLaunchToken()) return;
+    await refreshOverview();
+    await showView(currentView);
+    notice("Reconnected to the local workspace.");
+  }),
+);

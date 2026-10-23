@@ -62,7 +62,7 @@ def payload(store,index):
         documents.append({**item,'url':(store.root/item['path']).as_uri(),'x':plane[i][0],'y':plane[i][1],
                           'projects':record.get('projects',[]),'date':(record.get('updated_at') or record.get('created_at') or '')[:10],
                           'group':group_for[i],'neighbors':neighbors})
-    return {'checked_at':now(),'documents':documents,'groups':labels,
+    return {'checked_at':now(),'input_fingerprint':digest(store.records()),'documents':documents,'groups':labels,
             'variance_2d':variance,'neighbor_retention_5':neighbor_retention(points,plane),
             'method':'PCA of normalized local LSA vectors; groups use greedy cosine threshold 0.70.',
             'limits':'Exploratory English term co-occurrence from titles and sampled user messages. No pretrained embeddings. Map proximity and groups do not establish project ownership, truth, or decisions.'}

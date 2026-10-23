@@ -9,7 +9,7 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from chatos.core import Store
+from chatos.core import Store, digest
 from chatos.web import LocalServer
 from chatos import library
 from chatos.retrieval import retrieve
@@ -202,6 +202,7 @@ class WebTests(unittest.TestCase):
             '<script type="application/json" id="data">'
             + json.dumps(
                 {
+                    "input_fingerprint": digest([self.original]),
                     "documents": [
                         {
                             "source": "chatgpt",
@@ -211,7 +212,7 @@ class WebTests(unittest.TestCase):
                             "x": 1,
                             "y": 2,
                         }
-                    ]
+                    ],
                 }
             )
             + "</script>"
@@ -231,7 +232,9 @@ class WebTests(unittest.TestCase):
             "POST",
             {"source": "chatgpt", "id": "one", "projects": ["research"]},
         )
-        point = self.request("/api/map")[1]["documents"][0]
+        response = self.request("/api/map")[1]
+        self.assertIn("changed", response["freshness_note"])
+        point = response["documents"][0]
         self.assertEqual(point["title"], "Current local title")
         self.assertEqual(point["projects"], ["research"])
         self.assertEqual((point["x"], point["y"]), (1, 2))
