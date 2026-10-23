@@ -25,3 +25,7 @@ The seven-question exact-source lexical diagnostic still finds 4/7; this is not 
 User requested work until done or until this five-hour allowance is exhausted, then a refresh check at 4:16 AM October 23 America/Chicago. The one-time active heartbeat is `resume-chatos-after-allowance-refresh`, targeting this chat. Its saved definition was read back; future execution remains unknown. The account reported a 4:15:36 AM reset. Check live limits before resumed work; do not use reset credits. This explicit development authorization may use the allowance and does not alter the separate routine maintenance task's reserve.
 
 Read the app's local instructions and current state before continuing; keep completed work, source gaps, deferred requirements and actual outcomes distinct. Stay quiet on unchanged/non-actionable state; notify only for meaningful completion, a new actionable failure or required user input.
+
+## End-of-window continuation update
+
+The account showed 93 percent used (7 percent remaining) at the checkpoint. Core code and docs are committed; the next scheduled pass should finish any remaining acceptance checks, then continue into the user-requested general-user setup phase using isolated new workspaces and preserving this installation. The one-time schedule remains the existing task; do not create a duplicate. A final doctor detected legitimate changes in the host-managed OpenAI Docs skill references after snapshot capture; reconcile their archive before reporting a clean health check. Database integrity and conversation files were healthy.
