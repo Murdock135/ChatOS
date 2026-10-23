@@ -57,6 +57,6 @@ Both people and assistants operate over the same records. The user explicitly re
 
 ## What must be resolved before a public release?
 
-A new user needs initialization that does not inherit personal paths, project owners, or private operating notes. Source connections need explicit supported formats and setup. The local interface and annotation rules are documented in the [library guide](chat-library.md). Public packaging, platform support, and update/backup behavior still need broader verification.
+The basic initializer creates an independent workspace without inheriting the maintainer's project owners or private operating notes. A complete guided onboarding experience still needs clear source/account configuration and context-artifact instructions. The local interface and annotation rules are documented in the [library guide](chat-library.md). Public packaging, platform support, and update/backup behavior still need broader verification.
 
 Those are adoption gaps in the current implementation. Better documentation makes them understandable; it does not itself implement them. See the [feature map](features.md) and [verification record](verification.md).

@@ -19,4 +19,6 @@ The [implementation roadmap](../workspace/IMPLEMENTATION.md) tracks incomplete w
 
 [Chat-library guide](chat-library.md) — browse, annotate, archive/restore, inspect context, and check health in the local browser app.
 
-[Repository and workspace structure proposal](proposals/0001-repository-and-workspace-layout.md) — proposed separation of application code, platform records, shared context, and Chief of Staff workflows. No migration has been performed.
+[Repository and workspace layout](reorganization.md) — the implemented source/workspace split, canonical folders, local assistant shortcuts, and recovery locations. The [original proposal](proposals/0001-repository-and-workspace-layout.md) is retained as design history.
+
+Links into `workspace/` describe a configured installation and are absent from a fresh clone. The public guides and fictional walkthrough do not require those private records.

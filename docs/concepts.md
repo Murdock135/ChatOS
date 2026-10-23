@@ -4,7 +4,7 @@ These terms distinguish what the system has captured from what a person or assis
 
 ## Workspace
 
-The visible folder containing the application code, readable chat archive, configuration, generated views, and operating records. Today it can also be opened as an Obsidian vault. Keeping these together is the current design direction; the internal folders still have different purposes.
+The visible data folder containing the readable chat archive, configuration, generated views, and operating records. The default is `workspace/` inside the repository; application code lives separately in `src/chatos/`. A selected workspace can be opened as an Obsidian vault. Keeping the workspace together makes its different kinds of records inspectable.
 
 Source applications and live installed skills can remain outside this folder. The workspace may contain their captured records or dated copies. “One workspace” does not mean that every external source is physically moved into it.
 
@@ -60,4 +60,4 @@ A **scheduled run** needs a configured trigger and an available host. An enabled
 
 ## Local library annotations
 
-A local title, note, or archive flag is your own annotation, stored separately from captured messages. The app keeps the original title and source ID visible. Generated copies in `Conversations/Annotations/` are readable views of database state. Use the library or CLI to edit them. Archive hides a chat from the active library; it does not delete it, change the source app, or remove it from evidence search or the map. See the [library guide](chat-library.md).
+A local title, note, or archive flag is your own annotation, stored separately from captured messages. The app keeps the original title and source ID visible. Generated copies in `workspace/your_ais/<source>/annotations/` are readable views of database state. Use the library or CLI to edit them. Archive hides a chat from the active library; it does not delete it, change the source app, or remove it from evidence search or the map. See the [library guide](chat-library.md).

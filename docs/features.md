@@ -31,7 +31,7 @@ This is a map of the current implementation, not a list of promises for a future
 | Explain earlier choices with evidence | Ask an active assistant to review retrieved passages and later changes | Agent-assisted. A proposal, explicit user instruction, and completed action require different evidence. No general automatic decision extractor exists. | [Retrieval procedure](../workspace/chief_of_staff/skills/archive-retrieval/SKILL.md) |
 | Resume a project | Ask for a briefing using current project files and captured history | Agent-assisted. `brief ID` itself only displays a generated conversation index. Source/file access and interpretation are still needed. | [Briefing procedure](../workspace/chief_of_staff/skills/project-briefing/SKILL.md) |
 | File conversation context into project folders | `file-projects` after verified ownership | Implemented narrow delivery of managed context indexes. It writes externally and currently has personal path restrictions. Richer filing of decisions/tasks is an assistant workflow. | [Delivery](../src/chatos/routing.py), [routing procedure](../workspace/chief_of_staff/skills/project-router/SKILL.md) |
-| Inspect skills, memory, and instructions | Skills & memory in the app, skills inventory, or dated behavior snapshots | Implemented for accessible configured roots. A discovered file is not proof of host activation; archived copies do not update live installed resources. | [Inventory](../workspace/chief_of_staff/reference/scripts/system_inventory.py), [snapshots](../workspace/chief_of_staff/reference/scripts/snapshot_codex_state.py) |
+| Inspect skills, memory, and instructions | Skills & memory in the app, skills inventory, or dated behavior snapshots | Implemented for accessible configured roots. A discovered file is not proof of host activation; archived copies do not update live installed resources. | [Inventory](../src/chatos/maintenance/system_inventory.py), [snapshots](../src/chatos/maintenance/snapshot_codex_state.py) |
 
 ## Inspect operations and recover
 
@@ -39,13 +39,17 @@ This is a map of the current implementation, not a list of promises for a future
 | --- | --- | --- | --- |
 | See run health and changes | `status`, `doctor`, sync reports; `--json` for structured output | Implemented. Separate new/updated chat counts and behavior-file counts; missing coverage remains visible even when core checks pass. | [Reports](../src/chatos/terminal.py), [counts](../src/chatos/changes.py), [doctor](../src/chatos/recovery.py) |
 | Back up and restore conversations | Back up now in the app; sync verifies the daily backup; `restore BACKUP NEW_DIRECTORY` | Implemented and fixture-tested. New destination required. Database restoration does not restore the entire app, all original sources, skills, or attachments. Current backups are local. | [Backup](../src/chatos/runtime.py), [recovery](../src/chatos/recovery.py) |
-| Inspect schedules and runtime errors | Generated schedule inventory and curated event log | Implemented for accessible local Codex evidence. Collectors do not trigger tasks. Error logs or timestamps alone cannot establish a whole task's outcome. | [Schedules](../src/chatos/schedules.py), [error collector](../workspace/chief_of_staff/reference/scripts/system_log.py) |
+| Inspect schedules and runtime errors | Generated schedule inventory and curated event log | Implemented for accessible local Codex evidence. Collectors do not trigger tasks. Error logs or timestamps alone cannot establish a whole task's outcome. | [Schedules](../src/chatos/schedules.py), [error collector](../src/chatos/maintenance/system_log.py) |
 | Review possible negative feedback | `feedback`, then explicit classification with `review-feedback` | Phrase-cue queue and persistent review state implemented. Human/agent interpretation is required; it is not comprehensive sentiment analysis. | [Feedback](../src/chatos/feedback.py) |
 | Run maintenance periodically | Configure a host automation separately | Deployment-specific. The current Codex heartbeat has bounded execution evidence; it is not installed by cloning. Native launchd code exists but was disabled on this installation. | [Schedule record](../workspace/chief_of_staff/reference/Scheduled%20tasks.md), [native scheduler](../src/chatos/scheduler.py) |
 
+## Workspace initialization
+
+`init DESTINATION` creates a version-2 workspace with an empty project registry and Codex capture disabled unless `--codex-home PATH` is supplied. It refuses an existing nonempty destination and does not install a host skill or schedule. This basic initializer is implemented; it does not complete broader onboarding. See [setup code](../src/chatos/setup.py) and [workspace tests](../tests/test_workspace.py).
+
 ## Future requirements, not current features
 
-- A public onboarding/initialization flow independent of the maintainer's configuration.
+- A complete guided onboarding flow. The implemented `init` command already creates an independent empty workspace; account/source integration guidance and broader usability validation remain open.
 - Public packaging and new-user verification of the implemented local browser interface.
 - Migration of selected chats and useful context into another chat application.
 - Wider verified source coverage and improved semantic discovery, evaluated on actual use cases.

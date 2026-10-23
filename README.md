@@ -22,7 +22,7 @@ Checked items are implemented within the limits stated here. They do not imply c
 ### Planned
 
 - [x] **Clearer project organization:** packaged `src/chatos/` application and a visible private `workspace/`, with platform and Chief of Staff folders. [Layout and compatibility paths](docs/reorganization.md).
-- [ ] **Independent new-user setup:** initialize a workspace without inheriting the maintainer's personal paths, preferences, or project registry; verify with fictional users.
+- [ ] **Guided new-user setup:** build on the implemented empty-workspace initializer with source/context setup guidance and broader independent-user validation.
 - [ ] **Bring your own context:** prompts and accepted formats for asking your AI to prepare inspectable memory/context artifacts, with provenance and user review.
 - [ ] **Cross-app migration:** prepare selected chats and context for another chat application; destination and transfer format remain to be defined.
 - [ ] **Broader verified capture and better discovery:** improve source coverage and evaluate retrieval against real use cases. General raw Muse export work remains deferred.

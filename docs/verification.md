@@ -1,6 +1,6 @@
 # Documentation verification record
 
-Reviewed on 2026-10-22 (America/Chicago). This records the evidence behind the [feature map](features.md), rather than treating earlier assistant descriptions as proof.
+Verification history: the original baseline was reviewed on 2026-10-22 (America/Chicago); dated 2026-10-23 follow-ups below cover packaging, layout cleanup and the current walkthrough. This records the evidence behind the [feature map](features.md), rather than treating earlier assistant descriptions as proof.
 
 ## Source review
 
@@ -91,3 +91,11 @@ The earlier activation left legacy folders visible as aliases. User screenshots 
 - 80 regression tests pass. The entry installer moved from the retired System namespace into the package. Migration/repeat-sync tests verify that legacy folders stay absent while records, revisions and annotations remain intact. Lint, format and scoped type checks pass for new migration, wrapper and installer code.
 - README, Home, top-level product docs and active skills have no missing local Markdown link targets in the bounded link audit. Old absolute paths inside historical messages and snapshots remain original evidence; the migration receipt maps their current locations.
 - A fresh 260-record database backup verifies. Final restored-database, inventory and doctor results are recorded in the operating state and cleanup receipt. The existing fork identity error still makes ordinary sync partial; no new capture-completeness claim is made.
+
+## 2026-10-23 — Post-commit documentation consistency audit
+
+A follow-up audit found stale prose even though the prior commit updated the main layout guide and commands: the docs index still said migration had not happened; the beginner guide denied the initializer it invoked and described a removed empty-source argument; the concepts and architecture pages retained old paths. These were corrected rather than treating changed filenames as evidence of documentation consistency.
+
+The documentation now distinguishes the implemented basic initializer from incomplete guided onboarding. Package implementation links point to src/chatos/, and links to private configured records are identified as installation-specific. Historical verification results and the original structure proposal remain dated evidence.
+
+In a temporary workspace, the actual checkout command initialized the fictional demo, imported one chat with Codex disabled, generated the documented canonical file, returned evidence passages, passed doctor, and imported again with zero new/updated chats. Local Markdown targets and code-fence balance were checked across README, CONTRIBUTING, and top-level docs pages. No application code changed; the 80-test result recorded above was not rerun for this prose-only correction.
