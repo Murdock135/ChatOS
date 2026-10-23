@@ -42,6 +42,30 @@ class ExportTests(unittest.TestCase):
         self.assertNotIn('PRIVATE TOOL CODE',json.dumps(record))
         self.assertTrue(all('export_node_id' in m for m in record['messages']))
 
+    def test_older_uploaded_export_cannot_replace_a_newer_source_snapshot(self):
+        from chatos.core import Store
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / 'archive'
+            home = Path(temp) / 'source'
+            home.mkdir()
+            inbox = root / 'System/Imports/chatgpt'
+            inbox.mkdir(parents=True)
+            def export(updated, text):
+                return [{'id': 'stable-chat', 'title': 'Reading notes', 'update_time': updated,
+                         'mapping': {'m': {'parent': None, 'message': {'id': 'm',
+                             'author': {'role': 'user'}, 'content': {'parts': [text]}}}}}]
+            (inbox / 'a-newer.json').write_text(json.dumps(export(200, 'Latest source text')))
+            (inbox / 'z-older.json').write_text(json.dumps(export(100, 'Older source text')))
+            report = sync(root, home)
+            self.assertEqual(len(report['retained_newer_exports']), 1)
+            store = Store(root)
+            try:
+                self.assertEqual(len(store.records()), 1)
+                self.assertEqual(store.records()[0]['messages'][0]['text'], 'Latest source text')
+            finally:
+                store.close()
+            self.assertEqual(sync(root, home, force=True)['status'], 'ok')
+
     def test_bad_update_does_not_advance_source_success(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)/'archive';home=Path(temp)/'source';home.mkdir()

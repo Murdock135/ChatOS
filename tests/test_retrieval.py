@@ -34,6 +34,19 @@ class RetrievalTests(unittest.TestCase):
             line=Path(item['path']).read_text().splitlines()[item['line']-1]
             self.assertIn(item['message_id'],line)
 
+    def test_project_filter_is_applied_before_the_candidate_limit(self):
+        self.store.put({'source': 'chatgpt', 'id': 'crowded', 'title': 'Zircon protocol',
+                        'workspace': '/personal', 'messages': [
+                            {'id': str(i), 'role': 'user', 'text': 'Zircon protocol zircon protocol.'}
+                            for i in range(550)]})
+        self.store.put({'source': 'chatgpt', 'id': 'target', 'title': 'Research note',
+                        'workspace': '/research', 'messages': [
+                            {'id': 'decision', 'role': 'user',
+                             'text': 'We chose zircon protocol for this research project.'}]})
+        passages = retrieve(self.store, 'zircon protocol', project='research')['passages']
+        self.assertTrue(any(item['id'] == 'target' for item in passages))
+        self.assertTrue(all('research' in item['projects'] for item in passages))
+
     def test_edits_and_deletions_do_not_leave_old_evidence(self):
         self.assertTrue(retrieve(self.store,'normalization',project='research')['passages'])
         self.record['messages'][0]['text']='We revised the protocol.'

@@ -55,7 +55,7 @@ def backup(store, fresh=False):
     import hashlib
     write_json(folder/'manifest.json',{'created_at':now(),'database':target.name,
                'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),
-               'coverage':'Canonical imported conversations, revisions, search index, sync state; behavior files use snapshots.'})
+               'coverage':'Canonical imported conversations, revisions, library annotations, search index, sync state; behavior files use snapshots.'})
     return {'path':str(target),'status':'verified'}
 
 
@@ -273,6 +273,22 @@ def sync(root=ROOT, codex_home=None, force=False):
                                 if existing:
                                     before=json.loads(existing[0]);record=merge(before,record)
                                     if before.get('capture')!='partial_desktop_tool_capture':continue
+                            if source == 'chatgpt' and record.get('capture') == 'exported_visible_branches':
+                                existing = store.db.execute(
+                                    'SELECT record_json FROM conversations WHERE source=? AND id=?',
+                                    (source, record['id'])).fetchone()
+                                previous = json.loads(existing[0]) if existing else None
+                                if previous and previous.get('capture') == 'exported_visible_branches':
+                                    try:
+                                        old_time = datetime.fromisoformat(previous['updated_at']).timestamp()
+                                        new_time = datetime.fromisoformat(record['updated_at']).timestamp()
+                                    except (KeyError, TypeError, ValueError):
+                                        old_time = new_time = None
+                                    # Inbox filenames do not establish which source snapshot is newer.
+                                    if old_time is not None and new_time is not None and new_time < old_time:
+                                        status.setdefault('retained_newer_exports', []).append(
+                                            {'source': source, 'id': record['id'], 'older_export': str(file)})
+                                        continue
                             record.setdefault('evidence',{})['export_path'] = str(file)
                             status['changed'] += int(store.put(record))
                             imported += 1

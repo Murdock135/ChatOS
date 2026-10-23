@@ -15,6 +15,9 @@ def main():
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
     commands.add_parser('status')
     commands.add_parser('doctor')
+    cmd=commands.add_parser('serve');cmd.add_argument('--port',type=int,default=8765);cmd.add_argument('--open',action='store_true');cmd.add_argument('--codex-home',type=Path)
+    cmd=commands.add_parser('library');cmd.add_argument('source',choices=['codex','chatgpt','muse']);cmd.add_argument('identity');cmd.add_argument('--title');cmd.add_argument('--note')
+    mode=cmd.add_mutually_exclusive_group();mode.add_argument('--archive',action='store_true');mode.add_argument('--restore',action='store_true')
     cmd=commands.add_parser('backup');cmd.add_argument('--fresh',action='store_true')
     cmd=commands.add_parser('restore');cmd.add_argument('backup',type=Path);cmd.add_argument('destination',type=Path)
     commands.add_parser('install-scheduler')
@@ -36,6 +39,20 @@ def main():
 
     def emit(data):
         print_report(data, args.command, args.json)
+    if args.command=='serve':
+        from .web import serve
+        if not 0 <= args.port <= 65535:parser.error('Port must be between 0 and 65535')
+        serve(args.root,args.port,args.open,args.json,args.codex_home)
+        return 0
+    if args.command=='library':
+        from .library import get,update
+        store=Store(args.root)
+        try:
+            changes={key:getattr(args,key) for key in ['title','note'] if getattr(args,key) is not None}
+            if args.archive or args.restore:changes['archived']=args.archive
+            emit(update(store,args.source,args.identity,changes) if changes else get(store,args.source,args.identity)[1])
+        finally:store.close()
+        return 0
     if args.command=='dense-map':
         from .dense_map import build
         from .core import locked

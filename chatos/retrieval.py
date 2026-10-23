@@ -43,6 +43,24 @@ def sources(store):
         yield {'key':record['source']+':'+record['id'],'source':record['source'],'id':record['id'],
                'title':record['title'],'path':str(path),'projects':record.get('projects',[]),
                'capture':record.get('capture'),'documents':documents}
+    from .library import initialize, render as render_annotation
+    initialize(store)
+    for row in store.db.execute("SELECT * FROM library_annotations WHERE note != '' OR title != ''"):
+        annotation = dict(row)
+        record = next((r for r in store.records() if r['source'] == row['source'] and r['id'] == row['id']), None)
+        if not record:
+            continue
+        path = render_annotation(store, annotation)
+        text = path.read_text()
+        yield {'key': 'annotation:' + row['source'] + ':' + row['id'], 'source': 'workspace',
+               'id': 'annotation:' + row['source'] + ':' + row['id'],
+               'title': row['title'] or record['title'], 'path': str(path),
+               'projects': record.get('projects', []), 'capture': 'local_library_annotation',
+               'documents': [{'text': body, 'start': start, 'end': end,
+                              'line': text[:start].count('\n') + 1, 'role': 'local_annotation',
+                              'message_id': None, 'message_index': None,
+                              'timestamp': row['updated_at'], 'model': None}
+                             for start, end, body in chunks(text)]}
     for name in ['System/Memory/Working memory.md','STATE.md','System/Operating guidance.md','System/Decisions.md']:
         path=store.root/name
         if not path.is_file() or path.is_symlink():continue
@@ -97,8 +115,15 @@ def retrieve(store,query,project=None,limit=8):
             'passages':[]}
     if not words:return result
     expression=' OR '.join('"'+w+'"' for w in words)
-    rows=store.db.execute('''SELECT body,metadata,bm25(passage_index,0,2,1,0) AS rank
-                             FROM passage_index WHERE passage_index MATCH ? ORDER BY rank LIMIT 500''',(expression,))
+    parameters = [expression]
+    scope = ''
+    if project:
+        # Apply ownership before the candidate cap, so other projects cannot crowd it out.
+        scope = " AND EXISTS (SELECT 1 FROM json_each(passage_index.metadata, '$.projects') WHERE value=?)"
+        parameters.append(project)
+    rows = store.db.execute('''SELECT body,metadata,bm25(passage_index,0,2,1,0) AS rank
+                              FROM passage_index WHERE passage_index MATCH ?''' + scope +
+                            ' ORDER BY rank LIMIT 500', parameters)
     per_doc={};per_message={}
     for row in rows:
         item=json.loads(row['metadata'])

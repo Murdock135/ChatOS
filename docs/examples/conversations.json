@@ -1,0 +1,38 @@
+[
+  {
+    "id": "chatos-demo-reading-plan",
+    "title": "Demo: choosing a reading-note format",
+    "create_time": 1767225600,
+    "update_time": 1767225900,
+    "current_node": "choice",
+    "mapping": {
+      "question": {
+        "parent": null,
+        "message": {
+          "id": "demo-question",
+          "author": {"role": "user"},
+          "create_time": 1767225600,
+          "content": {"parts": ["I need a format for my paper-reading notes. I want to browse and search them locally."]}
+        }
+      },
+      "suggestion": {
+        "parent": "question",
+        "message": {
+          "id": "demo-suggestion",
+          "author": {"role": "assistant"},
+          "create_time": 1767225700,
+          "content": {"parts": ["A spreadsheet is one option for comparing papers. Markdown files are another option for longer notes."]}
+        }
+      },
+      "choice": {
+        "parent": "suggestion",
+        "message": {
+          "id": "demo-choice",
+          "author": {"role": "user"},
+          "create_time": 1767225900,
+          "content": {"parts": ["Use Markdown for the reading notes. Keep a short summary and questions in each note. We have not created any notes yet."]}
+        }
+      }
+    }
+  }
+]

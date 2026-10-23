@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>chat-OS · Your conversation workspace</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="/app.js"></script>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/"
+          ><span class="brand-mark"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-6.5A7.5 7.5 0 0 1 11.5 4h1A7.5 7.5 0 0 1 20 11.5Z"
+              />
+              <path d="M8 10h8M8 14h5" /></svg></span
+          ><span class="brand-name"
+            >chatOS<small>Your conversation workspace</small></span
+          ></a
+        >
+        <p class="eyebrow">Library</p>
+        <nav aria-label="Workspace">
+          <button data-view="chats" class="active">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="3" />
+              <path d="M4 9h16M10 9v11" /></svg
+            >Conversations</button
+          ><button data-view="map">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="6" cy="7" r="2" />
+              <circle cx="18" cy="5" r="2" />
+              <circle cx="15" cy="18" r="2" />
+              <path d="m8 7 8-2M7 9l7 7M18 7l-2 9" /></svg
+            >Conversation map</button
+          ><button data-view="context">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 4v16M5 6h4a3 3 0 0 1 3 3 3 3 0 0 1 3-3h4v13h-4a3 3 0 0 0-3 2 3 3 0 0 0-3-2H5Z"
+              /></svg
+            >Skills &amp; memory</button
+          ><button data-view="health">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 12h4l3-7 4 14 3-7h4" /></svg
+            >Health &amp; sync
+          </button>
+        </nav>
+        <div class="sidebar-foot">
+          <span class="local-dot"></span>Local workspace
+          <p id="workspace-path"></p>
+          <p>Source records stay intact.<br />Your annotations stay yours.</p>
+        </div>
+      </aside>
+      <main>
+        <header>
+          <div>
+            <h1 id="page-title">Conversations</h1>
+            <p id="subtitle">Find a conversation. Pick up a thread.</p>
+          </div>
+          <div class="header-actions">
+            <button id="import" title="Import a ChatGPT JSON or ZIP export">
+              Import chats</button
+            ><input
+              id="import-file"
+              type="file"
+              accept=".json,.zip"
+              hidden
+            /><button id="sync" class="primary">Sync workspace</button>
+          </div>
+        </header>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <section id="view-chats">
+          <div class="toolbar">
+            <label class="search"
+              >Search transcripts and local notes<input
+                id="search"
+                type="search"
+                placeholder="What were you working on?" /></label
+            ><button id="evidence" class="secondary">Find evidence</button
+            ><label
+              >Source<select id="source">
+                <option value="">All sources</option>
+                <option value="codex">Codex</option>
+                <option value="chatgpt">ChatGPT</option>
+                <option value="muse">Muse</option>
+              </select></label
+            ><label
+              >Project<select id="project">
+                <option value="">All projects</option>
+              </select></label
+            ><label class="check"
+              ><input id="archived" type="checkbox" />Archived</label
+            >
+          </div>
+          <p id="result-count" class="muted"></p>
+          <div class="library-layout">
+            <div>
+              <div
+                id="chat-list"
+                class="chat-list"
+                aria-label="Conversations"
+              ></div>
+              <button id="more" class="secondary" hidden>Load more</button>
+            </div>
+            <article id="reader" class="reader">
+              <div class="empty">
+                <span class="empty-symbol"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-6.5A7.5 7.5 0 0 1 11.5 4h1A7.5 7.5 0 0 1 20 11.5Z"
+                    />
+                    <path d="M8 10h8M8 14h5" /></svg
+                ></span>
+                <h2>Your earlier work, within reach.</h2>
+                <p>
+                  Select a conversation to read its messages, add a local note,
+                  or associate it with a project.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section id="view-map" hidden>
+          <div class="toolbar">
+            <label class="search"
+              >Find on the map<input
+                id="map-query"
+                type="search"
+                placeholder="Filter conversation titles" /></label
+            ><label
+              >Project<select id="map-project">
+                <option value="">All projects</option>
+              </select></label
+            ><label
+              >Source<select id="map-source">
+                <option value="">All sources</option>
+                <option value="codex">Codex</option>
+                <option value="chatgpt">ChatGPT</option>
+                <option value="muse">Muse</option>
+              </select></label
+            >
+          </div>
+          <p id="map-summary" class="muted"></p>
+          <div class="map-controls">
+            <button id="map-in">Zoom in</button
+            ><button id="map-out">Zoom out</button
+            ><button id="map-reset">Reset</button>
+          </div>
+          <canvas
+            id="map-canvas"
+            aria-label="Conversation map; use the title list below for keyboard access"
+          ></canvas>
+          <p id="map-hover" class="muted">
+            Select a point or conversation title to read its messages.
+          </p>
+          <div id="map-list" class="map-list"></div>
+        </section>
+        <section id="view-context" hidden>
+          <p class="callout">
+            These are dated, captured copies. Reading or editing a snapshot does
+            not activate a skill or change an AI application's live memory.
+          </p>
+          <div class="toolbar">
+            <label class="search"
+              >Find a context file<input
+                id="context-query"
+                type="search"
+                placeholder="Filter skills, memory, or instructions" /></label
+            ><label
+              >Type<select id="context-type">
+                <option value="">All types</option>
+                <option value="skills">Skills</option>
+                <option value="memory">Memory</option>
+                <option value="instructions">Instructions</option>
+              </select></label
+            >
+          </div>
+          <p id="context-summary" class="muted"></p>
+          <div class="library-layout">
+            <div id="context-list" class="chat-list"></div>
+            <article id="context-reader" class="reader">
+              <div class="empty">
+                <h2>Inspect your context.</h2>
+                <p>
+                  Select a captured file. Original path and capture time are
+                  shown alongside its contents.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section id="view-health" hidden>
+          <div class="health-top">
+            <div>
+              <h2>Workspace health</h2>
+              <p>
+                Run outcome and source coverage are separate. A healthy database
+                can still contain partial captures.
+              </p>
+            </div>
+            <div class="header-actions">
+              <button id="backup">Back up now</button
+              ><button id="check-health">Check health</button>
+            </div>
+          </div>
+          <div id="health-output"></div>
+        </section>
+        <footer>
+          Captured conversations are historical records. A suggestion is not an
+          accepted decision; a saved schedule is not proof that it ran.
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

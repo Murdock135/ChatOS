@@ -44,11 +44,13 @@ def restore(backup,destination):
                 raise ValueError('Unsafe canonical path in backup')
             write_json(path.with_suffix('.json'),record)
             store.render(record)
+        from .library import restore_annotations
+        restore_annotations(store)
         with store.db:
             store.db.execute("UPDATE runs SET status='interrupted' WHERE status='running'")
         report.update({'restored_at':now(),'destination':str(destination),
                        'restored_conversations':len(records),
-                       'limits':'Conversation database, revisions, checkpoints and regenerated source files only. Behavior snapshots and project registry need separate recovery. No scheduler installed or sync triggered.'})
+                       'limits':'Conversation database, revisions, checkpoints, library annotations and regenerated source files only. Behavior snapshots and project registry need separate recovery. No scheduler installed or sync triggered.'})
         write_json(destination/'RESTORE.json',report)
         atomic(destination/'README.md','# Isolated recovery\n\n'+report['limits']+'\n\nSee RESTORE.json for provenance.\n')
     finally:store.close()
