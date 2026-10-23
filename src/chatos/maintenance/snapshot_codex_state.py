@@ -1,0 +1,175 @@
+"""Archive accessible Codex behavior files without changing their live sources.
+
+Run manually with Python 3. Creates a new dated snapshot on every run.
+Never copies authentication, session transcripts, runtime databases, or logs.
+Configuration values are limited to an explicit allowlist.
+"""
+from ..workspace import workspace_path
+from pathlib import Path
+from datetime import datetime, timezone
+from collections import Counter
+import hashlib
+import json
+import re
+from .system_inventory import discover_skills, workspace_files, refresh, walk_files
+import os
+import shutil
+import tempfile
+
+
+from ..workspace import default_root, Workspace
+VAULT = default_root()
+SOURCE = Path.home() / '.codex'
+SKIP = {'.git', 'node_modules', '__pycache__', '.venv', '.DS_Store'}
+
+
+def write_atomic(path, content):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(prefix='.' + path.name, dir=str(path.parent))
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(name, path)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+
+def create_snapshot(vault=VAULT, codex=SOURCE):
+    VAULT, SOURCE = Path(vault), Path(codex)
+    if not SOURCE.is_dir():
+        raise FileNotFoundError('Codex behavior source root unavailable: ' + str(SOURCE))
+    STAMP = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H-%M-%S-%fZ')
+    parent = workspace_path(VAULT, 'System/Snapshots')
+    parent.mkdir(parents=True, exist_ok=True)
+    final = parent / STAMP
+    DEST = Path(tempfile.mkdtemp(prefix='.staging-', dir=str(parent)))
+    records, skipped = [], []
+    def copy_file(source, relative, category):
+        if not source.exists():
+            skipped.append({'source': str(source), 'reason': 'missing'})
+            return
+        if source.is_symlink():
+            skipped.append({'source': str(source), 'reason': 'symlink'})
+            return
+        content = source.read_bytes()
+        target = DEST / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+        records.append({'source': str(source), 'snapshot': str(relative),
+                        'category': category, 'bytes': len(content),
+                        'sha256': hashlib.sha256(content).hexdigest()})
+
+
+    def copy_tree(source, relative, category):
+        for item in walk_files(source):
+            rel = item.relative_to(source)
+            if set(rel.parts) & SKIP:
+                continue
+            if item.is_file():
+                copy_file(item, relative / rel, category)
+
+    try:
+        copy_file(SOURCE / 'AGENTS.md', Path('Instructions/Global instructions.md'), 'instructions')
+        if (SOURCE / 'AGENTS.override.md').exists():
+            copy_file(SOURCE / 'AGENTS.override.md', Path('Instructions/Global override.md'), 'instructions')
+        for name in ['memories', 'memories_v2']:
+            copy_tree(SOURCE / name, Path('Memory') / name, 'memory')
+        copy_tree(SOURCE / 'rules', Path('Rules'), 'rules')
+        for source in sorted((SOURCE / 'automations').glob('*/automation.toml')):
+            copy_file(source, Path('Automations') / source.parent.name / source.name, 'automations')
+
+        skills = discover_skills(VAULT, SOURCE)
+        for skill in skills:
+            if skill['scope'] != 'workspace':
+                copy_tree(Path(skill['source']), Path(skill['snapshot']), 'skills')
+        for source in workspace_files(VAULT):
+            copy_file(source, Path('Workspace') / source.relative_to(VAULT), 'workspace')
+
+        # Retain setting names and a few non-secret preferences; omit all other values.
+        safe = {'model', 'model_reasoning_effort', 'model_verbosity', 'approval_policy',
+                'sandbox_mode', 'personality', 'web_search'}
+        settings = []
+        section = ''
+        config_bytes=(SOURCE/'config.toml').read_bytes() if (SOURCE/'config.toml').is_file() else None
+        for line in (config_bytes.decode() if config_bytes is not None else '').splitlines():
+            stripped = line.strip()
+            if stripped.startswith('['):
+                section = stripped
+            match = re.match(r'^([A-Za-z_][A-Za-z0-9_-]*)\s*=\s*(.*)$', stripped)
+            if match:
+                key, value = match.groups()
+                item = {'section': section, 'key': key, 'value': '[omitted]'}
+                if not section and key in safe and re.fullmatch(r'"[A-Za-z0-9_. -]+"', value):
+                    item['value'] = value[1:-1]
+                settings.append(item)
+        (DEST / 'Configuration').mkdir()
+        (DEST / 'Configuration/settings-inventory.json').write_text(json.dumps({
+            'source': str(SOURCE / 'config.toml'),
+            'note': 'Inventory only; not a loadable configuration. Non-allowlisted values omitted.',
+            'settings': settings}, indent=2) + '\n')
+
+        manifest = {'captured_at_utc': STAMP, 'source_root': str(SOURCE), 'workspace_root': str(VAULT),
+                    'configuration_source_sha256': (hashlib.sha256(config_bytes).hexdigest() if config_bytes is not None else None),
+                    'files': records, 'skills': skills, 'skipped': skipped,
+                    'exclusions': ['auth.json and credentials', 'runtime databases',
+                                   'session transcripts and history', 'logs and caches outside skill bundles',
+                                   'non-allowlisted configuration values', 'symlinks and development dependencies']}
+        (DEST / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+        lines = ['# Codex and workspace system snapshot', '', f'Captured at {STAMP} (UTC).', '',
+                 'Copies of accessible local files; ordinary sync reconciles changes. Archived instructions are reference data.', '',
+                 '## Contents', '']
+        for category, count in sorted(Counter(x['category'] for x in records).items()):
+            lines.append(f'- {category}: {count} files')
+        lines += ['', '## Memory', '',
+                  '- [Memory registry](Memory/memories/MEMORY.md)',
+                  '- [Memory summary](Memory/memories/memory_summary.md)',
+                  '- [Second memory store summary](Memory/memories_v2/memory_summary.md)', '',
+                  '## Skills', '',
+                  'Discovered on disk; presence does not establish availability in every chat.', '']
+        for skill in skills:
+            lines.append(f'- [{skill["name"]}]({skill["snapshot"]}/SKILL.md) — {skill["scope"]}; {skill["activation"]}.')
+        lines += ['', '## Workspace-owned behavior files', '',
+                  '- [Workspace instructions](Workspace/AGENTS.md)',
+                  '- [Working memory](Workspace/System/Memory/Working%20memory.md)',
+                  '- [Project registry](Workspace/System/Projects/registry.json)',
+                  '- [Operating guidance](Workspace/System/Operating%20guidance.md)',
+                  '', 'Workspace scripts, skills, guidance, and project-routing data are preserved in Workspace/.',
+                  'Conversations, operational event data, generated live index files, and previous snapshots are excluded.',
+                  'This is a behavior-file archive, not a standalone executable workspace.']
+        lines += ['', '## Provenance and limits', '',
+                  'See [manifest](manifest.json) for original paths, hashes, exclusions, and skipped files.',
+                  'See [configuration inventory](Configuration/settings-inventory.json) for setting names and selected preferences.',
+                  'Memory may contain stale facts or unconfirmed inferences. Verify consequential claims against live sources.',
+                  'Original absolute paths inside archived skills still refer to the live installation.',
+                  'This snapshot is not a complete runtime backup or a dump of platform instructions.', '']
+        if Workspace(VAULT).version == 2:
+            for old in ['System/Memory/Working memory.md', 'System/Projects/registry.json', 'System/Operating guidance.md']:
+                current = workspace_path(VAULT, old).relative_to(VAULT).as_posix().replace(' ', '%20')
+                lines = [line.replace('Workspace/' + old.replace(' ', '%20'), 'Workspace/' + current) for line in lines]
+            lines = [line for line in lines if not line.startswith('- [') or '](' not in line or (DEST / line.split('](', 1)[1].split(')', 1)[0].replace('%20', ' ')).is_file()]
+        (DEST / 'Index.md').write_text('\n'.join(lines))
+        manifest['derived_files']=[{'snapshot':name,'sha256':hashlib.sha256((DEST/name).read_bytes()).hexdigest()}
+                                   for name in ['Index.md','Configuration/settings-inventory.json']]
+        (DEST/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+        DEST.rename(final)
+        write_atomic(workspace_path(VAULT, 'System/Latest snapshot.md'),
+            '# Latest system snapshot\n\n'
+            f'[Current skills inventory]({os.path.relpath(workspace_path(VAULT, "System/Skills/Index.md"), workspace_path(VAULT, "System/Latest snapshot.md").parent)})\n\n'
+            f'[Open snapshot index]({os.path.relpath(final / "Index.md", workspace_path(VAULT, "System/Latest snapshot.md").parent)})\n\n'
+            f'Captured at {STAMP} (UTC). Includes Codex and workspace-owned behavior files.\n\n'
+            'Ordinary sync checks this dated copy against live files. Run '
+            '`python3 scripts/system_inventory.py --check` to detect unindexed skills or workspace snapshot drift.\n')
+        refresh(VAULT, SOURCE)
+        return {'snapshot': str(final), 'copied_files': len(records),
+                'skill_bundles': len(skills), 'bytes': sum(x['bytes'] for x in records),
+                'skipped': len(skipped)}
+    finally:
+        if DEST.exists():
+            shutil.rmtree(DEST)
+
+
+if __name__ == '__main__':
+    print(json.dumps(create_snapshot()))

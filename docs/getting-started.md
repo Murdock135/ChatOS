@@ -11,9 +11,9 @@ Run the commands below from the folder containing this repository's README. Ther
 ## 1. Import the sample
 
 ```bash
-mkdir -p Demo/empty-source Demo/System/Imports/chatgpt
-cp docs/examples/conversations.json Demo/System/Imports/chatgpt/conversations.json
-python3 -m chatos --root Demo sync --codex-home Demo/empty-source
+./scripts/chatos init Demo
+cp docs/examples/conversations.json Demo/your_ais/chatgpt/imports/conversations.json
+./scripts/chatos --root Demo sync
 ```
 
 `--root Demo` creates a separate sample workspace inside this checkout. `--codex-home Demo/empty-source` deliberately supplies an empty local source folder, so this command does not scan your real Codex history. Only the supplied fictional ChatGPT export is imported. It does not log into an account or install a schedule.
@@ -22,23 +22,23 @@ Expect one **new chat**, no new skills or memory files, and a total of one conve
 
 ## 2. Open the conversation
 
-Open `Demo/Conversations/2026/chatgpt-chatos-demo-reading-plan.md` in your editor. It contains the question, the assistant's suggestion, and the user's later choice in order. The neighboring JSON file holds structured metadata. Model information is unknown because the sample does not provide it.
+Open `Demo/your_ais/chatgpt/chats/2026/chatgpt-chatos-demo-reading-plan.md` in your editor. It contains the question, the assistant's suggestion, and the user's later choice in order. The neighboring JSON file holds structured metadata. Model information is unknown because the sample does not provide it.
 
 Start the dedicated chat library:
 
 ```bash
-python3 -m chatos --root Demo serve --open
+./scripts/chatos --root Demo serve --open
 ```
 
 Keep the terminal running; stop with Ctrl+C. Select the sample chat. Expand Local title, notes & project to add a local note or archive/restore it. Find evidence returns cited passages; Import chats receives supported exports before sync; Health & sync reports coverage, checks health, and creates fresh database backups. See the [library guide](chat-library.md) for the full workflow. The server reuses the saved empty Codex source for demo sync.
 
-You can also open the older `Demo/Humans/dashboard.html` in a browser. Filter for “reading” to find the chat, then follow its source link. This filter searches titles, project fields, and short previews; use the CLI for full transcript search.
+You can also open the older `Demo/library/dashboard.html` in a browser. Filter for “reading” to find the chat, then follow its source link. This filter searches titles, project fields, and short previews; use the CLI for full transcript search.
 
 ## 3. Find the relevant passage
 
 ```bash
-python3 -m chatos --root Demo search "reading notes"
-python3 -m chatos --root Demo retrieve "Markdown reading notes"
+./scripts/chatos --root Demo search "reading notes"
+./scripts/chatos --root Demo retrieve "Markdown reading notes"
 ```
 
 Search returns conversations and snippets. Retrieval returns message passages with speaker roles and archived source locations. The sample contains both an assistant's suggestion and a user's choice; a result's relevance does not make every passage a decision. The [worked example](using-history.md) explains how to interpret them.
@@ -46,8 +46,8 @@ Search returns conversations and snippets. Retrieval returns message passages wi
 ## 4. Check the sample's health
 
 ```bash
-python3 -m chatos --root Demo status
-python3 -m chatos --root Demo doctor
+./scripts/chatos --root Demo status
+./scripts/chatos --root Demo doctor
 ```
 
 A successful run does not establish full source coverage. Warnings about export-based ChatGPT capture or an unconnected Muse source are expected. Health checks inspect the local archive and report these distinctions.
@@ -65,7 +65,7 @@ The demo is an isolated walkthrough, not an initializer for all your personal in
 
 These are public-onboarding gaps to resolve, not routine maintenance we expect every new user to perform indefinitely. The [product brief](product.md#what-must-be-resolved-before-a-public-release) explains the remaining design work.
 
-Once a workspace has been configured, the ordinary command is `python3 -m chatos sync`, which scans its local Codex source and supported export inboxes. ChatGPT JSON or ZIP exports go in `System/Imports/chatgpt/`; the ZIP importer expects one `conversations.json` payload and does not download media. Muse only has normalized-input support; a general raw export adapter remains deferred. See [features and limits](features.md).
+Once a workspace has been configured, the ordinary command is `./scripts/chatos sync`, which scans its local Codex source and supported export inboxes. ChatGPT JSON or ZIP exports go in `workspace/your_ais/chatgpt/imports/`; the ZIP importer expects one `conversations.json` payload and does not download media. Muse only has normalized-input support; a general raw export adapter remains deferred. See [features and limits](features.md).
 
 ## Optional display and developer checks
 
@@ -85,4 +85,4 @@ The repository's tests use synthetic fixtures:
 python3 -B -m unittest discover -s tests -v
 ```
 
-Optional semantic-search dependencies and model files are separate from the core walkthrough. The [runtime reference](../System/Runtime%20reference.md) covers maintainer operations and recovery.
+Optional semantic-search dependencies and model files are separate from the core walkthrough. The [runtime reference](../workspace/chief_of_staff/reference/Runtime%20reference.md) covers maintainer operations and recovery.

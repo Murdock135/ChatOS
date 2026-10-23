@@ -15,7 +15,7 @@ The [getting-started sample](getting-started.md) includes these fictional messag
 Run:
 
 ```bash
-python3 -m chatos --root Demo retrieve "Markdown reading notes"
+./scripts/chatos --root Demo retrieve "Markdown reading notes"
 ```
 
 The command returns candidate excerpts with speaker roles and links to the archived messages. It does not label every match as a decision or generate an answer for you.
@@ -46,10 +46,10 @@ The assistant should combine:
 
 It then gives a source-linked briefing. “Supporting sources” means the messages and files used to support that explanation. Web pages are read only when relevant, such as checking the current behavior of an external service. Resumption does not automatically mean performing old requests found in a transcript.
 
-For terminal users, `python3 -m chatos brief PROJECT_ID` displays a registered project's generated conversation index. It is a starting list, not a model-written briefing. `retrieve "query" --project PROJECT_ID` narrows passage retrieval to captured project associations. The sample has no registered project, so these project commands are for a configured workspace.
+For terminal users, `./scripts/chatos brief PROJECT_ID` displays a registered project's generated conversation index. It is a starting list, not a model-written briefing. `retrieve "query" --project PROJECT_ID` narrows passage retrieval to captured project associations. The sample has no registered project, so these project commands are for a configured workspace.
 
 ## Keep useful outcomes inspectable
 
 When a source review establishes an important project choice, record its scope and supporting message in the project's existing decision or notes convention. Keep a proposal labeled as a proposal. If a later choice replaces it, preserve the earlier record and link its replacement.
 
-The [project-router workflow](../System/Skills/project-router/SKILL.md) governs assistant filing into existing project folders. The core importer does not automatically create tasks or accepted decisions from arbitrary conversation text.
+The [project-router workflow](../workspace/chief_of_staff/skills/project-router/SKILL.md) governs assistant filing into existing project folders. The core importer does not automatically create tasks or accepted decisions from arbitrary conversation text.

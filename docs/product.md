@@ -48,7 +48,7 @@ Both people and assistants operate over the same records. The user explicitly re
 ## Product requirements already established
 
 - Human-facing chat management is a first-class purpose, alongside assistant workflows.
-- Keep the workspace together and visible for now. A conventional hidden directory is not automatically a better design. See [the storage decision](../System/Decisions.md#cos-2026-005--keep-the-inspectable-workspace-together).
+- Keep the workspace together and visible for now. A conventional hidden directory is not automatically a better design. See [the storage decision](../workspace/chief_of_staff/decisions/README.md#cos-2026-005--keep-the-inspectable-workspace-together).
 - Preserve source identities, available messages, capture gaps, and the distinction between evidence and interpretation.
 - Explain concepts before using them. Make the path from a fresh clone to first use understandable.
 - Eventually support taking useful records and context to another chat application. Migration remains future work.

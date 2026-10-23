@@ -11,7 +11,10 @@
         "sync"
       ],
       "options": {
-        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/src"
+        }
       },
       "problemMatcher": []
     },
@@ -25,7 +28,10 @@
         "status"
       ],
       "options": {
-        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/src"
+        }
       },
       "problemMatcher": []
     },
@@ -42,7 +48,10 @@
         "-v"
       ],
       "options": {
-        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/src"
+        }
       },
       "problemMatcher": []
     },
@@ -56,7 +65,10 @@
         "doctor"
       ],
       "options": {
-        "cwd": "/Users/zayan/Documents/obsidian_vaults/chats"
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}/src"
+        }
       },
       "problemMatcher": []
     }

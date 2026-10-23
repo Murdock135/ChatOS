@@ -72,3 +72,22 @@ The same 72 tests also passed under the installed Python 3.13 environment. Selec
 Committed source at `1e14970` was extracted into a new temporary directory without runtime data or a virtual environment. The system-Python suite passed all 72 tests; the documented fictional initial sync reported one new chat, and the unchanged repeat reported zero new/updated chats, total one. This is source-copy verification on the same Mac, not general-user initialization or a clean-machine test.
 
 A later browser regression check restarted the fictional server on the same port, then opened its newly printed token URL in the already-open tab. The app reconnected without a page reload and retained access to the one-chat library. Map freshness is also checked against captured-record fingerprints at request time; current local titles/project associations are applied independently of the older coordinates. Map method/limits are available under About this map.
+
+## 2026-10-23 — Reorganization acceptance
+
+- Packaged source moved to `src/chatos/`; a wheel containing web assets and explorer template was built from cached setuptools and installed locally. An editable wheel was subsequently installed for development. Online build-isolation fetch was unavailable in this environment. `scripts/chatos` also runs independently of installation.
+- All 259 existing conversations, revisions, checkpoints, annotations and feedback reviews matched exactly in a separate version-2 copy before activation. Two legacy title transformations were caught by the comparison; migration now updates only current projection paths and preserves historical record/revision bytes. Originals and failed staging remain retained.
+- Post-activation manual sync ran through the existing System/Scripts wrapper, captured this continuation chat (260 total), and verified behavior files. Its one import failure is the pre-existing mixed parent/fork identity; no source identity validation was bypassed.
+- 80 tests pass, including migration preservation and explicit repository-root selection. Loopback tests required authorized execution outside the restricted shell. Ruff lint/format and scoped BasedPyright checks pass for the migration/workspace modules.
+- The browser app was opened against the active `workspace/` and visually verified to show 260 conversations. The library is left open. No new UI design or broad onboarding acceptance is claimed.
+- Current behavior inventory and canonical-file/database health checks are repeated after maintained-note updates; known partial-source warnings remain. A fresh 260-record database backup verifies.
+
+## 2026-10-23 — Visible folder cleanup acceptance
+
+The earlier activation left legacy folders visible as aliases. User screenshots correctly showed that the root was still cluttered. This cleanup retires the aliases, updates active references, and groups recovery copies rather than deleting evidence.
+
+- Visible root folders: docs, scripts, src, tests, workspace. Visible workspace folders: app_data, backups, chief_of_staff, library, shared_context, your_ais. No root migration-staging directories, Users directory, build output, or legacy folder aliases remain.
+- Existing installed entry instructions and the active hourly maintenance prompt now use canonical paths; the task schedule, target and active state are preserved. This is configuration verification; manual run 57 verifies operation, not unattended execution after cleanup.
+- 80 regression tests pass. The entry installer moved from the retired System namespace into the package. Migration/repeat-sync tests verify that legacy folders stay absent while records, revisions and annotations remain intact. Lint, format and scoped type checks pass for new migration, wrapper and installer code.
+- README, Home, top-level product docs and active skills have no missing local Markdown link targets in the bounded link audit. Old absolute paths inside historical messages and snapshots remain original evidence; the migration receipt maps their current locations.
+- A fresh 260-record database backup verifies. Final restored-database, inventory and doctor results are recorded in the operating state and cleanup receipt. The existing fork identity error still makes ordinary sync partial; no new capture-completeness claim is made.

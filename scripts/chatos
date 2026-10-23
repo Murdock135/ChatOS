@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run the checkout without depending on an editable installation.
+repository=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+PYTHONPATH="$repository/src${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m chatos "$@"

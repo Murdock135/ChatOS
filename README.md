@@ -21,7 +21,7 @@ Checked items are implemented within the limits stated here. They do not imply c
 
 ### Planned
 
-- [ ] **Clearer project organization:** conventional application source/docs and a visible user workspace, with meaningful platform and Chief of Staff folders. [Structure proposal](docs/proposals/0001-repository-and-workspace-layout.md); no migration yet.
+- [x] **Clearer project organization:** packaged `src/chatos/` application and a visible private `workspace/`, with platform and Chief of Staff folders. [Layout and compatibility paths](docs/reorganization.md).
 - [ ] **Independent new-user setup:** initialize a workspace without inheriting the maintainer's personal paths, preferences, or project registry; verify with fictional users.
 - [ ] **Bring your own context:** prompts and accepted formats for asking your AI to prepare inspectable memory/context artifacts, with provenance and user review.
 - [ ] **Cross-app migration:** prepare selected chats and context for another chat application; destination and transfer format remain to be defined.
@@ -34,13 +34,15 @@ The assistant can act as a **Chief of Staff**: a role that helps organize contex
 The current prototype targets macOS and Python 3.9+ with SQLite FTS5. Core commands need no API key or extra packages. From the cloned repository folder:
 
 ```bash
-mkdir -p Demo/empty-source Demo/System/Imports/chatgpt
-cp docs/examples/conversations.json Demo/System/Imports/chatgpt/conversations.json
-python3 -m chatos --root Demo sync --codex-home Demo/empty-source
-python3 -m chatos --root Demo serve --open
+./scripts/chatos init Demo
+cp docs/examples/conversations.json Demo/your_ais/chatgpt/imports/conversations.json
+./scripts/chatos --root Demo sync
+./scripts/chatos --root Demo serve --open
 ```
 
 This creates a separate sample workspace under `Demo/` and imports one fictional conversation. It does not scan your real chat history, connect an account, or install a schedule. Keep the terminal running while you use the browser app; stop it with Ctrl+C. Follow [Getting started](docs/getting-started.md) or the [chat-library guide](docs/chat-library.md).
+
+See [where things live](docs/reorganization.md) for the repository/workspace split and compatibility paths.
 
 ## Learn the system
 
@@ -56,4 +58,4 @@ This is an early application with a local browser app, readable files, and CLI c
 
 Real archives contain private data. Some authored notes and configuration are tracked even though conversation payloads and runtime directories are Git-ignored. Review contents before sharing; current backups stay on the same device.
 
-[Documentation](docs/README.md) · [Roadmap](IMPLEMENTATION.md) · [Maintainer reference](System/Runtime%20reference.md) · [Verification record](docs/verification.md)
+[Current state](workspace/STATE.md) · [Sync status](workspace/STATUS.md) · [Documentation](docs/README.md) · [Roadmap](workspace/IMPLEMENTATION.md) · [Maintainer reference](workspace/chief_of_staff/reference/Runtime%20reference.md) · [Verification record](docs/verification.md)

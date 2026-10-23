@@ -13,9 +13,9 @@ Start with the problem and product, then follow a conversation through the syste
 | [How it works](how-it-works.md) | Architecture, data flow, storage, and the interfaces used by people and assistants |
 | [Using earlier conversations](using-history.md) | A worked example of finding a recorded choice and resuming a project with evidence |
 
-These pages explain the product. The [runtime reference](../System/Runtime%20reference.md) contains maintainer commands and recovery procedures. [Current state](../STATE.md) and the generated `STATUS.md` report describe this particular installation; they are not prerequisites or promises about a new installation.
+These pages explain the product. The [runtime reference](../workspace/chief_of_staff/reference/Runtime%20reference.md) contains maintainer commands and recovery procedures. [Current state](../workspace/STATE.md) and the generated `STATUS.md` report describe this particular installation; they are not prerequisites or promises about a new installation.
 
-The [implementation roadmap](../IMPLEMENTATION.md) tracks incomplete work. The [verification record](verification.md) states what was inspected and tested for this documentation pass.
+The [implementation roadmap](../workspace/IMPLEMENTATION.md) tracks incomplete work. The [verification record](verification.md) states what was inspected and tested for this documentation pass.
 
 [Chat-library guide](chat-library.md) — browse, annotate, archive/restore, inspect context, and check health in the local browser app.
 

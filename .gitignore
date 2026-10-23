@@ -28,3 +28,14 @@ System/Models/
 
 # Generated fictional walkthrough workspace.
 /Demo/
+
+# Private initialized workspace and package-build outputs.
+/workspace/
+/build/
+/dist/
+*.egg-info/
+
+/.chatos-migration-*/
+
+# Optional local assistant navigation.
+/.chief_of_staff/

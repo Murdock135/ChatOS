@@ -3,12 +3,12 @@
 The local browser app lets you manage captured chats without an active assistant. Start it from the repository folder:
 
 ```bash
-python3 -m chatos serve --open
+./scripts/chatos serve --open
 ```
 
 Keep that terminal running. Stop the app with Ctrl+C. It listens only on `127.0.0.1`; the printed launch URL contains a temporary access token. Use that URL to open another tab. Restarting the server creates a new token. `--port 0` chooses a free port if the default 8765 is occupied.
 
-For the [fictional walkthrough](getting-started.md), use `python3 -m chatos --root Demo serve --open`. The app reuses the source folder recorded by the sample's sync. `--codex-home PATH` explicitly overrides that source for the server's sync button.
+For the [fictional walkthrough](getting-started.md), use `./scripts/chatos --root Demo serve --open`. The app reuses the source folder recorded by the sample's sync. `--codex-home PATH` explicitly overrides that source for the server's sync button.
 
 ## Import an export
 
@@ -30,14 +30,14 @@ Expand **Local title, notes & project** in a conversation:
 - Archive locally to remove a chat from the active list. Check **Archived**, open the chat, and select **Restore to library** to undo it. Archiving does not delete records, remove them from evidence search or the map, or archive them in the source app.
 - Select registered projects and apply the assignment. This saves an explicit local association that survives reimport; it does not write external project notes. With no registered projects, there is nothing to assign.
 
-Annotations live in the workspace database. Readable copies appear under `Conversations/Annotations/`; editing those generated copies does not update the database. Use the app or `library` command. Database backup/restore preserves annotations. Existing daily backups can predate later edits; make a fresh backup when needed using `python3 -m chatos backup --fresh`. Backups remain on this device.
+Annotations live in the workspace database. Readable copies appear under `workspace/your_ais/<source>/annotations/`; editing those generated copies does not update the database. Use the app or `library` command. Database backup/restore preserves annotations. Existing daily backups can predate later edits; make a fresh backup when needed using `./scripts/chatos backup --fresh`. Backups remain on this device.
 
 The CLI exposes the same local annotation operation:
 
 ```bash
-python3 -m chatos library chatgpt CONVERSATION_ID --title "Reading notes" --note "Compare the later revision."
-python3 -m chatos library chatgpt CONVERSATION_ID --archive
-python3 -m chatos library chatgpt CONVERSATION_ID --restore
+./scripts/chatos library chatgpt CONVERSATION_ID --title "Reading notes" --note "Compare the later revision."
+./scripts/chatos library chatgpt CONVERSATION_ID --archive
+./scripts/chatos library chatgpt CONVERSATION_ID --restore
 ```
 
 ## Inspect the rest of the workspace
@@ -50,4 +50,4 @@ python3 -m chatos library chatgpt CONVERSATION_ID --restore
 
 The server is a foreground local application, not a hosted service or an always-running AI agent. Its API requires the temporary token and rejects other hosts/origins. Files are served through fixed assets and checked snapshot entries, rather than a general filesystem browser.
 
-Unexpected interface failures return a reference to `System/Logs/interface-errors.jsonl`. Its diagnostics contain operation names, error types, and code locations, without request bodies, query text, or exception messages. These are troubleshooting events, not proof of a scheduled task outcome.
+Unexpected interface failures return a reference to `workspace/app_data/logs/interface-errors.jsonl`. Its diagnostics contain operation names, error types, and code locations, without request bodies, query text, or exception messages. These are troubleshooting events, not proof of a scheduled task outcome.

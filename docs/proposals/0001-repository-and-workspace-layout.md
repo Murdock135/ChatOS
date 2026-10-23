@@ -1,6 +1,6 @@
 # Separate application code from a visible user workspace
 
-Status: proposed, 2026-10-23. No paths have been migrated and the proposed names are not yet runtime configuration.
+Status: implemented on 2026-10-23; the initial compatibility aliases were subsequently retired after user review. This preserves the original design proposal; see [the adopted decision](../adr/0002-versioned-visible-workspace.md) and [actual layout](../reorganization.md). The implementation uses chatos.json rather than the illustrative TOML filename below.
 
 Source: user messages in codex:01a16510-7f12-78b0-afa9-d5aee24d915b requesting conventional project organization, meaningful `your_ais/<platform>/` folders, a possible Chief of Staff folder, and a README feature checklist. This refines the adopted direction to keep chats, skills, memory, and related records together and inspectable; it does not supersede it.
 

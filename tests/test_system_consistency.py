@@ -11,13 +11,14 @@ import unittest
 from unittest.mock import patch
 from urllib.parse import unquote, urlparse
 
-SCRIPTS = Path(__file__).resolve().parents[1] / 'System/Scripts'
+import chatos.maintenance
+SCRIPTS = Path(chatos.maintenance.__file__).parent
 sys.path.insert(0, str(SCRIPTS))
-import system_inventory as inventory
+from chatos.maintenance import system_inventory as inventory
 
 
 def load_logger():
-    spec = importlib.util.spec_from_file_location('log_test', SCRIPTS / 'system_log.py')
+    spec = importlib.util.spec_from_file_location('chatos.maintenance.log_test', SCRIPTS / 'system_log.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -142,7 +143,7 @@ class InventoryTests(unittest.TestCase):
         self.assertNotIn(secret,list(inventory.walk_files(secret.parent)))
 
     def test_configuration_view_corruption_is_detected(self):
-        from snapshot_codex_state import create_snapshot
+        from chatos.maintenance.snapshot_codex_state import create_snapshot
         self.codex.mkdir()
         result=create_snapshot(self.vault,self.codex)
         settings=Path(result['snapshot'])/'Configuration/settings-inventory.json'
@@ -150,7 +151,7 @@ class InventoryTests(unittest.TestCase):
         self.assertIn('Configuration/settings-inventory.json',inventory.check(self.vault,self.codex)['snapshot_integrity_errors'])
 
     def test_failed_snapshot_preserves_published_pointer(self):
-        from snapshot_codex_state import create_snapshot
+        from chatos.maintenance.snapshot_codex_state import create_snapshot
         self.codex.mkdir()
         pointer=self.vault/'System/Latest snapshot.md'
         original=pointer.read_text()
