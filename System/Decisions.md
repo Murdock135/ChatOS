@@ -48,3 +48,14 @@ Each entry has a stable ID, date, status, scope, authority, supporting source me
 - Source: [conversation](../Conversations/2026/codex-01a16510-7f12-78b0-afa9-d5aee24d915b.md).
 - Destination: `/Users/zayan/.codex/skills/preferred-coding-style/SKILL.md` and global `/Users/zayan/.codex/AGENTS.md`.
 - Supersedes: none; operationalizes the existing preference profile.
+
+## COS-2026-005 — Keep the inspectable workspace together
+
+- Date: 2026-10-22
+- Status: adopted as the current direction; no relocation now
+- Authority: explicit user instruction in codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- Scope: keep everything in the current workspace for now so users can see and manage chats, skills, and related records in one place. Evaluate storage locations by their utility to the product rather than adopting platform conventions automatically.
+- User wording: “Right now, I think it would be best to keep everything here. Then, users can see their chats, skills, etc, all in one place”.
+- Clarification: moving data to ~/Library/Application Support or ~/Library/Caches was an assistant proposal, not a selected design. Logical organization within the workspace and separation of shareable application material from private records remain design questions; this decision does not authorize publishing private data.
+- Supersedes: no earlier adopted storage-layout decision; rejects treating the assistant's proposed platform directories as a requirement.
+- Source: [conversation](../Conversations/2026/codex-01a16510-7f12-78b0-afa9-d5aee24d915b.md).

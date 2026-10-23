@@ -7,10 +7,21 @@ updated: 2026-10-22
 
 The Chief of Staff owns implementation and upkeep. Zayan uses the workspace as a reference and directs work through chat. This is the current plan; Git retains earlier scaffold versions. [STATE.md](STATE.md) describes verified capabilities, and [STATUS.md](STATUS.md) reports the last sync.
 
-## Top priority on next resume — New-user documentation and conceptual design
+## Current priority — Essential feature completion, then public setup
 
-- [ ] Before other planned feature work, teach a newly cloned-repo user what chat-OS is for, what problem it solves, exactly what features it offers and how, its foundational concepts, architecture/design, setup, and usage. Define terms before using them and organize a coherent README-to-concepts learning path. Deferred now at the user's request; do not start until asked to resume.
-- Authoritative [verbatim feedback and resume requirements](System/Feedback/2026-10-22-new-user-documentation.md). The earlier README rewrite did not meet the user's stated need.
+Updated by the user on 2026-10-22: finish essential functionality in the current installation first, excluding unnecessary features; then adapt and test setup for other users. The earlier documentation work was resumed and its baseline remains available. [Product brief](docs/product.md), [verified feature map](docs/features.md), and the [documentation path](docs/README.md) now provide a concrete baseline. The original [verbatim request](System/Feedback/2026-10-22-new-user-documentation.md) remains preserved; delivery is not user-confirmed resolution.
+
+- [x] Define a working product description, human and assistant interfaces, and current capability boundaries from inspected implementation.
+- [x] Provide a README-to-walkthrough-to-concepts reading path, architecture diagrams, and a worked evidence-retrieval example.
+- [x] Verify fictional import, search, cited retrieval, health, and duplicate-free repeat sync in an isolated copy. Record fresh-copy and test limits.
+- [x] Implement the user-selected dedicated local browser interface with Apple-inspired styling: import, library search/read, separate local annotations, archive/restore, project assignment, evidence passages, map filters/pan/zoom, captured context, health/sync and fresh conversation-database backup.
+- [x] Verify source preservation, validated uploads, recovery, API access boundaries, export recency, and project-filter scope; lint/format/type-check the new modules and inspect the browser workflows. See docs/verification.md for scope and limits.
+- [ ] Settle public positioning, first audience, packaging and general setup. The current local interface is selected; these broader public-release choices remain open.
+- [ ] Later: implement and verify general real-user initialization without inheriting maintainer paths, project assignments, or private operating notes. This is an adoption gap, not completed by writing documentation.
+- [ ] Later: provide a prompt/artifact guide for users to obtain usable, inspectable memory/context from their own AI; define formats and provenance and test setup with separate fictional users and paths.
+- [ ] Later: evaluate the learning path with a new user and resolve remaining conceptual/navigation gaps before declaring onboarding complete.
+
+Human-facing AI-chat management remains first-class alongside Chief of Staff workflows. The requested local browser app uses the existing standard-library core and keeps the workspace together. No platform-directory relocation was performed.
 
 ## 1. Local records and Codex capture
 
@@ -30,7 +41,7 @@ The Chief of Staff owns implementation and upkeep. Zayan uses the workspace as a
 - [x] Supported hourly Codex heartbeat saved; account-usage guard defers at 30 percent or less remaining in the five-hour window.
 - [x] Disable the privacy-blocked native launch agent; retain diagnostic evidence without weakening Mac protections.
 - [x] Install a bounded global Chief of Staff reference and user skill; preserve original instructions. The new reference was observed loading into this conversation.
-- [ ] Verify an unattended maintenance execution after this active chat is available to the heartbeat. Saved active state, due times, and manual runs are not substitutes.
+- [x] A heartbeat-triggered bounded core sync and bounded changed-desktop-chat refresh have execution evidence. Saved active state, due times, and manual runs alone remain insufficient. Longer-term recurring reliability is still unverified.
 - [ ] Verify real sleep/wake and restart catch-up. The Mac-only runner cannot operate while powered off.
 - [ ] Choose snapshot/backup retention and storage thresholds; avoid deleting historical records without an agreed recoverable policy.
 
@@ -66,7 +77,7 @@ Any new persistent sensitive access must be reviewed at the point it is enabled.
 - [x] Project-filtered evidence retrieval and a skill for the active assistant to synthesize grounded answers, state conflicts, and acknowledge missing support.
 - [x] Keyword topic browsing and provisional local LSA groups/search.
 - [x] Generate a self-contained offline 2D map with pan/zoom, project/source/date/group filters, source links and nearby conversations. Show method, retained variance and neighbor retention.
-- [ ] Verify the explorer visually and exercise its interactions in a permitted environment. Current preview security policy blocks local-file rendering; do not bypass it.
+- [x] Render the map in the requested local browser app and verify its list navigation and controls without bypassing the blocked local-file preview. The original offline page remains a separate artifact.
 - [ ] Extend evaluation beyond the optional pinned Qwen/HDBSCAN/UMAP experiment. The first seven-question hybrid result matched lexical retrieval at 4/7, so it remains optional. No broad SOTA claim is supported.
 - [ ] Evaluate retrieval on real questions, paraphrases, hard negatives, contradictory/superseded decisions and partial histories. Small fixture tests are not a full quality evaluation.
 - [ ] Extend retrieval to registered project documents and external memory under deliberate ownership/freshness rules. Current passage retrieval covers imported chats and selected current chat-OS notes.
@@ -97,6 +108,6 @@ Any new persistent sensitive access must be reviewed at the point it is enabled.
 
 ## Next acceptance milestone
 
-Finish source access, verify the first unattended maintenance result, and run a representative project-resume → evidence retrieval → accepted outcome → verified filing cycle. Full three-source operation remains incomplete until ChatGPT and Muse updates work without overstating capture or weakening security.
+Complete and record the current-installation browser acceptance checks, then address public-user setup when that phase is resumed. Keep the broader source-access and project-filing quality backlog visible. Full three-source operation remains incomplete: ChatGPT capture is bounded/export-based and raw Muse work remains explicitly deferred. Neither UI completion nor a passing doctor establishes complete source coverage.
 
 [Source readiness](System/Sync%20sources.md) · [Project routing](System/Projects/Project%20routing.md) · [Recorded decisions](System/Decisions.md) · [Optional ideas](ideas.md)

@@ -113,3 +113,39 @@ Reviewed seven ownership assignments, registered two existing code repositories,
 - Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
 - Filed and reopened: verbatim request in System/Feedback/2026-10-22-new-user-documentation.md; priority pointers in STATE.md, IMPLEMENTATION.md, and working memory; feedback adjustment in the feedback log.
 - Explicitly note-only now. No redesign or new feature implementation; act on this first when the user asks to resume chat-OS work.
+
+## 2026-10-22 — Product surfaces and how-it-works docs deferred
+
+- Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- Filed and reopened: follow-up requirements in the existing new-user documentation note, top-priority roadmap section, and working memory.
+- Status: recorded for future work only. Broader adoption, product identity, human/assistant interaction surfaces, and explanatory documentation are requirements to explore; no particular UI or architecture selected and no implementation started.
+
+## 2026-10-22 — User-facing chat management and storage review
+
+- Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- Filed: explicit human-facing AI chat management requirement and read-only storage findings in the existing priority note, working memory, and roadmap.
+- Verified findings: checkout-derived database root, workspace-local runtime files, personal paths, and tracked operating context. Separate app/user-data/cache/library layout remains a proposal; no migration or UI implementation performed.
+
+## 2026-10-22 — Unified visible workspace retained
+
+- Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b.
+- Filed: explicit keep-everything-here direction as COS-2026-005, working memory, and the existing product/documentation requirement note.
+- Status: current direction adopted, files reopened and verified. Platform-directory proposal was not adopted; no relocation performed.
+
+## 2026-10-22 — Product brief and new-user documentation baseline
+
+- Project: chat-os; source codex:01a16510-7f12-78b0-afa9-d5aee24d915b, user continuation of the top-priority documentation/product-definition work.
+- Filed and reopened: docs/README.md, product.md, getting-started.md, concepts.md, features.md, how-it-works.md, using-history.md, verification.md; fictional export fixture; two static SVG diagrams and their dependency-free layout source. README, Home, human guides, system index, state, and roadmap linked to this path.
+- Verification: clean-copy help/status/empty doctor plus 57 baseline tests; fictional first sync 1 new chat, retrieval includes demo-choice, repeat sync no duplicates; 58 updated tests and 19 consistency/report tests passed; local links and deterministic SVG regeneration checked; Obsidian reading view inspected.
+- Material tool recovery: Mermaid trust prompt left unchanged and replaced with static SVG output. Native scroll calls returned windowNotFoundAtPosition; keyboard navigation recovered visual inspection.
+- Scope: documentation-first baseline delivered, not a public launch. No accounts connected, scheduler installed, source migration, chosen UI framework, or storage relocation. Broader product choices and real-user initialization remain pending review.
+
+## 2026-10-23 — Dedicated local library and continuation
+
+- Owner/source: chat-os; codex:01a16510-7f12-78b0-afa9-d5aee24d915b. User approved interface scope and Apple-inspired direction; implementation is delivered for inspection, not user-confirmed acceptance.
+- Filed: chatos/library.py, web.py, uploads.py, static assets, CLI dispatch, source-preserving annotation retrieval/recovery, dated-export protection, project-scoped candidate fix, tests, docs/chat-library.md and adopted interface ADR. Updated product/docs/human guides and state/roadmap.
+- Verification: 71 system-Python tests; isolated Ruff lint/format, BasedPyright basic/Python 3.9 for the new boundary modules, Prettier frontend checks; browser fixture import/sync/backup, annotations/archive/restore, evidence, assignment/filtering; actual 254-chat library, captured instruction preview and older 220-chat map inspected read-only.
+- Future: general-user initialization, removal/separation of personal configuration, memory-artifact prompt/provenance guide, independent setup tests, and destination-specific migration remain distinct from this implementation. Known source gaps and optional map/quality limits remain explicit.
+- User-authorized one-time 4:16 AM continuation saved and reopened; its future execution remains unknown. See System/Scheduled tasks.md.
+
+- Follow-through: bounded offline refresh embedded 357 passages (4,903/4,903 at the check); rebuilt map covered 254/254 conversations. Python 3.13 also passed the same 72 tests. No remote inference or replacement model was used.

@@ -96,3 +96,10 @@ Ordinary sync produces a conservative [review queue](Feedback/Review%20queue.md)
 - Interpretation: explicit negative feedback about documentation audience, foundations, and organization; high confidence. No emotion inferred.
 - Adjustment: record verbatim and make documentation/conceptual organization the topmost next-resume priority. Respect explicit deferral now; no redesign performed.
 - Outcome: deferred requirement recorded, not resolved. Supersedes any implication that the earlier README revision satisfied onboarding.
+
+## 2026-10-22 — Follow-through on new-user documentation feedback
+
+- Source: codex:01a16510-7f12-78b0-afa9-d5aee24d915b; user resumed with “continue”, requested README best practices, and welcomed diagrams. This is follow-through on the previously logged audience/foundations feedback, not a new negative-feedback interpretation.
+- Delivered: concise README with a usable fictional first experience; linked product brief, concepts, feature map with code evidence, architecture, and example of source-grounded continuity. Defined Chief of Staff before depending on the term. Kept one visible workspace and recorded unselected interfaces/setup as open.
+- Checks: 57 baseline tests in a clean committed-source export; full updated suite 58; actual sample import, search, citation, health, and idempotent repeat verified. README navigation and static diagrams inspected in Obsidian.
+- Outcome: concrete revision delivered; user-confirmed resolution remains pending. Public real-user initialization is still incomplete.
