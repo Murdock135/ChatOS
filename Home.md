@@ -1,50 +1,29 @@
 ---
 type: index
 ---
-# Chief of Staff workspace
+# chat-OS workspace
 
-**[Current state](STATE.md)** — capabilities, coverage, memory, skills, logs, and current development priority.
+Keep captured AI conversations and related context in one place. Browse and search the records yourself, or work with an assistant that can retrieve relevant messages and help you continue a project.
 
-**New here? [Start here — human guide](Humans/Start%20here.md).**
+**New here? Start with [the README](README.md) and [the fictional walkthrough](docs/getting-started.md).** No existing archive or connected account is needed for the sample.
 
-Agent-managed operating workspace and conversation archive. The Chief of Staff maintains the records and infrastructure; Zayan uses them as a reference. Conversations are intended to span Codex, ChatGPT, and Muse, with navigation by topic and date.
+An assistant acting as a **Chief of Staff** helps organize context and carry out work you authorize. That role needs an active assistant and access to the workspace; the repository is not an always-running AI agent.
 
-[What happens when I chat?](Humans/What%20happens%20when%20I%20chat.md) · [Conversation map](Humans/explorer.html) · [Offline dashboard](Humans/dashboard.html) · [Sync status](STATUS.md) · [Conversations](Conversations/Index.md) · [Projects](Projects/Index.md)
+## Understand the application
 
-## Building the chat-OS
+[Product and purpose](docs/product.md) · [Concepts](docs/concepts.md) · [Features](docs/features.md) · [Architecture](docs/how-it-works.md) · [Using earlier conversations](docs/using-history.md)
 
-- [Implementation roadmap](IMPLEMENTATION.md) — remaining work, dependencies, and acceptance checks.
-- [Ideas](ideas.md) — optional improvements and small experiments.
+## Use this configured workspace
 
-## Chief of Staff system
+Start the local app with `python3 -m chatos serve --open`. The [library guide](docs/chat-library.md) covers import, search, local annotations, archive/restore, project assignment, context, and health.
 
-- [[System/Index|System files]] — operating guidance, skills, memory, configuration, rules, and automations.
-- [[Working memory]] — vault-owned durable notes.
-- [Recorded decisions](System/Decisions.md) — source-reviewed choices and supersession history.
-- [[Scheduled tasks]] — task schedules, saved state, and archived definitions.
-- [[System logs]] — chat and scheduled-task incidents and recoveries.
-- [[Feedback log]] — negative feedback and how the assistant responds to it.
-- [[Conversation metadata]] — model, source, timestamps, and other conversation details.
-- [[Project routing]] — keep project material with its owner.
-- [[Latest snapshot]] — dated copies of accessible local Codex behavior files.
-- [Current skills inventory](System/Skills/Index.md) — workspace skills and discovered local/cached skills, with activation limits.
-- [Consistency audit](System/Audits/2026-10-22%20consistency%20audit.md) — repaired defects, remaining gaps, and the check command.
+- [Conversations](Conversations/Index.md) and [HTML dashboard](Humans/dashboard.html) — browse captured chats.
+- [Projects](Projects/Index.md) and [topics](Topics/Index.md) — generated ways to navigate related context.
+- [Human guide](Humans/Start%20here.md) — where to start and what the views mean.
+- [Sync status](STATUS.md) and [current state](STATE.md) — actual run evidence, coverage, and remaining work for this installation.
+- [Skills](System/Skills/Index.md), [memory](System/Memory/Working%20memory.md), and [snapshots](System/Latest%20snapshot.md) — inspect accessible assistant-context records.
+- [System index](System/Index.md) — operating guidance, reviewed choices, schedules, logs, and maintainer records.
 
-## Topics
+These generated views and private records are created during use and are not all shipped in Git. For a new clone, use the demo path above. Source coverage is incomplete; a recorded message, generated summary, and live installed resource are different things.
 
-- [[Conversation knowledge management]] — archiving, semantic organization, and continuity across chats.
-
-## Conversations
-
-- [[2026-10-22 Chief of Staff and chat archive]] — archive scope and initial setup.
-
-## Capture status
-
-The vault structure and local agent guidance are in place. The initial conversation record is a partial capture of the setup exchange, with a labeled summary. Local Codex import, incremental sync, search, and project context views now work. Full cross-app capture remains incomplete; see STATE.md and the timestamped sync status.
-
-## Open work
-
-- Identify the other chat apps to include and their available exports or connectors.
-- Import available histories with stable source identifiers and completeness labels.
-- Establish and verify ongoing capture for each source.
-- Expand and refine topic links as conversations arrive.
+[Roadmap](IMPLEMENTATION.md) · [Ideas](ideas.md) · [Runtime reference](System/Runtime%20reference.md) · [Documentation verification](docs/verification.md)

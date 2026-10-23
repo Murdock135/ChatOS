@@ -1,54 +1,46 @@
 # chat-OS
 
-chat-OS is a local workspace for keeping AI conversations, project context, and assistant settings in one place. It helps you find earlier discussions, see which decisions were made, and resume work with the supporting sources close at hand.
+**Keep your AI conversations and useful context in one visible local workspace.**
 
-Conversations are stored as readable Markdown and structured records. You can browse them in Obsidian, open the offline dashboard, or ask Codex to retrieve relevant passages. This installation is configured for Zayan’s Mac and projects; it is not a general-purpose installer.
+A useful discussion can be hard to find a week later—especially when it happened in another chat or application. chat-OS collects available conversation records, makes them readable and searchable, and preserves links to the messages behind an explanation or project note.
 
-## Start here
+You can use the workspace yourself or let an assistant with access help you find and use earlier context.
 
-Open this folder as an Obsidian vault, or open [Home.md](Home.md) in your editor.
+## What you can do
 
-- **[Start here](Humans/Start%20here.md)** explains how to use the workspace.
-- **[Dashboard](Humans/dashboard.html)** lets you browse and filter captured conversations. Open the HTML file in a browser.
-- **[Current state](STATE.md)** describes what works and what remains incomplete.
-- **[Sync status](STATUS.md)** shows the most recent sync results and source coverage.
+- **Collect and read chats:** import available local Codex history or supported ChatGPT exports, with source information and capture gaps preserved.
+- **Find earlier discussions:** search transcript text, retrieve specific message excerpts, and inspect the original wording.
+- **Manage your library:** add local titles and notes, archive/restore chats, and associate them with projects in a dedicated local browser app.
+- **Inspect assistant context:** see accessible skills, memory, instructions, and their dated captured copies in the workspace.
+- **Continue earlier work with an assistant:** ask it to read relevant messages and current project files, explain what is established, and propose a next step with evidence.
 
-When using Codex with this workspace, you can ask things like:
+The assistant can act as a **Chief of Staff**: a role that helps organize context and follow through on work you authorize. It needs an active host and tool access; chat-OS does not include an always-running AI agent.
 
-> What did we decide about this project last time?
->
-> Find the conversation where we discussed my coding preferences.
->
-> Help me resume work on SPARQ, starting with the recorded decisions and open questions.
+## Try it with a fictional chat
 
-Answers can only use accessible records. Missing conversations and partial captures remain visible as coverage gaps.
-
-## Sync and check health
-
-The core commands require Python 3.9 or later. They use the standard library and need no API key or package installation. Optional semantic-search tools have separate dependencies.
-
-From Terminal:
+The current prototype targets macOS and Python 3.9+ with SQLite FTS5. Core commands need no API key or extra packages. From the cloned repository folder:
 
 ```bash
-cd /Users/zayan/Documents/obsidian_vaults/chats
-python3 -m chatos sync
-python3 -m chatos doctor
+mkdir -p Demo/empty-source Demo/System/Imports/chatgpt
+cp docs/examples/conversations.json Demo/System/Imports/chatgpt/conversations.json
+python3 -m chatos --root Demo sync --codex-home Demo/empty-source
+python3 -m chatos --root Demo serve --open
 ```
 
-`sync` imports accessible local records and refreshes the archive. `doctor` checks the database, conversation files, latest backup, and freshness, and reports coverage warnings. For the full last-sync report, run `python3 -m chatos status`.
+This creates a separate sample workspace under `Demo/` and imports one fictional conversation. It does not scan your real chat history, connect an account, or install a schedule. Keep the terminal running while you use the browser app; stop it with Ctrl+C. Follow [Getting started](docs/getting-started.md) or the [chat-library guide](docs/chat-library.md).
 
-Reports show run metadata first, then counts of new and updated chats, skills, memory, and other captured changes. For Rich tables and colors, use `.venv/bin/python -m chatos sync` in this installation; `python3` also produces a readable report without Rich. Add `--json` to any command for machine-readable output, for example `python3 -m chatos status --json`.
+## Learn the system
 
-You can also search directly:
+- [Product and purpose](docs/product.md) — the problem, intended users, and human/assistant interfaces.
+- [Core concepts](docs/concepts.md) — sources, captures, memory, skills, and recorded choices.
+- [Features and limits](docs/features.md) — what works today and what remains incomplete.
+- [How it works](docs/how-it-works.md) — diagrams, data flow, components, and storage.
+- [Using earlier conversations](docs/using-history.md) — a worked example of evidence-based project continuity.
 
-```bash
-python3 -m chatos search "coding preferences"
-```
+## Current status
 
-## What is captured?
+This is an early application with a local browser app, readable files, and CLI commands. The sample is usable independently, but personal configuration still needs generalizing for other users. Cross-application migration remains future work. Source coverage varies; see [Features and limits](docs/features.md).
 
-Codex history is imported from available local files. ChatGPT supports export imports and partial desktop captures; a core sync does not fetch your entire ChatGPT account. Muse capture is deferred. The configured hourly Codex maintenance task can do additional agent work, but a saved schedule does not guarantee a completed run.
+Real archives contain private data. Some authored notes and configuration are tracked even though conversation payloads and runtime directories are Git-ignored. Review contents before sharing; current backups stay on the same device.
 
-The archive contains private conversation data. Recognized credential formats are redacted, but that does not make it safe to publish. Backups currently remain on the same Mac.
-
-For maintenance commands, storage locations, and recovery, see the [runtime reference](System/Runtime%20reference.md). Design details and planned work live in the [implementation roadmap](IMPLEMENTATION.md).
+[Documentation](docs/README.md) · [Roadmap](IMPLEMENTATION.md) · [Maintainer reference](System/Runtime%20reference.md) · [Verification record](docs/verification.md)

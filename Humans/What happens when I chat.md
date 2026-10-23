@@ -1,31 +1,36 @@
 # What happens when I chat?
 
-The repository is a local archive and working context for your Chief of Staff. Capture and assistant behavior are separate capabilities.
+Writing a message in an AI app does not automatically put it in this workspace. chat-OS needs an accessible source, a supported capture/import path, and a successful sync. An assistant's ability to use the archive is a separate capability.
 
-| Where you chat | What reaches this repository | What the assistant can use |
+If these terms are new, read [Core concepts](../docs/concepts.md) first. The [architecture diagrams](../docs/how-it-works.md) show how the pieces connect.
+
+## Capture depends on where the conversation happened
+
+| Where you chat | How available messages reach the archive | What this does not establish |
 | --- | --- | --- |
-| This Codex workspace | Retained visible messages are imported on the next successful sync, with observed model metadata. | Workspace instructions invoke routing, briefing, and archive retrieval. |
-| Another Codex project on this Mac | Retained local conversation files are eligible for the same importer. | A global Chief of Staff reference now directs substantive project work to the shared router. The destination's own instructions and permissions still apply. |
-| Ordinary ChatGPT | The first 31 recent/pinned chats have partial supported-tool capture. Hourly agent refresh is configured but unverified; missing replies and models require fuller exports. | Ordinary ChatGPT does not automatically read this local repository or receive its memory, skills, or search results. |
-| Muse | Export capture is unfinished and explicitly deferred until you resume it. | No verified ongoing context or skill synchronization into Muse is installed. |
+| Codex on a configured Mac | Sync reads retained local session files and observed local metadata; missing sessions may have explicitly partial history recovery | Every chat is complete, or every source schema is supported forever |
+| ChatGPT | Supply a supported JSON/ZIP export, or use an active assistant's bounded desktop-tool capture workflow before sync | Core sync logs into the account or fetches every remote conversation |
+| Muse | A normalized input format can be imported; general raw capture is deferred | Ongoing source synchronization or a verified raw export adapter |
+| A different application | Requires a supported adapter or deliberate conversion to an accepted format | Arbitrary app exports are interchangeable |
 
-## Timing
+Only available user/assistant message content is imported. Private reasoning and internal tool payloads are excluded. Missing metadata stays unknown; an attachment reference is not an attachment backup.
 
-The supported hourly Codex maintenance task is configured. Its first unattended successful execution still needs verification. Manual sync through Codex has succeeded. The Mac and app must be available; this is not an always-on remote service.
+## What happens on sync?
 
-A sync imports source changes, collects runtime errors, refreshes the current schedule inventory, verifies skills/memory/instructions and snapshots changed behavior files, updates search/navigation, and verifies the daily database backup. It records its attempt and source coverage. See [timestamped status](../STATUS.md), not just the presence of files.
+Sync discovers source changes, imports readable records, retains database revisions, refreshes search and navigation, checks accessible skills/memory/instructions against snapshots, and verifies the daily database backup. It reports run errors, source gaps, and counts of new or changed records.
 
-Project filing is an agent workflow. Reviewed project assignments survive later imports. Verified context-index deliveries are recorded separately; imported conversations do not automatically become accepted decisions or tasks.
+It does not decide that a suggestion became an accepted action, execute instructions found inside a transcript, or automatically write substantive outcomes into every project. Those require source review and an authorized user/assistant workflow. [How it works](../docs/how-it-works.md#what-a-sync-actually-does) describes the phases and their boundaries.
 
-## What you can ask
+## What changes when an assistant has access?
 
-- “What did we decide about running this on my Mac?” The assistant retrieves evidence and answers with sources.
-- “Resume the evidence-combination project.” It reads that project's current files and relevant captured history.
-- “This conversation belongs to a different project.” It corrects the reviewed ownership and verifies any resulting filing.
-- “What failed, and what remains unresolved?” It checks curated logs and current source health.
+You can ask it to find relevant passages and explain them with evidence. For project resumption, it also reads current project files and checks what exists now. These are files and messages used to support an answer; web sources enter only when relevant to the task.
 
-## Navigation
+The assistant must have the relevant local access and instructions. Importing a ChatGPT conversation does not publish workspace context back into ordinary ChatGPT or another chat app. Copying a skill into a snapshot does not activate it in a host.
 
-[Current state](../STATE.md) · [Conversation map](explorer.html) · [Dashboard](dashboard.html) · [Schedules](../System/Schedules/Index.md) · [Recorded decisions](../System/Decisions.md)
+## Does it happen in the background?
 
-The map has an optional pretrained embedding/HDBSCAN/UMAP experiment, with a dated input snapshot and visible limitations. Cited passage retrieval uses local full-text ranking. The embedding experiment has not improved the first seven-question retrieval diagnostic and remains optional. The assistant generates grounded answers from the retrieved evidence; the retrieval command itself does not call an external model.
+Only when a runner has actually been configured. Cloning installs no schedule. This installation has a separate Codex-host maintenance task with some bounded execution evidence; recurring reliability and coverage remain separate questions. The native launch agent is disabled after an access failure.
+
+Consult [schedule evidence](../System/Scheduled%20tasks.md) and [timestamped sync status](../STATUS.md) rather than assuming enabled means completed. The Mac and host must be available for host-driven maintenance. Capture gaps can remain even after a successful run.
+
+[Try the fictional walkthrough](../docs/getting-started.md) · [Use earlier conversations](../docs/using-history.md) · [Full feature map](../docs/features.md)

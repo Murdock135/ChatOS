@@ -72,6 +72,7 @@ def workspace_files(vault=VAULT):
                  'System/Projects/Automatic filing receipts.md', 'System/Schedules/Index.md', 'System/Feedback/Review queue.md'}
     dependency_files=[p for pattern in ['requirements*.in','requirements*.txt','requirements*.lock','pyproject.toml','uv.lock'] for p in vault.glob(pattern)]
     candidates = (list(vault.glob('*.md')) + dependency_files + list(walk_files(vault / 'Humans')) +
+                  list(walk_files(vault / 'docs')) +
                   list(walk_files(vault / 'System', {'Snapshots','Logs','State','Imports','Backups','Models'})) +
                   list(walk_files(vault / 'tests')) + list(walk_files(vault / 'chatos')) + list(walk_files(vault / '.vscode')) +
                   ([vault/'.gitignore'] if (vault/'.gitignore').exists() else []))

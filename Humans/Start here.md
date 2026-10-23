@@ -2,51 +2,41 @@
 type: guide
 audience: human
 project: chat-os
-updated: 2026-10-22
+updated: 2026-10-23
 ---
 # Start here
 
-This is your shared workspace with the Chief of Staff. The assistant handles routine upkeep; you can inspect the sources, history, capture gaps, and changes behind your chats, skills, and memory. Transparency and provenance are core purposes, alongside helping you resume projects.
+chat-OS is a local workspace for collecting, finding, and using AI conversations. The aim is to keep chats and related context visible together, so you can inspect them yourself and use relevant material when continuing work.
 
-Start with **[Current state](../STATE.md)** and **[What happens when I chat?](What%20happens%20when%20I%20chat.md)**. The archive contains 220 Codex and 31 partial ChatGPT records. Complete cross-app capture and the first unattended maintenance run remain unverified; Muse is deferred.
+An assistant can help maintain that continuity: retrieve earlier messages, read current project files, organize useful outcomes, and carry out work you authorize. We call that assistant role the **Chief of Staff**. It is not a separate person or a built-in background intelligence. Ordinary browsing and searching do not require an active assistant.
 
-| What you want | Open |
+## If you just cloned this repository
+
+Start with [Getting started](../docs/getting-started.md). It imports a fictional conversation into a separate `Demo/` workspace, searches it, retrieves a passage, and checks health. It does not connect your accounts or use the maintainer's existing archive.
+
+Then read [Product and purpose](../docs/product.md), [Core concepts](../docs/concepts.md), and [How it works](../docs/how-it-works.md). These explain the problem, terminology, interfaces, and architecture. [Features and limits](../docs/features.md) distinguishes implemented mechanisms from assistant workflows and future work.
+
+The main workspace is currently a personal installation with machine-specific paths and authored records. Cloning it does not initialize your projects, install skills in a host, or configure scheduled maintenance. The getting-started guide explains this boundary.
+
+## If this workspace is already configured for you
+
+| You want to… | Start here |
 | --- | --- |
-| Current capabilities and gaps | [Current state](../STATE.md) |
-| Last sync and source coverage | [Sync status](../STATUS.md) |
-| Browse or filter conversations | [Dashboard](dashboard.html) |
-| Explore the provisional 2D map | [Conversation map](explorer.html) |
-| Workspace memory | [Working memory](../System/Memory/Working%20memory.md) |
-| Current discovered skills | [Skills inventory](../System/Skills/Index.md) |
-| Copies of behavior files and external memory | [Latest snapshot](../System/Latest%20snapshot.md) |
-| Established system decisions | [Recorded decisions](../System/Decisions.md) |
-| Failures and recoveries | [Event log](../System/Logs/Event%20log.md) |
-| Feedback and adjustments | [Feedback log](../System/Feedback%20log.md) |
-| Current Codex task metadata | [Schedules](../System/Schedules/Index.md) |
-| Project ownership and deliveries | [Projects](../Projects/Index.md), [receipts](../System/Projects/Automatic%20filing%20receipts.md), [queue](../System/Projects/Automatic%20routing%20queue.md) |
-| Remaining implementation | [Roadmap](../IMPLEMENTATION.md) |
-| Optional improvements and their concrete form | [Ideas](../ideas.md) |
+| Browse and manage chats | `python3 -m chatos serve --open`; see the [library guide](../docs/chat-library.md) |
+| Find something in transcript text | `python3 -m chatos search "subject"` from the workspace root |
+| Inspect exact message passages | `python3 -m chatos retrieve "subject"`; see [the worked example](../docs/using-history.md) |
+| Continue work with an assistant | Ask it to read current project files and relevant earlier chats, distinguish established choices from suggestions, and link the evidence |
+| See current source coverage and the last run | [Sync status](../STATUS.md) and `python3 -m chatos doctor` |
+| Inspect memory, skills, or instructions | [Working memory](../System/Memory/Working%20memory.md), [skills inventory](../System/Skills/Index.md), [snapshot index](../System/Latest%20snapshot.md) |
+| Inspect operating history | [Schedules](../System/Schedules/Index.md), [event log](../System/Logs/Event%20log.md), [feedback log](../System/Feedback%20log.md) |
+| Understand remaining work | [Current installation state](../STATE.md) and [roadmap](../IMPLEMENTATION.md) |
 
-## Using it
+The dashboard filters titles, project fields, and short previews. It is not full transcript search. The [conversation map](explorer.html) is experimental and may describe an older set of inputs.
 
-Continue giving work through chat. Name the project when useful. Ask the assistant to resume a project, retrieve a past decision with evidence, show pending filing, or explain a failure. Routine sync, filing, and verification are the assistant's responsibility within its available permissions.
+## Know what you are looking at
 
-Your projects stay in their existing vault folders and code repositories. This repository links to them and preserves their workflows. A reviewed project match is not a completed task; a delivery receipt means the destination was written and checked.
+A conversation record preserves available source messages. A project note is maintained context. A search result is a candidate to read, not proof of a decision. A dated skill snapshot is a copy, not the installed live skill. Definitions and examples are in [Core concepts](../docs/concepts.md).
 
-## Understanding freshness
+Generated conversation files and indexes can be replaced by sync. Use the library for durable local titles/notes, or keep authored notes linked to the source. Generated annotation files are readable database views. Your projects remain in their configured locations; associating a chat does not relocate those projects or create accepted tasks.
 
-The sync status and generated views have timestamps. Ordinary sync now checks behavior-file hashes, refreshes the skills inventory, and creates a snapshot when files change. A snapshot remains a dated copy: editing it does not alter the live app, activate a skill, or change a schedule.
-
-The global Chief of Staff instruction reference was loaded into this conversation after installation. That verifies the reference is visible here; broader behavior still depends on the active agent, source access, and destination permissions. Ordinary ChatGPT and Muse do not inherit these local Codex instructions.
-
-A saved active schedule or recorded run time does not prove completion. The native launch agent was disabled after macOS privacy blocked it. No computer security/privacy settings were weakened.
-
-## Storage
-
-Markdown/JSON conversations and the SQLite runtime database stay local. Skills, instructions, scripts, and documentation have local Git history. Private transcripts, imports, runtime logs, snapshots, and database backups are excluded from Git. No remote repository or external hosting is configured.
-
-Database recovery has been tested into a new isolated directory. It restores conversation records/revisions and regenerates source files. Behavior snapshots and the project registry are separate recovery material. All current copies remain on this Mac, so this is not protection against losing the entire device.
-
-## Coding preferences
-
-Your [preferred coding style](/Users/zayan/.codex/skills/preferred-coding-style/SKILL.md) is installed with a global Codex instruction to apply it when writing, changing, reviewing, or illustrating code. The trigger loaded into the setup chat. You can explicitly invoke `$preferred-coding-style`; if a future session does not show the new skill, restart Codex. This configures Codex, not ordinary ChatGPT sessions.
+For maintenance commands, backup/restore scope, and configuration details, use the [runtime reference](../System/Runtime%20reference.md). Source exports, the conversation database, behavior snapshots, and attachments are different recovery scopes. Current same-device backups do not protect against losing the device.

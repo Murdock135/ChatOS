@@ -1,5 +1,7 @@
 # Chief of Staff system
 
+[Product documentation](../docs/README.md) — purpose, concepts, features, walkthrough, and architecture.
+
 [Human orientation guide](../Humans/Start%20here.md)
 
 [Current state](../STATE.md) — maintained by the Chief of Staff for human inspection.

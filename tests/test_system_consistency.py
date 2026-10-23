@@ -104,6 +104,17 @@ class InventoryTests(unittest.TestCase):
         self.assertFalse(report['ok'])
         self.assertIn(str(self.vault / 'AGENTS.md'), report['snapshot_workspace_changed'])
 
+    def test_new_product_documentation_is_detected_for_snapshot(self):
+        guide = self.vault / 'docs/concepts.md'
+        guide.parent.mkdir()
+        guide.write_text('# Concepts\nExplain sources before using the term.\n')
+        report = inventory.check(self.vault, self.codex)
+        self.assertFalse(report['ok'])
+        self.assertIn(str(guide), report['snapshot_workspace_missing'])
+        self.capture()
+        self.assertTrue(inventory.check(self.vault, self.codex)['ok'])
+        self.assertEqual((self.snapshot / 'Workspace/docs/concepts.md').read_text(), guide.read_text())
+
     def test_corrupted_snapshot_is_detected(self):
         (self.snapshot / 'Workspace/AGENTS.md').write_text('Corrupted\n')
         self.assertIn('Workspace/AGENTS.md', inventory.check(

@@ -5,7 +5,7 @@
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  --accent: #007aff;
+  --accent: #0071e3;
   --line: #e5e5ea;
   --muted: #6e6e73;
   --surface: #fff;
@@ -53,7 +53,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #007aff70;
+  outline: 3px solid #0071e3;
   outline-offset: 3px;
 }
 input,
@@ -76,7 +76,7 @@ input[type="checkbox"] {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #86868b;
+  color: #6e6e73;
 }
 textarea {
   resize: vertical;
@@ -170,7 +170,7 @@ p {
   font-weight: 400;
 }
 .eyebrow {
-  color: #86868b;
+  color: #6e6e73;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -375,7 +375,7 @@ header p {
 .empty {
   padding: 110px 32px;
   text-align: center;
-  color: #86868b;
+  color: #6e6e73;
 }
 .empty h2 {
   color: #4e4e54;
@@ -610,7 +610,7 @@ footer {
   margin-top: 28px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  color: #86868b;
+  color: #6e6e73;
   font-size: 10px;
 }
 [hidden] {

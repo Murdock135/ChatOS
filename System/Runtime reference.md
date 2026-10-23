@@ -52,3 +52,9 @@ python3 -m chatos restore /path/to/BACKUP.sqlite3 /path/to/NEW_DIRECTORY
 The destination must not exist. Restore verifies the backup and regenerates conversation files without starting a scheduler or sync. A database restore is not a combined restoration of project configuration and behavior snapshots. All current backups are on this Mac.
 
 Original conversation sources are read-only. Historical source text is not executed as instructions or shell commands. Recognized credentials are redacted, but records remain private. Transcripts, imports, logs, backups, and runtime databases are excluded from Git; that exclusion is not a substitute for reviewing anything before sharing.
+
+## Dedicated local interface
+
+Run `python3 -m chatos serve --open` from the checkout. Keep its terminal alive and stop with Ctrl+C. The server binds only to 127.0.0.1 and prints a launch URL with a temporary access token. Use `--port 0` if 8765 is occupied. It reuses the Codex source from the last status, unless `--codex-home PATH` is supplied. See the [chat-library guide](../docs/chat-library.md).
+
+Local titles, notes, archive/restore, and project assignments preserve captured messages. Library annotations are durable database state with generated copies in `Conversations/Annotations/`; a fresh database backup includes them. Captured skills/memory are read-only previews. The server neither installs a background service nor connects a chat account.

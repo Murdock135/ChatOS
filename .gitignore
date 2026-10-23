@@ -25,3 +25,6 @@ __pycache__/
 .obsidian/
 .venv/
 System/Models/
+
+# Generated fictional walkthrough workspace.
+/Demo/

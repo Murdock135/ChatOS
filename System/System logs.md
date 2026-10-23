@@ -25,3 +25,7 @@ Saved task definitions supply chat-to-task associations when available. Unmatche
 ## Current coverage
 
 Logging is available during work in this vault and through manual collector runs. No always-on collector or background polling has been installed. Errors from ChatGPT and other chat apps, task run history, and events absent from retained local logs are not covered yet. A successful collection confirms the scan ran; it does not prove every task succeeded.
+
+## Local browser interface diagnostics
+
+Unexpected API failures are recorded in `System/Logs/interface-errors.jsonl` with an incident reference, operation, error class and code locations. Payloads, query text and exception messages are excluded. These diagnostics are separate from the Codex error collector and curated event ledger; inspect and file material incidents through the existing record workflow. A browser error alone does not establish a scheduled task outcome.
