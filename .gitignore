@@ -39,3 +39,6 @@ System/Models/
 
 # Optional local assistant navigation.
 /.chief_of_staff/
+
+# Optional local embedding environment.
+/.venv-semantic/

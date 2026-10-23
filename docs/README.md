@@ -22,3 +22,5 @@ The [implementation roadmap](../workspace/IMPLEMENTATION.md) tracks incomplete w
 [Repository and workspace layout](reorganization.md) — the implemented source/workspace split, canonical folders, local assistant shortcuts, and recovery locations. The [original proposal](proposals/0001-repository-and-workspace-layout.md) is retained as design history.
 
 Links into `workspace/` describe a configured installation and are absent from a fresh clone. The public guides and fictional walkthrough do not require those private records.
+
+[Optional semantic setup](semantic-search.md) — embedding-model and dependency installation, indexing, hybrid retrieval, clustering and map freshness.

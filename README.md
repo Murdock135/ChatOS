@@ -1,37 +1,47 @@
-# chat-OS
+# ChatOS
 
-**Keep your AI conversations and useful context in one visible local workspace.**
+**A local library for your AI conversations and the context around them.**
 
-A useful discussion can be hard to find a week later—especially when it happened in another chat or application. chat-OS collects available conversation records, makes them readable and searchable, and preserves links to the messages behind an explanation or project note.
+Import chats, find earlier discussions, keep notes, and inspect the messages behind a remembered choice. Your records live in a visible folder on your machine. Browse them in the local web app or let an assistant with file access use them to help you resume work.
 
-You can use the workspace yourself or let an assistant with access help you find and use earlier context.
+## Setup
 
-## Feature checklist
+You need **macOS and Python 3.9+ with SQLite FTS5**. The core app uses Python's standard library; no model, API key, or additional packages are required for the basic archive and keyword search. Obsidian is optional.
 
-Checked items are implemented within the limits stated here. They do not imply complete source coverage or that a fresh installation has connected your accounts. See [Features and limits](docs/features.md) for details and [Verification](docs/verification.md) for the checks performed.
+Download or clone this repository, open a terminal in its root folder, then run:
 
-- [x] **Collect chats:** import available local Codex history and supported ChatGPT JSON/ZIP exports; preserve source IDs, capture gaps, and revisions.
-- [x] **Browse and organize:** use the local browser library to read transcripts, search, filter, add local titles/notes, archive/restore, and associate chats with projects.
-- [x] **Find evidence:** search transcript text and retrieve cited message excerpts, optionally scoped to a project.
-- [x] **Inspect assistant context:** browse accessible skills, memory, instructions, and dated captured copies; captured files are distinct from active host configuration.
-- [x] **Resume work with an assistant:** use documented retrieval, briefing, and project-filing workflows. Requires an active assistant with file/tool access.
-- [x] **Explore related chats:** experimental conversation map and optional local semantic retrieval; dependencies, coverage, freshness, and quality limits apply.
-- [x] **Check health and changes:** inspect sync results, new/updated chat counts, context-file changes, capture warnings, and diagnostics.
-- [x] **Back up and recover the database:** create verified local database backups and restore into a new directory. This does not restore the whole workspace or source attachments.
+```bash
+./scripts/chatos init workspace
+./scripts/chatos --root workspace serve --open
+```
 
-### Planned
+The first command creates your private workspace. The second opens the chat library in your browser. Keep the terminal running while using the app; stop it with **Ctrl+C**. If the browser does not open, use the launch URL printed in the terminal. If port 8765 is occupied, add `--port 0` to choose a free port.
 
-- [x] **Clearer project organization:** packaged `src/chatos/` application and a visible private `workspace/`, with platform and Chief of Staff folders. [Layout and compatibility paths](docs/reorganization.md).
-- [ ] **Guided new-user setup:** build on the implemented empty-workspace initializer with source/context setup guidance and broader independent-user validation.
-- [ ] **Bring your own context:** prompts and accepted formats for asking your AI to prepare inspectable memory/context artifacts, with provenance and user review.
-- [ ] **Cross-app migration:** prepare selected chats and context for another chat application; destination and transfer format remain to be defined.
-- [ ] **Broader verified capture and better discovery:** improve source coverage and evaluate retrieval against real use cases. General raw Muse export work remains deferred.
+**Already have a configured workspace?** Skip `init` and run the second command. Initialization refuses an existing nonempty directory. You can choose another data folder by replacing `workspace` in both commands.
 
-The assistant can act as a **Chief of Staff**: a role that helps organize context and follow through on work you authorize. It needs an active host and tool access; chat-OS does not include an always-running AI agent.
+### Add your chats
 
-## Try it with a fictional chat
+The library starts empty. To import a supported **ChatGPT JSON or ZIP export**:
 
-The current prototype targets macOS and Python 3.9+ with SQLite FTS5. Core commands need no API key or extra packages. From the cloned repository folder:
+1. Click **Import chats** in the app and choose your export, up to 128 MiB.
+2. Click **Sync workspace** to import the received records.
+3. Select a conversation to read it, or search for a topic you remember.
+
+This imports a local export; it does not connect your ChatGPT account. ZIP attachments are not extracted. Reimporting the same source conversations does not create duplicate chats.
+
+To include local **Codex history**, use this initialization command *instead of* the plain `init` command above, then run sync and open the app:
+
+```bash
+./scripts/chatos init workspace --codex-home "$HOME/.codex"
+./scripts/chatos --root workspace sync
+./scripts/chatos --root workspace serve --open
+```
+
+Codex capture is disabled unless you opt in. The initializer creates an empty project registry and does not install an assistant integration or scheduled task. See [Getting started](docs/getting-started.md) for source configuration and setup limits.
+
+### Try it before importing personal data
+
+This separate demo imports one fictional conversation:
 
 ```bash
 ./scripts/chatos init Demo
@@ -40,22 +50,66 @@ cp docs/examples/conversations.json Demo/your_ais/chatgpt/imports/conversations.
 ./scripts/chatos --root Demo serve --open
 ```
 
-This creates a separate sample workspace under `Demo/` and imports one fictional conversation. It does not scan your real chat history, connect an account, or install a schedule. Keep the terminal running while you use the browser app; stop it with Ctrl+C. Follow [Getting started](docs/getting-started.md) or the [chat-library guide](docs/chat-library.md).
+`Demo/` stays separate from `workspace/`. The sample does not scan your Codex history or connect an account.
 
-See [where things live](docs/reorganization.md) for the repository/workspace split and compatibility paths.
+### Optional semantic search and clustering
 
-## Learn the system
+The pretrained semantic features need **Qwen/Qwen3-Embedding-0.6B** downloaded locally, additional Python packages, and embeddings built from your chats. HDBSCAN creates clusters; UMAP creates the 2D projection. No separate chat-generation model or inference API key is required.
 
-- [Product and purpose](docs/product.md) — the problem, intended users, and human/assistant interfaces.
-- [Core concepts](docs/concepts.md) — sources, captures, memory, skills, and recorded choices.
-- [Features and limits](docs/features.md) — what works today and what remains incomplete.
-- [How it works](docs/how-it-works.md) — diagrams, data flow, components, and storage.
-- [Using earlier conversations](docs/using-history.md) — a worked example of evidence-based project continuity.
+These are separate from the core setup above. Follow [Semantic setup](docs/semantic-search.md) to install the optional runtime and pinned model, build passage embeddings, and generate the map. The pretrained map needs at least six conversations with current embeddings; the one-chat demo cannot produce it. Ordinary sync does not download the model or rebuild embeddings.
 
-## Current status
+## Everyday use
 
-This is an early application with a local browser app, readable files, and CLI commands. The sample is usable independently, but personal configuration still needs generalizing for other users. Cross-application migration remains future work. Source coverage varies; see [Features and limits](docs/features.md).
+Open the app with `./scripts/chatos --root workspace serve --open` whenever you want to use your library.
 
-Real archives contain private data. Some authored notes and configuration are tracked even though conversation payloads and runtime directories are Git-ignored. Review contents before sharing; current backups stay on the same device.
+- **Find a chat:** search its transcript text or your local notes; filter by source or project.
+- **Read and organize:** select a conversation, add a local title or note, or archive/restore it. These changes stay separate from the captured messages.
+- **Inspect evidence:** choose **Find evidence** to see matching passages with message citations.
+- **Check your archive:** open **Health & sync** to inspect coverage, run checks, or create a fresh database backup.
 
-[Current state](workspace/STATE.md) · [Sync status](workspace/STATUS.md) · [Documentation](docs/README.md) · [Roadmap](workspace/IMPLEMENTATION.md) · [Maintainer reference](workspace/chief_of_staff/reference/Runtime%20reference.md) · [Verification record](docs/verification.md)
+You can also use the terminal:
+
+```bash
+./scripts/chatos --root workspace sync
+./scripts/chatos --root workspace search "reading notes"
+./scripts/chatos --root workspace retrieve "Markdown reading notes"
+./scripts/chatos --root workspace doctor
+./scripts/chatos --root workspace backup --fresh
+```
+
+`search` finds conversations; `retrieve` finds specific passages. Both return captured evidence that you or an assistant can inspect. An assistant acting as your **Chief of Staff** can use those passages and current project files to help resume work. That role needs an active host with file/tool access; ChatOS does not include an always-running AI agent.
+
+[Chat-library guide](docs/chat-library.md) · [Using earlier conversations](docs/using-history.md)
+
+## Features
+
+Checked features are implemented within the [documented limits](docs/features.md). They do not imply complete capture or a connected account.
+
+- [x] Import available local Codex history and supported ChatGPT exports, retaining source IDs, metadata, capture gaps, and revisions.
+- [x] Browse, search, filter, annotate, archive/restore, and associate captured chats with projects.
+- [x] Retrieve cited message passages, optionally scoped to a project.
+- [x] Inspect accessible skills, memory, instructions, and dated captured copies.
+- [x] Resume project work through documented assistant retrieval, briefing, and filing procedures.
+- [x] Explore related chats with an experimental map and optional local semantic retrieval.
+- [x] Inspect sync results, change counts, source coverage, and diagnostics.
+- [x] Create verified database backups and restore them into a new directory.
+- [x] Keep application code and a visible private workspace separately organized.
+
+### Planned
+
+- [ ] Guided onboarding for sources, reusable context, and assistant integration, with broader independent-user validation.
+- [ ] A guide for asking your AI to prepare inspectable memory/context artifacts with provenance and review.
+- [ ] Migration of selected chats and context to another chat application.
+- [ ] Broader verified source capture and better-evaluated semantic discovery. Raw Muse export work remains deferred.
+
+## Data and current limits
+
+Your chats, settings, context, and database live in `workspace/`, which is excluded from Git and the Python package. Source applications and their original files remain separate. See [Folder layout](docs/reorganization.md) for editing and recovery rules.
+
+This is an early local application. Capture can be partial; source coverage is reported explicitly. Semantic search and clustering are optional experiments. Sync runs when invoked; scheduled maintenance requires separate configuration. Database backups do not include the entire workspace, original attachments, or protection against losing this device. Review files before sharing them.
+
+## Documentation and development
+
+[Documentation index](docs/README.md) · [Concepts](docs/concepts.md) · [Architecture](docs/how-it-works.md) · [Features and limits](docs/features.md) · [Verification](docs/verification.md) · [Contributing](CONTRIBUTING.md)
+
+For a configured installation: [current state](workspace/STATE.md) · [sync report](workspace/STATUS.md) · [roadmap](workspace/IMPLEMENTATION.md). These private records are absent from a fresh clone.
