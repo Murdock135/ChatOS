@@ -88,3 +88,5 @@ PYTHONPATH=src python3 -B -m unittest discover -s tests -v
 ```
 
 Optional semantic-search dependencies and model files are separate from the core walkthrough. The [runtime reference](../workspace/chief_of_staff/reference/Runtime%20reference.md) covers maintainer operations and recovery.
+
+For real-user setup stages and optional assistant access, follow [Guided onboarding](onboarding.md). For asking your AI to prepare reusable context, use [Context artifacts](context-artifacts.md). Portable migration is documented in [Portable bundles](portable-bundles.md).

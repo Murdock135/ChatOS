@@ -7,7 +7,7 @@ import subprocess
 import sys
 from .core import ROOT,atomic,write_json,now
 
-LABEL='com.zayan.chatos.sync'
+LABEL='local.chatos.sync'
 
 
 def definition(root=ROOT, executable=None):

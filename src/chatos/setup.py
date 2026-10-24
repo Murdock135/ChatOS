@@ -7,12 +7,16 @@ from pathlib import Path
 from typing import Optional
 
 from .workspace import Workspace
+from .onboarding import assistant_guide
 
 
 def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
     """Initialize an empty destination; leave existing workspaces untouched."""
     destination = destination.expanduser().absolute()
-    if destination.is_symlink() or (destination.exists() and (not destination.is_dir() or any(destination.iterdir()))):
+    if destination.is_symlink() or (
+        destination.exists()
+        and (not destination.is_dir() or any(destination.iterdir()))
+    ):
         raise ValueError("Initialization requires a new or empty directory")
     if codex_home is not None:
         codex_home = codex_home.expanduser().resolve()
@@ -24,7 +28,10 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
         config = {
             "layout_version": 2,
             "sources": {
-                "codex": {"enabled": codex_home is not None, "path": str(codex_home) if codex_home else None},
+                "codex": {
+                    "enabled": codex_home is not None,
+                    "path": str(codex_home) if codex_home else None,
+                },
                 "chatgpt": {"enabled": True},
                 "muse": {"enabled": False},
             },
@@ -32,6 +39,7 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
         }
         (staging / "chatos.json").write_text(json.dumps(config, indent=2) + "\n")
         files = {
+            "ASSISTANT.md": assistant_guide(destination),
             "README.md": "# Your chatOS workspace\n\nBrowse your chats with `chatos --root THIS_DIRECTORY serve --open`.\n\n"
             "- `your_ais/`: source records, export inboxes and captured-context links.\n"
             "- `shared_context/`: your reviewed profile, preferences and context artifacts.\n"
@@ -57,7 +65,15 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(text)
-        for relative in ["shared_context/skills", "shared_context/inbox", "chief_of_staff/skills", "app_data/state", "app_data/logs", "library", "backups"]:
+        for relative in [
+            "shared_context/skills",
+            "shared_context/inbox",
+            "chief_of_staff/skills",
+            "app_data/state",
+            "app_data/logs",
+            "library",
+            "backups",
+        ]:
             (staging / relative).mkdir(parents=True, exist_ok=True)
         paths = Workspace(staging)
         for source in config["sources"]:
@@ -67,6 +83,11 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
     finally:
         if staging.exists():
             shutil.rmtree(staging)
-    return {"status": "initialized", "workspace": str(destination.resolve()), "layout_version": 2,
-            "codex_enabled": codex_home is not None, "scheduler_installed": False,
-            "next": "Copy a supported ChatGPT export into your_ais/chatgpt/imports/, then run sync."}
+    return {
+        "status": "initialized",
+        "workspace": str(destination.resolve()),
+        "layout_version": 2,
+        "codex_enabled": codex_home is not None,
+        "scheduler_installed": False,
+        "next": "Run setup-status, then supply an export in your_ais/chatgpt/imports/ and sync. ASSISTANT.md explains optional assistant access.",
+    }

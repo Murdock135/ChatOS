@@ -42,3 +42,6 @@ System/Models/
 
 # Optional local embedding environment.
 /.venv-semantic/
+
+# Fictional context walkthrough.
+/ContextDemo/

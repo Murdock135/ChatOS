@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import stat
 from datetime import datetime
 from pathlib import Path
 
@@ -16,19 +17,38 @@ def import_artifact(root: Path, source: Path) -> dict:
     workspace = Workspace(root)
     if workspace.version != 2:
         raise ValueError("Context artifacts require an initialized version-2 workspace")
-    if source.is_symlink() or source.stat().st_size > MAX_BYTES:
+    if (
+        source.is_symlink()
+        or not stat.S_ISREG(source.stat().st_mode)
+        or source.stat().st_size > MAX_BYTES
+    ):
         raise ValueError("Context artifact must be a regular JSON file up to 1 MiB")
     with source.open("rb") as stream:
         payload = stream.read(MAX_BYTES + 1)
     if len(payload) > MAX_BYTES:
         raise ValueError("Context artifact exceeds 1 MiB")
     artifact = json.loads(payload)
-    if not isinstance(artifact, dict) or artifact.get("schema_version") != 1:
+    if not isinstance(artifact, dict) or (
+        type(artifact.get("schema_version")) is not int
+        or artifact["schema_version"] != 1
+    ):
         raise ValueError("Expected context artifact schema_version 1")
-    required = {"schema_version", "kind", "body", "created_at", "generated_by", "source_references", "uncertainties"}
+    required = {
+        "schema_version",
+        "kind",
+        "body",
+        "created_at",
+        "generated_by",
+        "source_references",
+        "uncertainties",
+    }
     if set(artifact) != required:
         raise ValueError("Context artifact fields do not match the documented schema")
-    if not isinstance(artifact["kind"], str) or artifact["kind"] not in {"profile", "preferences", "project_context"}:
+    if not isinstance(artifact["kind"], str) or artifact["kind"] not in {
+        "profile",
+        "preferences",
+        "project_context",
+    }:
         raise ValueError("Unsupported context artifact kind")
     for name in ["body", "created_at", "generated_by"]:
         if not isinstance(artifact[name], str) or not artifact[name].strip():
@@ -37,18 +57,38 @@ def import_artifact(root: Path, source: Path) -> dict:
     if created.tzinfo is None:
         raise ValueError("created_at must include a timezone")
     for name in ["source_references", "uncertainties"]:
-        if not isinstance(artifact[name], list) or not all(isinstance(item, str) for item in artifact[name]):
+        if not isinstance(artifact[name], list) or not all(
+            isinstance(item, str) for item in artifact[name]
+        ):
             raise ValueError(name + " must be a list of text values")
     # The source hash identifies the submitted file; retained text uses archive redaction.
     identity = hashlib.sha256(payload).hexdigest()
-    path = workspace.root / "shared_context/inbox" / (identity + ".json")
+    path = workspace.path("shared_context/inbox") / (identity + ".json")
     retained = json.loads(redact(json.dumps(artifact, ensure_ascii=False)))
-    retained_hash = hashlib.sha256(json.dumps(retained, sort_keys=True).encode()).hexdigest()
-    record = {"id": identity, "imported_at": now(), "source_sha256": identity, "retained_sha256": retained_hash,
-              "review_status": "unreviewed", "active_instructions": False, "artifact": retained}
+    retained_hash = hashlib.sha256(
+        json.dumps(retained, sort_keys=True).encode()
+    ).hexdigest()
+    record = {
+        "id": identity,
+        "imported_at": now(),
+        "source_sha256": identity,
+        "retained_sha256": retained_hash,
+        "review_status": "unreviewed",
+        "active_instructions": False,
+        "artifact": retained,
+    }
     if not path.exists():
         write_json(path, record)
-    return {"status": "unreviewed", "id": identity, "path": str(path), "active_instructions": False}
+    else:
+        if path.is_symlink():
+            raise ValueError("Context inbox entries must not be symlinks")
+        record = json.loads(path.read_text())
+    return {
+        "status": record["review_status"],
+        "id": identity,
+        "path": str(path),
+        "active_instructions": False,
+    }
 
 
 def accept_artifact(root: Path, identity: str, review_note: str) -> dict:
@@ -60,24 +100,49 @@ def accept_artifact(root: Path, identity: str, review_note: str) -> dict:
     workspace = Workspace(root)
     if workspace.version != 2:
         raise ValueError("Context artifacts require a version-2 workspace")
-    source = workspace.root / "shared_context/inbox" / (identity + ".json")
+    source = workspace.path("shared_context/inbox") / (identity + ".json")
     if source.is_symlink():
         raise ValueError("Context inbox entries must not be symlinks")
     record = json.loads(source.read_text())
     if record["id"] != identity or record["source_sha256"] != identity:
         raise ValueError("Context artifact identity mismatch")
     artifact = record["artifact"]
-    if hashlib.sha256(json.dumps(artifact, sort_keys=True).encode()).hexdigest() != record.get("retained_sha256"):
-        raise ValueError("Retained context changed; import the revised artifact for review")
-    record.update(review_status="accepted", reviewed_at=now(), review_note=redact(review_note))
-    target = workspace.root / "shared_context/accepted" / (identity + ".md")
+    if hashlib.sha256(
+        json.dumps(artifact, sort_keys=True).encode()
+    ).hexdigest() != record.get("retained_sha256"):
+        raise ValueError(
+            "Retained context changed; import the revised artifact for review"
+        )
+    record.update(
+        review_status="accepted", reviewed_at=now(), review_note=redact(review_note)
+    )
+    target = workspace.path("shared_context/accepted") / (identity + ".md")
     note = "# Reviewed " + artifact["kind"] + "\n\n"
     note += "AI-prepared context, reviewed for reuse. This is not a provider memory export or an active host instruction.\n\n"
     note += "Artifact ID/source SHA-256: `" + identity + "`\n\n"
-    note += "Generated by: " + artifact["generated_by"] + "\n\nCreated: " + artifact["created_at"] + "\n\n"
+    note += (
+        "Generated by: "
+        + artifact["generated_by"]
+        + "\n\nCreated: "
+        + artifact["created_at"]
+        + "\n\n"
+    )
     note += "Review note: " + record["review_note"] + "\n\n" + artifact["body"] + "\n\n"
-    note += "## Source references\n\n" + "\n".join("- " + item for item in artifact["source_references"]) + "\n\n"
-    note += "## Uncertainties\n\n" + "\n".join("- " + item for item in artifact["uncertainties"]) + "\n"
-    atomic(target, note)
+    note += (
+        "## Source references\n\n"
+        + "\n".join("- " + item for item in artifact["source_references"])
+        + "\n\n"
+    )
+    note += (
+        "## Uncertainties\n\n"
+        + "\n".join("- " + item for item in artifact["uncertainties"])
+        + "\n"
+    )
     write_json(source, record)
-    return {"status": "accepted", "id": identity, "path": str(target), "active_instructions": False}
+    atomic(target, note)
+    return {
+        "status": "accepted",
+        "id": identity,
+        "path": str(target),
+        "active_instructions": False,
+    }

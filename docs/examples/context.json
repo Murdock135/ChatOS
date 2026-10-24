@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "kind": "preferences",
+  "body": "For the fictional reading project, keep notes in plain Markdown. This is a project-specific preference.",
+  "created_at": "2026-10-23T09:00:00-05:00",
+  "generated_by": "Fictional assistant; model unknown",
+  "source_references": ["Fictional chat chatos-demo-reading-plan, user message demo-choice"],
+  "uncertainties": ["This does not establish a preference for every project."]
+}

@@ -26,3 +26,11 @@ The [implementation roadmap](../workspace/IMPLEMENTATION.md) tracks incomplete w
 Links into `workspace/` describe a configured installation and are absent from a fresh clone. The public guides and fictional walkthrough do not require those private records.
 
 [Optional semantic setup](semantic-search.md) — embedding-model and dependency installation, indexing, hybrid retrieval, clustering and map freshness.
+
+## Complete your own workflow
+
+1. [Source coverage](source-coverage.md): understand accessible records and missing evidence.
+2. [Search and clustering evaluation](search-evaluation.md): measure exact passages, scope, negatives and labeled map pairs.
+3. [Context artifacts](context-artifacts.md): ask your AI for scoped context, inspect it and record explicit review.
+4. [Guided onboarding](onboarding.md): initialize independently, inspect readiness, choose assistant access and verify backup.
+5. [Portable bundles](portable-bundles.md): select local records/context for a different assistant without automatic transmission.

@@ -1,0 +1,7 @@
+{
+  "cases": [
+    {"id": "exact-format", "question": "Markdown reading notes", "expected": {"source": "chatgpt", "conversation_id": "chatos-demo-reading-plan", "contains": "Use Markdown"}},
+    {"id": "format-paraphrase", "question": "Which format should I keep my reading notes in?", "expected": {"source": "chatgpt", "conversation_id": "chatos-demo-reading-plan", "contains": "Use Markdown"}},
+    {"id": "no-evidence", "question": "zygomorphxqv", "expected": null}
+  ]
+}

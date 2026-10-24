@@ -15,7 +15,7 @@ Download or clone this repository, open a terminal in its root folder, then run:
 ./scripts/chatos --root workspace serve --open
 ```
 
-The first command creates your private workspace. The second opens the chat library in your browser. Keep the terminal running while using the app; stop it with **Ctrl+C**. If the browser does not open, use the launch URL printed in the terminal. If port 8765 is occupied, add `--port 0` to choose a free port.
+The first command creates your private workspace and an optional ASSISTANT.md access guide. The second opens the chat library in your browser. Keep the terminal running while using the app; stop it with **Ctrl+C**. If the browser does not open, use the launch URL printed in the terminal. If port 8765 is occupied, add `--port 0` to choose a free port.
 
 **Already have a configured workspace?** Skip `init` and run the second command. Initialization refuses an existing nonempty directory. You can choose another data folder by replacing `workspace` in both commands.
 
@@ -37,7 +37,7 @@ To include local **Codex history**, use this initialization command *instead of*
 ./scripts/chatos --root workspace serve --open
 ```
 
-Codex capture is disabled unless you opt in. The initializer creates an empty project registry and does not install an assistant integration or scheduled task. See [Getting started](docs/getting-started.md) for source configuration and setup limits.
+Codex capture is disabled unless you opt in. The initializer creates an empty project registry and does not install an assistant integration or scheduled task. Follow [Guided setup](docs/onboarding.md) for readiness checks, reviewed context, assistant access and recovery, or [Getting started](docs/getting-started.md) for the fictional walkthrough.
 
 ### Try it before importing personal data
 
@@ -95,13 +95,17 @@ Checked features are implemented within the [documented limits](docs/features.md
 - [x] Inspect sync results, change counts, source coverage, and diagnostics.
 - [x] Create verified database backups and restore them into a new directory.
 - [x] Keep application code and a visible private workspace separately organized.
+- [x] Evaluate exact passage retrieval, negative queries, project scope, map geometry and supplied topic labels. [Evaluation guide](docs/search-evaluation.md).
+- [x] Prepare, import and explicitly review AI context artifacts with source references and uncertainty. [Context guide](docs/context-artifacts.md).
+- [x] Follow guided local setup, inspect readiness, and generate an optional assistant-access guide; independent fictional-user flows are tested. [Onboarding](docs/onboarding.md).
+- [x] Export and verify explicitly selected portable local bundles of chats, annotations and optional reviewed context. [Migration guide](docs/portable-bundles.md).
 
-### Planned
+### Remaining limitations and future work
 
-- [ ] Guided onboarding for sources, reusable context, and assistant integration, with broader independent-user validation.
-- [ ] A guide for asking your AI to prepare inspectable memory/context artifacts with provenance and review.
-- [ ] Migration of selected chats and context to another chat application.
-- [ ] Broader verified source capture and better-evaluated semantic discovery. Raw Muse export work remains deferred.
+- [ ] Broader source capture where history or reply text is unavailable. Fuller ChatGPT capture requires a supplied export; raw Muse work remains deferred.
+- [ ] Stronger, independently reviewed evidence of semantic search and clustering quality. Measurement is implemented; semantic discovery remains experimental.
+
+The implemented migration format is a portable reading bundle. Native destination-app import, automatic uploads, provider-memory activation and public release are not claimed. Clean-machine, wider export-schema and cross-platform validation remain open.
 
 ## Data and current limits
 

@@ -1,13 +1,14 @@
 from pathlib import Path
 import argparse
 import json
+import sys
 from .core import ROOT,Store
 from .runtime import sync
 from .terminal import print_report
 from .workspace import workspace_path
 
 
-def main():
+def _main():
     parser=argparse.ArgumentParser(description='Local Chief of Staff archive')
     parser.add_argument('--root',type=Path,default=ROOT)
     parser.add_argument('--json', action='store_true', help='Print machine-readable JSON')
@@ -20,6 +21,15 @@ def main():
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
     commands.add_parser('status')
     commands.add_parser('coverage',help='Report captured records and known source gaps')
+    cmd=commands.add_parser('evaluate',help='Evaluate labeled evidence retrieval');cmd.add_argument('cases',type=Path);cmd.add_argument('--limit',type=int,default=8);cmd.add_argument('--hybrid',action='store_true');cmd.add_argument('--output',type=Path)
+    cmd=commands.add_parser('map-diagnostics');cmd.add_argument('--labels',type=Path)
+    cmd=commands.add_parser('bundle-export',help='Write a selected portable local bundle');cmd.add_argument('destination',type=Path)
+    selection=cmd.add_mutually_exclusive_group(required=True)
+    selection.add_argument('--conversation',action='append');selection.add_argument('--project');selection.add_argument('--all',action='store_true')
+    cmd.add_argument('--with-context',action='store_true')
+    cmd=commands.add_parser('bundle-check');cmd.add_argument('directory',type=Path)
+    commands.add_parser('setup-status')
+    commands.add_parser('assistant-guide',help='Create or refresh the local assistant access guide')
     commands.add_parser('doctor')
     cmd=commands.add_parser('serve');cmd.add_argument('--port',type=int,default=8765);cmd.add_argument('--open',action='store_true');cmd.add_argument('--codex-home',type=Path)
     cmd=commands.add_parser('library');cmd.add_argument('source',choices=['codex','chatgpt','muse']);cmd.add_argument('identity');cmd.add_argument('--title');cmd.add_argument('--note')
@@ -58,6 +68,12 @@ def main():
     if args.command=='context-accept':
         from .context import accept_artifact
         emit(accept_artifact(args.root,args.identity,args.review_note));return 0
+    if args.command in ['setup-status','assistant-guide']:
+        from .onboarding import setup_status, write_guide
+        emit((setup_status if args.command=='setup-status' else write_guide)(args.root));return 0
+    if args.command=='bundle-check':
+        from .portable import check_bundle
+        emit(check_bundle(args.directory));return 0
     if args.command=='serve':
         from .web import serve
         if not 0 <= args.port <= 65535:parser.error('Port must be between 0 and 65535')
@@ -147,7 +163,23 @@ def main():
         emit(json.loads(p.read_text()) if p.exists() else {'status':'never_run'});return 0
     store=Store(args.root)
     try:
-        if args.command=='coverage':
+        if args.command=='bundle-export':
+            from .portable import export_bundle
+            emit(export_bundle(store,args.destination,args.conversation,args.project,args.all,args.with_context))
+        elif args.command=='evaluate':
+            from .evaluation import evaluate
+            backend=None
+            if args.hybrid:
+                from .dense import retrieve as backend
+            result=evaluate(store,args.cases,args.limit,backend)
+            if args.output:
+                from .core import write_json
+                write_json(args.output,result)
+            emit(result)
+        elif args.command=='map-diagnostics':
+            from .evaluation import map_diagnostics
+            emit(map_diagnostics(store,args.labels))
+        elif args.command=='coverage':
             from .coverage import report
             emit(report(store))
         elif args.command=='search':
@@ -165,6 +197,14 @@ def main():
     finally:
         store.close()
     return 0
+
+
+def main():
+    try:
+        return _main()
+    except (ValueError, OSError) as error:
+        print_report({'status':'error','error':str(error)},'error','--json' in sys.argv)
+        return 1
 
 
 if __name__=='__main__':

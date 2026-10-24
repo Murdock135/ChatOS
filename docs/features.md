@@ -47,11 +47,15 @@ This is a map of the current implementation, not a list of promises for a future
 
 `init DESTINATION` creates a version-2 workspace with an empty project registry and Codex capture disabled unless `--codex-home PATH` is supplied. It refuses an existing nonempty destination and does not install a host skill or schedule. This basic initializer is implemented; it does not complete broader onboarding. See [setup code](../src/chatos/setup.py) and [workspace tests](../tests/test_workspace.py).
 
-## Future requirements, not current features
+## Setup, evaluation and portable handoff
 
-- A complete guided onboarding flow. The implemented `init` command already creates an independent empty workspace; account/source integration guidance and broader usability validation remain open.
-- Public packaging and new-user verification of the implemented local browser interface.
-- Migration of selected chats and useful context into another chat application.
-- Wider verified source coverage and improved semantic discovery, evaluated on actual use cases.
+- Implemented: independent basic initialization, setup readiness checks and an optional generated ASSISTANT.md access guide. It does not install a host integration, source connection or schedule. Two fictional-user home/workspace flows are tested; see [Onboarding](onboarding.md).
+- Implemented: provenance-aware JSON context import, explicit acceptance, accepted-note retrieval and a preparation/review guide. Unreviewed artifacts are excluded; no hidden provider-memory export is claimed. See [Context artifacts](context-artifacts.md).
+- Implemented: exact-passage and message-hit evaluation, negative-query noise, scope diagnostics, corpus/case fingerprints, and saved map diagnostics with optional topic-pair labels. These measure known limitations; they do not establish general semantic quality. See [Evaluation](search-evaluation.md).
+- Implemented: selected portable local bundle export, separate annotations, opt-in reviewed context and integrity checking. No destination-native import or transmission is performed. See [Portable bundles](portable-bundles.md).
+
+## Remaining access and validation gaps
+
+Fuller unavailable history still needs actual accessible source material. The current user has no ChatGPT export to extend capture, and raw Muse work remains deferred. Stronger semantic quality evidence, clean-machine setup, wider source-format compatibility and cross-platform validation are open. Public release and native destination-account import are not established by these local checks.
 
 Deletion, renaming, sending replies, and synchronizing labels back into every source application are not implemented here. The local HTTP API serves the browser app; no generic assistant API/MCP server or built-in AI reply service is shipped. See [product choices still open](product.md#what-must-be-resolved-before-a-public-release) and the [roadmap](../workspace/IMPLEMENTATION.md).
