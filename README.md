@@ -83,6 +83,12 @@ You can also use the terminal:
 
 [Chat-library guide](docs/chat-library.md) · [Using earlier conversations](docs/using-history.md)
 
+## Optional Chief of Staff setup
+
+To let your own assistant use ChatOS, load the bundled **chatos skill**. New workspaces include a copy under `shared_context/skills/chatos/`. For an existing workspace, select **Setup & handoff → Prepare Chief of Staff skill**, or run `./scripts/chatos --root workspace assistant-skill`.
+
+Give the returned SKILL.md path to an assistant with local file/terminal access. For automatic discovery and `$chatos` prompts, follow the [skill setup guide](docs/chief-of-staff-skill.md), which includes installation, verification and example prompts. The skill is optional for using the app; preparing its files does not activate it in a host or install a scheduled agent.
+
 ## Features
 
 Checked features are implemented within the [documented limits](docs/features.md). They do not imply complete capture or a connected account.
@@ -98,6 +104,7 @@ Checked features are implemented within the [documented limits](docs/features.md
 - [x] Keep application code and a visible private workspace separately organized.
 - [x] Evaluate exact passage retrieval, negative queries, project scope, map geometry and supplied topic labels. [Evaluation guide](docs/search-evaluation.md).
 - [x] Prepare, import, explicitly review and retire AI context artifacts with source references and uncertainty. [Context guide](docs/context-artifacts.md).
+- [x] Give your Chief of Staff a bundled, workspace-bound ChatOS skill with setup and verification instructions.
 - [x] Follow guided local setup in the app, inspect readiness, and generate an optional assistant-access guide; independent fictional-user flows are tested. [Onboarding](docs/onboarding.md).
 - [x] Export and verify explicitly selected portable local bundles of chats, annotations and optional reviewed context. [Migration guide](docs/portable-bundles.md).
 

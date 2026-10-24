@@ -4,6 +4,8 @@ ChatOS is the local archive and retrieval tool. Your chosen assistant supplies i
 
 ## Give access deliberately
 
+Use the [bundled ChatOS skill](chief-of-staff-skill.md) for reusable Chief of Staff tool instructions. New workspaces include a workspace-bound copy; existing users can prepare one through the app or `assistant-skill`. You can load SKILL.md explicitly or install the whole folder for discovery in a supported host. Verify discovery and an actual cited retrieval separately. The manual ASSISTANT.md route below remains available.
+
 Create your own workspace with [guided setup](onboarding.md). Give its ASSISTANT.md file to an assistant with local tools and state the current task. The guide contains commands with that workspace's paths. It does not install a skill, connect an account, grant permissions or activate provider memory.
 
 Start with a bounded request:

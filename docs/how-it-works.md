@@ -69,6 +69,7 @@ The [Git ignore rules](../.gitignore) omit conversation payloads and runtime dir
 | Operating-file inventory and snapshots | [inventory](../src/chatos/maintenance/system_inventory.py), [snapshot writer](../src/chatos/maintenance/snapshot_codex_state.py) |
 | Schedules, errors, and feedback cues | [schedule evidence](../src/chatos/schedules.py), [native scheduler](../src/chatos/scheduler.py), [error collection](../src/chatos/maintenance/system_log.py), [feedback review](../src/chatos/feedback.py) |
 | Setup, reviewed context and portable handoff | [browser workflows](../src/chatos/web_workflows.py), [onboarding](../src/chatos/onboarding.py), [context lifecycle](../src/chatos/context.py), [portable bundle](../src/chatos/portable.py) |
+| Chief of Staff skill | [bundled instructions](../src/chatos/skills/chatos/SKILL.md), [workspace binding/export](../src/chatos/assistant_skill.py), [host setup](chief-of-staff-skill.md) |
 | Assistant procedures | [public assistant guide](assistant-workflow.md); each initialized workspace generates its own ASSISTANT.md |
 
 The supported hourly maintenance task belongs to the Codex host, outside the core Python runner. The native launch-agent implementation also exists, but this installation disabled it after Documents-folder access was blocked. Merely cloning the repository installs neither scheduler. Details and dated execution evidence belong in the [schedule record](../workspace/chief_of_staff/reference/Scheduled%20tasks.md).

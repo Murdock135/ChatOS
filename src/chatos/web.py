@@ -190,6 +190,7 @@ class Handler(BaseHTTPRequestHandler):
                 "/api/artifact/accept",
                 "/api/artifact/retire",
                 "/api/guide",
+                "/api/assistant-skill",
                 "/api/bundle",
             ]
             and method == "POST"
@@ -222,6 +223,10 @@ class Handler(BaseHTTPRequestHandler):
                         data.get("review_note"),
                         path.endswith("/retire"),
                     )
+                if path == "/api/assistant-skill":
+                    from .assistant_skill import export_skill
+
+                    return export_skill(store.root)
                 if path == "/api/guide":
                     return write_guide(store.root)
                 return create_handoff(store, data)

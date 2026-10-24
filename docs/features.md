@@ -49,6 +49,8 @@ This is a map of the current implementation, not a list of promises for a future
 
 ## Setup, evaluation and portable handoff
 
+- Implemented: bundled Chief of Staff skill with a per-workspace connection reference, safe CLI/browser preparation, explicit destination export and host setup/verification guidance. New workspaces include it; preparation does not prove activation. See [skill setup](chief-of-staff-skill.md).
+
 - Implemented: independent initialization, browser setup readiness/source choices and an optional generated ASSISTANT.md access guide. It does not install a host integration, source connection or schedule. Two fictional-user home/workspace flows are tested; see [Onboarding](onboarding.md).
 - Implemented: provenance-aware JSON context import, explicit acceptance/retirement with retained review history, accepted-note retrieval and a preparation/review guide. Unreviewed artifacts are excluded; no hidden provider-memory export is claimed. See [Context artifacts](context-artifacts.md).
 - Implemented: exact-passage and message-hit evaluation, negative-query noise, scope diagnostics, corpus/case fingerprints, and saved map diagnostics with optional topic-pair labels. These measure known limitations; they do not establish general semantic quality. See [Evaluation](search-evaluation.md).

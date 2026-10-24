@@ -11,6 +11,7 @@ Start with the problem and product, then follow a conversation through the syste
 | [Core concepts](concepts.md) | Sources, captures, memory, skills, projects, and the Chief of Staff role |
 | [Features and limits](features.md) | Which capabilities are implemented, which need an assistant, and which remain future work |
 | [How it works](how-it-works.md) | Architecture, data flow, storage, and the interfaces used by people and assistants |
+| [Chief of Staff skill setup](chief-of-staff-skill.md) | Prepare and load the bundled tool-use skill, verify access and try example prompts |
 | [Your own assistant](assistant-workflow.md) | How a new user gives access, gets cited briefings and preserves project outcomes without private maintainer skills |
 | [Using earlier conversations](using-history.md) | A worked example of finding a recorded choice and resuming a project with evidence |
 

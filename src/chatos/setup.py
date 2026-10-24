@@ -8,6 +8,7 @@ from typing import Optional
 
 from .workspace import Workspace
 from .onboarding import assistant_guide
+from .assistant_skill import skill_files
 
 
 def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
@@ -61,6 +62,12 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
             "chief_of_staff/decisions/README.md": "# Recorded choices\n\nRecord explicit choices with source, date, scope and status. Discussion alone is not agreement.\n",
             "chief_of_staff/feedback/log.md": "# Reviewed feedback\n\nNo feedback has been recorded.\n",
         }
+        files.update(
+            {
+                "shared_context/skills/chatos/" + name: text
+                for name, text in skill_files(destination).items()
+            }
+        )
         for relative, text in files.items():
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)

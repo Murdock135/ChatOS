@@ -29,6 +29,7 @@ def _main():
     selection.add_argument('--conversation',action='append');selection.add_argument('--project');selection.add_argument('--all',action='store_true')
     cmd.add_argument('--with-context',action='store_true')
     cmd=commands.add_parser('bundle-check');cmd.add_argument('directory',type=Path)
+    cmd=commands.add_parser('assistant-skill',help='Prepare the Chief of Staff skill for this workspace');cmd.add_argument('destination',type=Path,nargs='?')
     commands.add_parser('setup-status')
     commands.add_parser('assistant-guide',help='Create or refresh the local assistant access guide')
     commands.add_parser('doctor')
@@ -70,6 +71,9 @@ def _main():
         from .context import accept_artifact, retire_artifact
         operation=retire_artifact if args.command=='context-retire' else accept_artifact
         emit(operation(args.root,args.identity,args.review_note));return 0
+    if args.command=='assistant-skill':
+        from .assistant_skill import export_skill
+        emit(export_skill(args.root,args.destination));return 0
     if args.command in ['setup-status','assistant-guide']:
         from .onboarding import setup_status, write_guide
         emit((setup_status if args.command=='setup-status' else write_guide)(args.root));return 0

@@ -48,6 +48,8 @@ Do not inherit another user's profile, project registry, accepted summaries or h
 
 ## 4. Choose how your assistant participates
 
+The Chief of Staff role is optional. To let that assistant use ChatOS, load the bundled `chatos` skill: new workspaces include a bound copy in `shared_context/skills/chatos/`; existing users can choose **Prepare Chief of Staff skill** on Setup & handoff. Follow [skill setup and prompt examples](chief-of-staff-skill.md) to load it explicitly or install it for host discovery, then verify a cited retrieval. Skill preparation does not establish activation.
+
 Each new workspace contains `ASSISTANT.md` with paths and commands for that workspace. For an older initialized workspace, use Create or refresh assistant guide on Setup & handoff, or generate it:
 
 ```bash

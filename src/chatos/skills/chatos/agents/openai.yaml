@@ -1,0 +1,4 @@
+interface:
+  display_name: "ChatOS Chief of Staff"
+  short_description: "Use your local chat archive with cited context"
+  default_prompt: "Use $chatos to brief me on my current project using cited conversations."

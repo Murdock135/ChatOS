@@ -400,6 +400,11 @@ class GuidedWebTests(unittest.TestCase):
         status, result = self.request("/api/guide", "POST", {})
         self.assertEqual(status, 200)
         self.assertFalse(result["host_integration_installed"])
+        status, skill = self.request("/api/assistant-skill", "POST", {})
+        self.assertEqual(status, 200)
+        self.assertTrue(Path(skill["entrypoint"]).is_file())
+        self.assertFalse(skill["host_activation_verified"])
+        self.assertTrue(self.request("/api/setup")[1]["assistant_skill_ready"])
         (self.root / "ASSISTANT.md").write_text("My own assistant guide")
         self.assertEqual(self.request("/api/guide", "POST", {})[0], 400)
         self.assertEqual(
@@ -526,6 +531,7 @@ class GuidedWebTests(unittest.TestCase):
             self.assertEqual(self.request(endpoint, authenticated=False)[0], 401)
         for endpoint in [
             "/api/guide",
+            "/api/assistant-skill",
             "/api/artifact/import",
             "/api/artifact/accept",
             "/api/artifact/retire",

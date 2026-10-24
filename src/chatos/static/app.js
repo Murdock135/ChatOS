@@ -816,6 +816,9 @@ async function loadSetup() {
     ? `${quantity(status.records, "captured conversation")} · ${quantity(status.pending_context_ids.length, "artifact")} awaiting review · ${quantity(status.database_backups, "database backup")}. ${status.next_action}`
     : status.detail;
   if (!status.supported) return;
+  $("skill-path").textContent = status.assistant_skill_ready
+    ? `${overview.workspace}/shared_context/skills/chatos/SKILL.md`
+    : "Prepare the skill to connect your Chief of Staff to this workspace.";
   $("codex-enabled").checked = status.codex_enabled;
   $("codex-path").value = status.codex_path || "";
   $("guide-path").textContent = status.assistant_guide_ready
@@ -1048,6 +1051,21 @@ $("handoff-form").onsubmit = safely(async (event) => {
       ),
     );
     notice("Your selected portable bundle is ready locally.");
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$("make-skill").onclick = safely(async () => {
+  await startup;
+  const button = $("make-skill");
+  button.disabled = true;
+  try {
+    const result = await api("assistant-skill", "POST", {});
+    $("skill-path").textContent = result.entrypoint;
+    notice(
+      "ChatOS skill prepared. Give SKILL.md to your assistant or install the folder in its documented skill location, then verify discovery.",
+    );
   } finally {
     button.disabled = false;
   }
