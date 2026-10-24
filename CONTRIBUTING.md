@@ -10,6 +10,12 @@ uv pip install -e .
 PYTHONPATH=src uv run --no-sync python -m unittest discover -s tests -v
 ```
 
+For browser startup logic, use Node.js 18+ with its built-in test runner (no npm dependencies):
+
+```bash
+node --test tests/browser_startup.test.cjs
+```
+
 The test suite uses temporary workspaces; browser API tests bind a loopback port. Do not point tests at a personal archive. Core functionality uses the standard library; optional embedding packages are independent of the core installation.
 
 Before submitting code, run the relevant tests, Ruff lint and format checks, and scoped BasedPyright checks. No universal tool installation is implied by this checkout. Preserve source evidence and separate generated files from authored changes. Never include private workspace contents, real exports, credentials, or runtime databases in contributions.

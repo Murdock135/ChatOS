@@ -699,7 +699,10 @@ $("map-reset").onclick = () => {
 };
 window.addEventListener("resize", drawMap);
 for (const button of document.querySelectorAll("[data-view]"))
-  button.onclick = safely(() => showView(button.dataset.view));
+  button.onclick = safely(async () => {
+    await startup;
+    await showView(button.dataset.view);
+  });
 let timer;
 $("search").oninput = () => {
   clearTimeout(timer);
@@ -722,6 +725,7 @@ $("check-health").onclick = safely(async () => {
   }
 });
 $("sync").onclick = safely(async () => {
+  await startup;
   $("sync").disabled = true;
   $("sync").textContent = "Syncing…";
   notice("Sync is running. You can keep reading captured records.");
@@ -746,10 +750,12 @@ $("sync").onclick = safely(async () => {
     $("sync").textContent = "Sync workspace";
   }
 });
-safely(async () => {
+// Queue navigation until the initial overview and default view are ready.
+const startup = (async () => {
   await refreshOverview();
   await showView(overview.chats || overview.archived ? "chats" : "setup");
 })();
+startup.catch((error) => notice(error.message, true));
 
 $("import").onclick = () => $("import-file").click();
 $("import-file").onchange = safely(async () => {
