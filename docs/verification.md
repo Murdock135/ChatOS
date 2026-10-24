@@ -107,3 +107,14 @@ User feedback identified that the README still lacked a clear real-user setup an
 The README commands were exercised in temporary workspaces: empty initialization, refusal to overwrite a configured workspace, sample import, search, cited retrieval, health, fresh backup, duplicate-free repeat, and Codex configuration against an empty fictional source. A temporary loopback server served the initialized workspace. Initial test-helper comparisons treated macOS /var and /private/var aliases literally; checks were corrected to compare resolved paths and rerun successfully.
 
 The previously reviewed model-data downloader is restored as a checkout helper with a packaged implementation, --root and --help. Tests use synthetic model bytes and a mocked download client to verify pinned-hash failure, accepted library-owned modules, rejected custom modules, canonical model paths and verification manifest publication. No model download, dependency installation, GPU inference or full embedding refresh was performed in this revision. Lint/format/scoped type checks pass; 82 regression tests pass. README and top-level documentation link/code-fence checks pass. Optional dependency installation on a fresh machine remains unverified.
+
+## 2026-10-23 — Final reorganization check
+
+The user resumed this chat to finish the reorganization and stop at that boundary. The live version-2 migration and folder cleanup were already committed; this pass inspected the actual checkout rather than repeating migration.
+
+- All 82 regression tests passed on system Python, including migration preservation, workspace selection, recovery, imports and loopback API checks.
+- No root-level System, Conversations, Humans, Projects or Topics aliases remain. Application code, maintenance commands, documentation and private records use the implemented layout.
+- A bounded link audit covered 31 active entrypoints, guides, skills and top-level operational references. It found remaining renamed wiki links and a sync-status link pointing above the workspace. Those links now resolve directly to the canonical files; the repeated audit found no missing targets. Historical transcript and snapshot text was preserved.
+- The initial health check found database integrity and generated conversation files intact, with behavior drift in three recently changed routing files. Manual sync run 64 reconciled those files, and inventory and doctor checks subsequently passed with 262 records. The existing mixed-identity fork import and partial source coverage remain separate limitations; this pass does not claim to repair them.
+
+No application code, source connector, new onboarding feature or model inference was added in this final pass. The unrelated existing Home.md recap-link edit was left in place.
