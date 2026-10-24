@@ -767,3 +767,53 @@ footer {
 .branch-details p {
   margin: 8px 0 0;
 }
+
+.setup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  gap: 20px;
+}
+.setup-card {
+  background: var(--surface, white);
+  border: 1px solid var(--border, #e0e3e8);
+  border-radius: 18px;
+  padding: 24px;
+  min-width: 0;
+}
+.setup-card h2 {
+  font-size: 18px;
+  margin-top: 0;
+}
+.setup-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.setup-card .form-grid {
+  padding: 0;
+}
+.setup-card label {
+  margin: 14px 0;
+}
+.setup-card .check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.setup-card input[type="checkbox"] {
+  width: auto;
+}
+.setup-card pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 340px;
+  overflow: auto;
+}
+.artifact-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.setup-card details {
+  margin: 12px 0;
+}

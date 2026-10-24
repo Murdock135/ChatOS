@@ -6,7 +6,7 @@ import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
-from chatos.context import accept_artifact, import_artifact
+from chatos.context import accept_artifact, import_artifact, retire_artifact
 from chatos.core import Store
 from chatos.library import update
 from chatos.onboarding import setup_status, write_guide
@@ -224,6 +224,41 @@ class AdoptionTests(unittest.TestCase):
                 self.assertFalse(list(parent.glob(".chatos-bundle-*")))
             finally:
                 store.close()
+
+    def test_retirement_preserves_published_note_if_review_write_fails(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "workspace"
+            initialize(root)
+            result = import_artifact(root, ROOT / "docs/examples/context.json")
+            identity = result["id"]
+            accepted = accept_artifact(
+                root, identity, "Verified fictional source and scope."
+            )
+            note = Path(accepted["path"])
+            original = note.read_bytes()
+            with patch(
+                "chatos.context.write_json",
+                side_effect=OSError("Interrupted review write"),
+            ):
+                with self.assertRaises(OSError):
+                    retire_artifact(root, identity, "Superseded.")
+            self.assertEqual(note.read_bytes(), original)
+            record = json.loads(
+                (root / "shared_context/inbox" / (identity + ".json")).read_text()
+            )
+            self.assertEqual(record["review_status"], "accepted")
+            # Older envelopes stored just their latest review; preserve it on upgrade.
+            inbox = root / "shared_context/inbox" / (identity + ".json")
+            record.pop("review_history")
+            inbox.write_text(json.dumps(record))
+            retire_artifact(root, identity, "Superseded.")
+            history = json.loads(inbox.read_text())["review_history"]
+            self.assertEqual([r["status"] for r in history], ["accepted", "retired"])
+            self.assertFalse(note.exists())
+            self.assertEqual(
+                import_artifact(root, ROOT / "docs/examples/context.json")["status"],
+                "retired",
+            )
 
 
 if __name__ == "__main__":

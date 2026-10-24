@@ -18,6 +18,7 @@ def _main():
     cmd=commands.add_parser('migrate',help='Verify a separate copy of a legacy workspace');cmd.add_argument('destination',type=Path)
     cmd=commands.add_parser('context-import');cmd.add_argument('file',type=Path)
     cmd=commands.add_parser('context-accept');cmd.add_argument('identity');cmd.add_argument('--review-note',required=True)
+    cmd=commands.add_parser('context-retire');cmd.add_argument('identity');cmd.add_argument('--review-note',required=True)
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
     commands.add_parser('status')
     commands.add_parser('coverage',help='Report captured records and known source gaps')
@@ -65,9 +66,10 @@ def _main():
     if args.command=='context-import':
         from .context import import_artifact
         emit(import_artifact(args.root,args.file));return 0
-    if args.command=='context-accept':
-        from .context import accept_artifact
-        emit(accept_artifact(args.root,args.identity,args.review_note));return 0
+    if args.command in ['context-accept','context-retire']:
+        from .context import accept_artifact, retire_artifact
+        operation=retire_artifact if args.command=='context-retire' else accept_artifact
+        emit(operation(args.root,args.identity,args.review_note));return 0
     if args.command in ['setup-status','assistant-guide']:
         from .onboarding import setup_status, write_guide
         emit((setup_status if args.command=='setup-status' else write_guide)(args.root));return 0

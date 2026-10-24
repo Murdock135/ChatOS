@@ -2,6 +2,8 @@
 
 A portable bundle is a local folder of readable Markdown and structured JSON. It lets another assistant read selected captured conversations and optional context. It is not a native import into ChatGPT, Claude or another account, and creating it sends nothing anywhere.
 
+In the app, open **Setup & handoff → Take context to another app**. Choose one conversation, one registered project, or explicitly all captured conversations. Context is off by default. Creating a bundle shows the verified local folder under your workspace's `backups/portable-handoffs/`; open it and read START_HERE.md. It is not sent to another service.
+
 ## Select deliberately
 
 List conversation IDs in the app or generated records, then select source-qualified IDs:

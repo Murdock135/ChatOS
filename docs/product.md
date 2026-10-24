@@ -14,7 +14,7 @@ A working description is:
 
 > A local workspace for collecting, finding, and using your AI conversations, with readable records that you and your assistant can inspect.
 
-This describes the product direction. A dedicated local browser interface is now implemented. A packaged desktop application, hosted service, and final public positioning remain open. The checkout still contains the original user's configuration and operating history. It is not yet a turnkey installation for another person.
+This describes the product direction. A dedicated local browser interface is now implemented. A packaged desktop application, hosted service, and final public positioning remain open. Private configuration and operating history are excluded from Git and packages. New users initialize their own workspace and follow the app's Setup & handoff page.
 
 ## Who uses it?
 
@@ -51,12 +51,12 @@ Both people and assistants operate over the same records. The user explicitly re
 - Keep the workspace together and visible for now. A conventional hidden directory is not automatically a better design. See [the storage decision](../workspace/chief_of_staff/decisions/README.md#cos-2026-005--keep-the-inspectable-workspace-together).
 - Preserve source identities, available messages, capture gaps, and the distinction between evidence and interpretation.
 - Explain concepts before using them. Make the path from a fresh clone to first use understandable.
-- Eventually support taking useful records and context to another chat application. Migration remains future work.
+- Take explicitly selected records and optional reviewed context to another assistant through a verified portable local bundle. Native destination-account import remains outside this format.
 
 “Manage chats” currently means capture, inspect, browse, search, annotate, archive/restore locally, and associate records with projects. Renaming/deleting chats in the source application, replying to them, universal tagging, and importing context into another application are not implemented management features.
 
 ## What must be resolved before a public release?
 
-The basic initializer creates an independent workspace without inheriting the maintainer's project owners or private operating notes. A complete guided onboarding experience still needs clear source/account configuration and context-artifact instructions. The local interface and annotation rules are documented in the [library guide](chat-library.md). Public packaging, platform support, and update/backup behavior still need broader verification.
+The initializer creates an independent workspace without inheriting personal project owners or private operating notes. The Setup & handoff page provides source opt-in, context import/review/retirement, assistant guide creation and selected portable export. The [onboarding guide](onboarding.md) explains the complete local workflow and its access boundaries. The local interface and annotation rules are documented in the [library guide](chat-library.md). Public packaging, platform support, and update/backup behavior still need broader verification.
 
 Those are adoption gaps in the current implementation. Better documentation makes them understandable; it does not itself implement them. See the [feature map](features.md) and [verification record](verification.md).

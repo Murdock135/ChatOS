@@ -51,3 +51,9 @@ The CLI exposes the same local annotation operation:
 The server is a foreground local application, not a hosted service or an always-running AI agent. Its API requires the temporary token and rejects other hosts/origins. Files are served through fixed assets and checked snapshot entries, rather than a general filesystem browser.
 
 Unexpected interface failures return a reference to `workspace/app_data/logs/interface-errors.jsonl`. Its diagnostics contain operation names, error types, and code locations, without request bodies, query text, or exception messages. These are troubleshooting events, not proof of a scheduled task outcome.
+
+## Setup and portable handoff
+
+A new empty library opens Setup & handoff. This page lets you choose local Codex capture before scanning, inspect setup readiness, create an optional assistant-access guide, import a context artifact and inspect its sources/uncertainty before accepting it. Accepted context becomes searchable immediately. Retiring it with a reason removes it from retrieval and future bundles while preserving the source artifact, published note and review history. Already exported bundles remain historical copies.
+
+Choose one conversation, a registered project or explicitly all captured records to create a portable bundle. Context is opt-in. The result shows a verified local folder containing START_HERE.md, readable records, separate annotations and integrity hashes. Open that folder yourself and review files before supplying them to a different application. This does not transmit anything or install destination memory. See [Onboarding](onboarding.md), [Context artifacts](context-artifacts.md) and [Portable bundles](portable-bundles.md).

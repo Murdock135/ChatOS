@@ -65,6 +65,7 @@ Open the app with `./scripts/chatos --root workspace serve --open` whenever you 
 - **Find a chat:** search its transcript text or your local notes; filter by source or project.
 - **Read and organize:** select a conversation, add a local title or note, or archive/restore it. These changes stay separate from the captured messages.
 - **Inspect evidence:** choose **Find evidence** to see matching passages with message citations.
+- **Set up and hand off:** open **Setup & handoff** to choose source capture, review or retire context, create assistant instructions, and export a selected portable bundle.
 - **Check your archive:** open **Health & sync** to inspect coverage, run checks, or create a fresh database backup.
 
 You can also use the terminal:
@@ -96,8 +97,8 @@ Checked features are implemented within the [documented limits](docs/features.md
 - [x] Create verified database backups and restore them into a new directory.
 - [x] Keep application code and a visible private workspace separately organized.
 - [x] Evaluate exact passage retrieval, negative queries, project scope, map geometry and supplied topic labels. [Evaluation guide](docs/search-evaluation.md).
-- [x] Prepare, import and explicitly review AI context artifacts with source references and uncertainty. [Context guide](docs/context-artifacts.md).
-- [x] Follow guided local setup, inspect readiness, and generate an optional assistant-access guide; independent fictional-user flows are tested. [Onboarding](docs/onboarding.md).
+- [x] Prepare, import, explicitly review and retire AI context artifacts with source references and uncertainty. [Context guide](docs/context-artifacts.md).
+- [x] Follow guided local setup in the app, inspect readiness, and generate an optional assistant-access guide; independent fictional-user flows are tested. [Onboarding](docs/onboarding.md).
 - [x] Export and verify explicitly selected portable local bundles of chats, annotations and optional reviewed context. [Migration guide](docs/portable-bundles.md).
 
 ### Remaining limitations and future work

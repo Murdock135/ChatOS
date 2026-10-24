@@ -332,3 +332,212 @@ class WebTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class GuidedWebTests(unittest.TestCase):
+    """Exercise the same setup, review and handoff boundaries used by the browser."""
+
+    request = WebTests.request
+    stop = WebTests.stop
+
+    def setUp(self):
+        from chatos.setup import initialize
+
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "Avery's workspace"
+        initialize(self.root)
+        store = Store(self.root)
+        for identity, text in [
+            ("selected", "Keep my reading notes in Markdown."),
+            ("private", "Leave this conversation out of the handoff."),
+        ]:
+            store.put(
+                {
+                    "source": "chatgpt",
+                    "id": identity,
+                    "title": identity,
+                    "created_at": "2026-10-23",
+                    "messages": [
+                        {"id": identity + "-message", "role": "user", "text": text}
+                    ],
+                }
+            )
+        self.records = store.records()
+        store.close()
+        self.server = LocalServer(self.root, 0)
+        self.worker = threading.Thread(target=self.server.serve_forever, daemon=True)
+        self.worker.start()
+        self.addCleanup(self.stop)
+
+    def test_setup_source_selection_and_guide_are_explicit(self):
+        status, setup = self.request("/api/setup")
+        self.assertEqual(status, 200)
+        self.assertEqual(setup["records"], 2)
+        self.assertFalse(setup["codex_enabled"])
+        self.assertEqual(
+            self.request(
+                "/api/source/codex", "POST", {"enabled": True, "path": "relative"}
+            )[0],
+            400,
+        )
+        self.assertEqual(
+            self.request("/api/source/codex", "POST", {"enabled": "yes"})[0], 400
+        )
+        codex = Path(self.temp.name) / "fictional-codex"
+        codex.mkdir()
+        status, result = self.request(
+            "/api/source/codex", "POST", {"enabled": True, "path": str(codex)}
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(result["enabled"])
+        self.assertEqual(self.server.codex_home, codex.resolve())
+        self.assertFalse((self.root / "app_data/state/status.json").exists())
+        self.assertEqual(
+            self.request("/api/source/codex", "POST", {"enabled": False})[0], 200
+        )
+        self.assertFalse(self.request("/api/setup")[1]["codex_enabled"])
+        status, result = self.request("/api/guide", "POST", {})
+        self.assertEqual(status, 200)
+        self.assertFalse(result["host_integration_installed"])
+        (self.root / "ASSISTANT.md").write_text("My own assistant guide")
+        self.assertEqual(self.request("/api/guide", "POST", {})[0], 400)
+        self.assertEqual(
+            (self.root / "ASSISTANT.md").read_text(), "My own assistant guide"
+        )
+
+    def test_context_requires_review_before_search_and_portable_export(self):
+        artifact = {
+            "schema_version": 1,
+            "kind": "preferences",
+            "body": "For the fictional reading project prefer quartznimbus Markdown notes.",
+            "created_at": "2026-10-24T00:00:00-05:00",
+            "generated_by": "Fictional assistant; model unknown",
+            "source_references": ["chatgpt:selected, selected-message"],
+            "uncertainties": ["Scope is this project only."],
+        }
+        status, imported = self.request("/api/artifact/import", "POST", artifact)
+        self.assertEqual(status, 200)
+        identity = imported["id"]
+        self.assertEqual(
+            self.request("/api/artifact?id=" + identity)[1]["review_status"],
+            "unreviewed",
+        )
+        self.assertEqual(self.request("/api/artifacts")[1]["items"][0]["id"], identity)
+        self.assertEqual(self.request("/api/artifact?id=../../secret")[0], 400)
+        before = self.request("/api/retrieve?q=quartznimbus")[1]
+        self.assertFalse(before["passages"])
+        status, first = self.request(
+            "/api/bundle",
+            "POST",
+            {"conversations": ["chatgpt:selected"], "with_context": True},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(first["context_files"], 2)
+        self.assertEqual(
+            self.request(
+                "/api/artifact/accept",
+                "POST",
+                {"id": identity, "review_note": ""},
+            )[0],
+            400,
+        )
+        self.assertEqual(
+            self.request(
+                "/api/artifact/accept",
+                "POST",
+                {
+                    "id": identity,
+                    "review_note": "Verified source and project-specific scope.",
+                },
+            )[0],
+            200,
+        )
+        after = self.request("/api/retrieve?q=quartznimbus")[1]
+        self.assertTrue(after["passages"])
+        status, exported = self.request(
+            "/api/bundle",
+            "POST",
+            {"conversations": ["chatgpt:selected"], "with_context": True},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(exported["context_files"], 3)
+        directory = Path(exported["directory"])
+        self.assertIn(self.root.resolve(), directory.resolve().parents)
+        payload = json.loads((directory / "conversations.json").read_text())
+        self.assertEqual([r["id"] for r in payload["conversations"]], ["selected"])
+        self.assertEqual(self.request("/api/bundle", "POST", {})[0], 400)
+        self.assertEqual(self.request("/api/bundle", "POST", {"all": "yes"})[0], 400)
+        self.assertEqual(
+            self.request(
+                "/api/bundle",
+                "POST",
+                {"all": True, "conversations": ["chatgpt:selected"]},
+            )[0],
+            400,
+        )
+        self.assertEqual(
+            self.request(
+                "/api/artifact/retire",
+                "POST",
+                {"id": identity, "review_note": "Superseded; stop reuse."},
+            )[0],
+            200,
+        )
+        self.assertFalse(self.request("/api/retrieve?q=quartznimbus")[1]["passages"])
+        retired = self.request("/api/artifact?id=" + identity)[1]
+        self.assertEqual(retired["review_status"], "retired")
+        self.assertEqual(
+            [review["status"] for review in retired["review_history"]],
+            ["accepted", "retired"],
+        )
+        self.assertTrue(
+            list((self.root / "shared_context/retired" / identity).glob("*.md"))
+        )
+        next_bundle = self.request(
+            "/api/bundle",
+            "POST",
+            {"conversations": ["chatgpt:selected"], "with_context": True},
+        )[1]
+        self.assertEqual(next_bundle["context_files"], 2)
+        self.assertEqual(
+            self.request(
+                "/api/artifact/accept",
+                "POST",
+                {"id": identity, "review_note": "Reviewed again for a new task."},
+            )[0],
+            200,
+        )
+        self.assertTrue(self.request("/api/retrieve?q=quartznimbus")[1]["passages"])
+        store = Store(self.root)
+        try:
+            self.assertEqual(store.records(), self.records)
+        finally:
+            store.close()
+
+    def test_new_workflows_keep_authentication_and_lock_boundaries(self):
+        from chatos.core import locked
+
+        for endpoint in [
+            "/api/setup",
+            "/api/artifacts",
+            "/api/artifact?id=" + "a" * 64,
+        ]:
+            self.assertEqual(self.request(endpoint, authenticated=False)[0], 401)
+        for endpoint in [
+            "/api/guide",
+            "/api/artifact/import",
+            "/api/artifact/accept",
+            "/api/artifact/retire",
+            "/api/source/codex",
+            "/api/bundle",
+        ]:
+            self.assertEqual(
+                self.request(endpoint, "POST", {}, authenticated=False)[0], 401
+            )
+            self.assertEqual(
+                self.request(endpoint, "POST", {}, Origin="https://example.invalid")[0],
+                403,
+            )
+        with locked(self.root / "app_data/state/sync.lock", blocking=False):
+            self.assertEqual(self.request("/api/bundle", "POST", {"all": True})[0], 409)

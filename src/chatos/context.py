@@ -3,6 +3,7 @@
 import hashlib
 import json
 import stat
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -10,6 +11,31 @@ from .core import atomic, now, redact, write_json
 from .workspace import Workspace
 
 MAX_BYTES = 1024 * 1024
+
+
+def _append_review(record: dict, status: str, review_note: str) -> None:
+    """Keep earlier review evidence, including envelopes predating review history."""
+    if "review_history" not in record:
+        record["review_history"] = []
+        if record.get("reviewed_at"):
+            record["review_history"].append(
+                {
+                    "status": record["review_status"],
+                    "reviewed_at": record["reviewed_at"],
+                    "review_note": record.get("review_note", ""),
+                }
+            )
+    reviewed_at = now()
+    record["review_history"].append(
+        {
+            "status": status,
+            "reviewed_at": reviewed_at,
+            "review_note": redact(review_note),
+        }
+    )
+    record.update(
+        review_status=status, reviewed_at=reviewed_at, review_note=redact(review_note)
+    )
 
 
 def import_artifact(root: Path, source: Path) -> dict:
@@ -113,9 +139,7 @@ def accept_artifact(root: Path, identity: str, review_note: str) -> dict:
         raise ValueError(
             "Retained context changed; import the revised artifact for review"
         )
-    record.update(
-        review_status="accepted", reviewed_at=now(), review_note=redact(review_note)
-    )
+    _append_review(record, "accepted", review_note)
     target = workspace.path("shared_context/accepted") / (identity + ".md")
     note = "# Reviewed " + artifact["kind"] + "\n\n"
     note += "AI-prepared context, reviewed for reuse. This is not a provider memory export or an active host instruction.\n\n"
@@ -146,3 +170,44 @@ def accept_artifact(root: Path, identity: str, review_note: str) -> dict:
         "path": str(target),
         "active_instructions": False,
     }
+
+
+def retire_artifact(root: Path, identity: str, review_note: str) -> dict:
+    """Stop reusing context while preserving the artifact, review and published note."""
+    if len(identity) != 64 or any(char not in "0123456789abcdef" for char in identity):
+        raise ValueError("Expected a context artifact SHA-256 ID")
+    if not review_note.strip() or len(review_note) > 4000:
+        raise ValueError(
+            "An explicit retirement note is required (up to 4000 characters)"
+        )
+    workspace = Workspace(root)
+    if workspace.version != 2:
+        raise ValueError("Context artifacts require a version-2 workspace")
+    source = workspace.path("shared_context/inbox") / (identity + ".json")
+    if source.is_symlink():
+        raise ValueError("Context inbox entries must not be symlinks")
+    record = json.loads(source.read_text())
+    if record.get("id") != identity or record.get("source_sha256") != identity:
+        raise ValueError("Context artifact identity mismatch")
+    if record.get("review_status") == "retired":
+        return {"status": "retired", "id": identity, "active_instructions": False}
+    note = workspace.path("shared_context/accepted") / (identity + ".md")
+    if note.is_symlink():
+        raise ValueError("Accepted context must not be a symlink")
+    retained = None
+    if note.exists():
+        retained = (
+            workspace.path("shared_context/retired")
+            / identity
+            / (uuid.uuid4().hex + ".md")
+        )
+        retained.parent.mkdir(parents=True, exist_ok=True)
+        note.rename(retained)
+    _append_review(record, "retired", review_note)
+    try:
+        write_json(source, record)
+    except OSError:
+        if retained is not None:
+            retained.rename(note)
+        raise
+    return {"status": "retired", "id": identity, "active_instructions": False}

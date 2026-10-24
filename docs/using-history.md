@@ -30,7 +30,7 @@ In a chat whose assistant can read the configured workspace, ask:
 
 > Find our earlier discussion about the reading-note format. Separate my explicit choices from your suggestions, look for later changes, and link the supporting messages.
 
-The assistant uses retrieval to locate passages, then reads their context before answering. A hosted chat without access to the local workspace will not gain that access merely because these files exist. You can also select relevant excerpts and provide them to another assistant manually; automatic application-to-application migration is future work.
+The assistant uses retrieval to locate passages, then reads their context before answering. A hosted chat without access to the local workspace will not gain that access merely because these files exist. You can also use [a selected portable bundle](portable-bundles.md) to give readable records to another assistant. This does not automatically import them into a provider account.
 
 ## Resume a project
 

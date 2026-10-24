@@ -15,6 +15,8 @@ Initialization refuses a nonempty destination. If this checkout already has some
 
 To try fictional material first, use `Demo` in place of `workspace` and copy `docs/examples/conversations.json` into `Demo/your_ais/chatgpt/imports/`. Keep demo folders separate from personal data and Git commits.
 
+For an empty library, the browser opens **Setup & handoff** automatically. You can return to that page from the sidebar at any time.
+
 ## 2. Choose your sources
 
 For ChatGPT, open the app and supply a supported export through Import chats, then Sync workspace:
@@ -25,7 +27,7 @@ For ChatGPT, open the app and supply a supported export through Import chats, th
 
 Keep the terminal running; stop with Ctrl+C. You can instead copy the export into `your_ais/chatgpt/imports/` inside your chosen workspace and run `sync`. There is no connected account merely because a platform folder exists.
 
-Local Codex history is opt-in. For a new workspace, use `init DIRECTORY --codex-home /absolute/CODEX_DIRECTORY` instead of the first initialization command. For an existing version-2 workspace, edit its `chatos.json` Codex entry to `{"enabled": true, "path": "/absolute/CODEX_DIRECTORY"}` after choosing that source, then sync. Leave it disabled if you do not want local history scanned. Muse raw capture remains deferred.
+Local Codex history is opt-in. For a new workspace, use `init DIRECTORY --codex-home /absolute/CODEX_DIRECTORY` instead of the first initialization command. For an existing version-2 workspace, open **Setup & handoff**, choose Capture local Codex history, enter its absolute directory and save. Then select Sync workspace. You can turn capture off through the same form without removing already captured records. Alternatively edit its `chatos.json` Codex entry to `{"enabled": true, "path": "/absolute/CODEX_DIRECTORY"}` before syncing. Leave it disabled if you do not want local history scanned. Muse raw capture remains deferred.
 
 Inspect what actually arrived:
 
@@ -40,13 +42,13 @@ Open a cited record and verify its wording. Partial captures and unavailable rep
 
 ## 3. Add only the context you want reused
 
-Edit your own `shared_context/profile.md` and `preferences.md`, or follow [Context artifacts](context-artifacts.md) to ask your AI for an inspectable summary. Imported artifacts stay unreviewed until explicitly accepted. Check `setup-status` for pending IDs. Sync after accepting or retiring context so retrieval reflects the current selection.
+Edit your own `shared_context/profile.md` and `preferences.md`, or follow [Context artifacts](context-artifacts.md) to ask your AI for an inspectable summary. In Setup & handoff, choose a Context artifact JSON file, inspect the displayed body, source references and uncertainties, and enter a review note before acceptance. Imported artifacts stay unreviewed until explicitly accepted. The same panel lets you retire accepted context with a reason, preserving it outside active retrieval and future bundles. Browser acceptance/retirement updates retrieval immediately; command-line changes require sync. Check `setup-status` for pending IDs. Sync after accepting or retiring context so retrieval reflects the current selection.
 
 Do not inherit another user's profile, project registry, accepted summaries or host skills. The fictional example is a format demonstration, not your preferences.
 
 ## 4. Choose how your assistant participates
 
-Each new workspace contains `ASSISTANT.md` with paths and commands for that workspace. For an older initialized workspace, generate it:
+Each new workspace contains `ASSISTANT.md` with paths and commands for that workspace. For an older initialized workspace, use Create or refresh assistant guide on Setup & handoff, or generate it:
 
 ```bash
 ./scripts/chatos --root workspace assistant-guide
@@ -57,6 +59,8 @@ The command preserves a user-authored ASSISTANT.md rather than overwriting it. A
 Ask an assistant with local file/terminal access:
 
 > Read the ASSISTANT.md file in my ChatOS workspace. Explain what you can access and what remains unavailable. Then help with my current task using cited source messages and reviewed context.
+
+The [assistant workflow guide](assistant-workflow.md) explains retrieval, project briefing and filing without relying on private maintainer skills.
 
 An ordinary chat application cannot read your local folder automatically. If the destination assistant cannot access local files, give it a [selected portable bundle](portable-bundles.md). This is an explicit handoff, not a background memory connection.
 

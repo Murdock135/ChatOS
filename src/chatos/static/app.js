@@ -67,6 +67,9 @@ function option(value, label) {
   result.value = value;
   return result;
 }
+function quantity(count, label) {
+  return `${count} ${label}${count === 1 ? "" : "s"}`;
+}
 function date(value) {
   return value ? new Date(value).toLocaleString() : "Date unknown";
 }
@@ -103,7 +106,7 @@ async function showView(view) {
     return;
   if (view !== currentView) dirty = false;
   currentView = view;
-  for (const section of ["chats", "map", "context", "health"])
+  for (const section of ["chats", "map", "context", "health", "setup"])
     $("view-" + section).hidden = section !== view;
   for (const button of document.querySelectorAll("[data-view]")) {
     const selected = button.dataset.view === view;
@@ -117,6 +120,10 @@ async function showView(view) {
       "Explore related chats. Similarity is a suggestion, not a decision.",
     ],
     context: ["Skills & memory", "Inspect the context behind your assistant."],
+    setup: [
+      "Setup & handoff",
+      "Choose sources, review context, and carry it with you.",
+    ],
     health: [
       "Health & sync",
       "Know what is captured, current, and still missing.",
@@ -128,6 +135,7 @@ async function showView(view) {
   if (view === "context") await loadContext();
   if (view === "health") renderHealth();
   if (view === "map") await loadMap();
+  if (view === "setup") await loadSetup();
 }
 async function loadChats(append = false) {
   const id = ++requestId;
@@ -740,7 +748,7 @@ $("sync").onclick = safely(async () => {
 });
 safely(async () => {
   await refreshOverview();
-  await showView("chats");
+  await showView(overview.chats || overview.archived ? "chats" : "setup");
 })();
 
 $("import").onclick = () => $("import-file").click();
@@ -794,3 +802,247 @@ window.addEventListener(
     notice("Reconnected to the local workspace.");
   }),
 );
+
+async function loadSetup() {
+  const status = await api("setup");
+  $("setup-controls").hidden = !status.supported;
+  $("setup-summary").textContent = status.supported
+    ? `${quantity(status.records, "captured conversation")} · ${quantity(status.pending_context_ids.length, "artifact")} awaiting review · ${quantity(status.database_backups, "database backup")}. ${status.next_action}`
+    : status.detail;
+  if (!status.supported) return;
+  $("codex-enabled").checked = status.codex_enabled;
+  $("codex-path").value = status.codex_path || "";
+  $("guide-path").textContent = status.assistant_guide_ready
+    ? `${overview.workspace}/ASSISTANT.md`
+    : "Create the optional guide when you want assistant access.";
+  $("handoff-project").replaceChildren(
+    ...overview.projects.map((p) => option(p.id, p.name)),
+  );
+  const selected = $("handoff-chat").value;
+  const choices = [];
+  for (const archived of [false, true]) {
+    let offset = 0,
+      page;
+    do {
+      page = await api(
+        "chats?" + new URLSearchParams({ archived, offset, limit: 100 }),
+      );
+      choices.push(
+        ...page.items.map((chat) =>
+          option(
+            `${chat.source}:${chat.id}`,
+            `${chat.title} · ${chat.source}${archived ? " · archived" : ""}`,
+          ),
+        ),
+      );
+      offset += page.items.length;
+    } while (page.items.length && offset < page.total);
+  }
+  $("handoff-chat").replaceChildren(...choices);
+  const preferred = current
+    ? `${current.record.source}:${current.record.id}`
+    : selected;
+  if (choices.some((choice) => choice.value === preferred))
+    $("handoff-chat").value = preferred;
+  const data = await api("artifacts");
+  $("artifact-list").replaceChildren();
+  if (!data.items.length)
+    $("artifact-list").append(
+      node("p", "No context artifacts imported yet.", "muted"),
+    );
+  for (const item of data.items) {
+    const button = node(
+      "button",
+      `${item.kind} · ${item.review_status} · ${item.id.slice(0, 8)}`,
+    );
+    button.onclick = safely(() => reviewContext(item.id));
+    $("artifact-list").append(button);
+  }
+  updateHandoffSelection();
+}
+async function reviewContext(identity) {
+  const record = await api("artifact?" + new URLSearchParams({ id: identity }));
+  const content = $("artifact-review");
+  const artifact = record.artifact;
+  content.replaceChildren(
+    node("h3", `Review ${artifact.kind.replaceAll("_", " ")}`),
+    node(
+      "p",
+      `${record.review_status} · Prepared ${date(artifact.created_at)} · ${artifact.generated_by}`,
+    ),
+    node("pre", artifact.body),
+    node("h4", "Supporting sources"),
+  );
+  const references = node("ul");
+  for (const reference of artifact.source_references)
+    references.append(node("li", reference));
+  if (!artifact.source_references.length)
+    references.append(
+      node(
+        "li",
+        "No supporting sources were supplied. Verify the claims independently.",
+      ),
+    );
+  content.append(references, node("h4", "Uncertainty and scope"));
+  const uncertainty = node("ul");
+  for (const item of artifact.uncertainties)
+    uncertainty.append(node("li", item));
+  if (!artifact.uncertainties.length)
+    uncertainty.append(
+      node(
+        "li",
+        "No uncertainty was recorded. This does not establish completeness.",
+      ),
+    );
+  content.append(uncertainty);
+  if (record.review_history?.length || record.review_note) {
+    content.append(node("h4", "Review history"));
+    for (const review of record.review_history || [
+      {
+        review_status: record.review_status,
+        reviewed_at: record.reviewed_at,
+        review_note: record.review_note,
+      },
+    ]) {
+      content.append(
+        node(
+          "p",
+          `${review.status || review.review_status} · ${date(review.reviewed_at)} · ${review.review_note}`,
+        ),
+      );
+    }
+  }
+  const provenance = node("details");
+  provenance.append(
+    node("summary", "Retained JSON and integrity metadata"),
+    node("pre", JSON.stringify(record, null, 2)),
+  );
+  content.append(provenance);
+  if (record.review_status === "accepted") {
+    content.append(
+      node(
+        "p",
+        "Accepted in this workspace. Review its scope again before using it for another task.",
+      ),
+    );
+  }
+  const retiring = record.review_status === "accepted";
+  const form = node("form", "", "form-grid");
+  const label = node(
+      "label",
+      retiring
+        ? "Why should this context stop being reused?"
+        : "Your review note",
+    ),
+    note = node("textarea");
+  note.required = true;
+  note.maxLength = 4000;
+  note.placeholder =
+    "What sources did you verify, and where should this context apply?";
+  label.append(note);
+  const submit = node(
+    "button",
+    retiring ? "Retire context" : "Accept reviewed context",
+  );
+  submit.type = "submit";
+  form.append(label, submit);
+  form.onsubmit = safely(async (event) => {
+    event.preventDefault();
+    submit.disabled = true;
+    try {
+      await api(retiring ? "artifact/retire" : "artifact/accept", "POST", {
+        id: identity,
+        review_note: note.value,
+      });
+      await loadSetup();
+      await reviewContext(identity);
+      notice(
+        retiring
+          ? "Context retired from retrieval and future bundles. Its source and review history are preserved."
+          : "Context accepted and indexed for cited retrieval. No host instructions were installed.",
+      );
+    } finally {
+      submit.disabled = false;
+    }
+  });
+  content.append(form);
+}
+function updateHandoffSelection() {
+  const selection = $("handoff-selection").value;
+  $("handoff-chat-label").hidden = selection !== "chat";
+  $("handoff-project-label").hidden = selection !== "project";
+}
+$("handoff-selection").onchange = updateHandoffSelection;
+$("source-form").onsubmit = safely(async (event) => {
+  event.preventDefault();
+  const result = await api("source/codex", "POST", {
+    enabled: $("codex-enabled").checked,
+    path: $("codex-path").value,
+  });
+  await loadSetup();
+  notice(result.detail);
+});
+$("make-guide").onclick = safely(async () => {
+  const result = await api("guide", "POST", {});
+  $("guide-path").textContent = result.path;
+  notice(
+    "Assistant guide ready. Give this local file to an assistant when you choose to use it.",
+  );
+});
+$("artifact-file").onchange = safely(async () => {
+  const input = $("artifact-file"),
+    file = input.files[0];
+  if (!file) return;
+  try {
+    if (file.size > 1024 * 1024)
+      throw new Error("Context artifacts must be JSON files up to 1 MiB.");
+    const result = await api(
+      "artifact/import",
+      "POST",
+      JSON.parse(await file.text()),
+    );
+    await loadSetup();
+    await reviewContext(result.id);
+    notice(
+      "Artifact received. Inspect its sources and uncertainty before accepting.",
+    );
+  } finally {
+    input.value = "";
+  }
+});
+$("handoff-form").onsubmit = safely(async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector("button[type=submit]");
+  button.disabled = true;
+  try {
+    const selection = $("handoff-selection").value;
+    const body = { with_context: $("handoff-context").checked };
+    if (selection === "chat") {
+      if (!$("handoff-chat").value)
+        throw new Error("Import a conversation before exporting it.");
+      body.conversations = [$("handoff-chat").value];
+    } else if (selection === "project") {
+      if (!$("handoff-project").value)
+        throw new Error(
+          "No project is registered yet. Select a conversation instead.",
+        );
+      body.project = $("handoff-project").value;
+    } else body.all = true;
+    const result = await api("bundle", "POST", body);
+    $("handoff-result").replaceChildren(
+      node("h3", "Portable bundle verified"),
+      node(
+        "p",
+        `${quantity(result.conversations, "conversation")} · ${quantity(result.visible_messages, "message")} · ${quantity(result.context_files, "context file")}`,
+      ),
+      node("pre", result.directory),
+      node(
+        "p",
+        "Open this folder on your computer and read START_HERE.md. Review the selected files before giving them to another app. Nothing has been uploaded.",
+      ),
+    );
+    notice("Your selected portable bundle is ready locally.");
+  } finally {
+    button.disabled = false;
+  }
+});

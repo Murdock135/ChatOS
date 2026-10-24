@@ -6,7 +6,7 @@ Use the sample below to see a conversation become a readable archive and a searc
 
 The current implementation targets macOS. Use Python 3.9 or later with SQLite FTS5 support; the core commands use the standard library. Obsidian is optional. The generated HTML views can be opened in a browser, and Markdown files in an editor.
 
-Run the commands below from the folder containing this repository's README. The checkout includes an `init` command that creates an independent version-2 workspace with an empty project registry and Codex capture disabled by default. Application code is also installable as a Python package; there is no native macOS app installer. General guided source/account setup remains incomplete. The private workspace used by the maintainer is excluded from Git.
+Run the commands below from the folder containing this repository's README. The checkout includes an `init` command that creates an independent version-2 workspace with an empty project registry and Codex capture disabled by default. Application code is also installable as a Python package; there is no native macOS app installer. Guided local setup is available in the app; it does not connect provider accounts. The private workspace used by the maintainer is excluded from Git.
 
 ## 1. Import the sample
 
@@ -67,7 +67,7 @@ The new workspace has its own `chatos.json`, blank profile/preferences, empty pr
 
 To opt into local Codex history during initialization, supply `--codex-home /absolute/path/to/your/.codex`. Review that source choice before the first sync. Subsequent commands should keep using `--root` for the selected workspace. The main checkout's configured workspace is a separate personal installation.
 
-Chief of Staff project routing, external delivery destinations, host skill installation, and scheduled maintenance require separate configuration. Cloning or initializing does not connect accounts or install these integrations. A complete guided onboarding experience and broader new-user validation remain open. Muse has normalized-input support only; raw export work remains deferred. See [features and limits](features.md).
+Chief of Staff project routing, external delivery destinations, host skill installation, and scheduled maintenance require separate configuration. Cloning or initializing does not connect accounts or install these integrations. Use Setup & handoff for guided source choices, reviewed context and portable bundles. Independent real-user validation remains open. Muse has normalized-input support only; raw export work remains deferred. See [features and limits](features.md).
 
 ## Optional display and developer checks
 

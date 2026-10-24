@@ -68,6 +68,23 @@ The [Git ignore rules](../.gitignore) omit conversation payloads and runtime dir
 | Project delivery and reviewed ownership | [routing](../src/chatos/routing.py) |
 | Operating-file inventory and snapshots | [inventory](../src/chatos/maintenance/system_inventory.py), [snapshot writer](../src/chatos/maintenance/snapshot_codex_state.py) |
 | Schedules, errors, and feedback cues | [schedule evidence](../src/chatos/schedules.py), [native scheduler](../src/chatos/scheduler.py), [error collection](../src/chatos/maintenance/system_log.py), [feedback review](../src/chatos/feedback.py) |
-| Assistant procedures | [assistant entry skill](../workspace/chief_of_staff/skills/chief-of-staff-entry/SKILL.md), [workspace instructions](../AGENTS.md) |
+| Setup, reviewed context and portable handoff | [browser workflows](../src/chatos/web_workflows.py), [onboarding](../src/chatos/onboarding.py), [context lifecycle](../src/chatos/context.py), [portable bundle](../src/chatos/portable.py) |
+| Assistant procedures | [public assistant guide](assistant-workflow.md); each initialized workspace generates its own ASSISTANT.md |
 
 The supported hourly maintenance task belongs to the Codex host, outside the core Python runner. The native launch-agent implementation also exists, but this installation disabled it after Documents-folder access was blocked. Merely cloning the repository installs neither scheduler. Details and dated execution evidence belong in the [schedule record](../workspace/chief_of_staff/reference/Scheduled%20tasks.md).
+
+## Reviewed context and portable handoff
+
+Setup & handoff uses the same validated functions as the CLI. Source configuration is saved before any scan; a separate sync applies it. Mutating browser operations share the workspace lock with sync. Context acceptance and retirement immediately refresh the local passage index.
+
+```mermaid
+flowchart LR
+  A[AI-prepared artifact] --> B[Unreviewed inbox]
+  B -->|Inspect sources and record review| C[Accepted note]
+  C --> D[Cited retrieval]
+  C -->|Explicit optional selection| E[Portable bundle]
+  C -->|Retire with reason| F[Retained note and review history]
+  F -->|New explicit review| C
+```
+
+The retained artifact keeps its source hash and review history. Retirement moves the published note outside active context; it does not rewrite an existing bundle or modify a source app. A portable export reads a selected database snapshot, writes a new local directory, checks its manifest/index/hashes, and publishes that directory only after verification. Optional context includes user-authored profile/preferences and accepted notes with review provenance. Unreviewed and retired notes are excluded. No transmission, provider-memory activation or destination-native import occurs.

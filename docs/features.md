@@ -28,9 +28,9 @@ This is a map of the current implementation, not a list of promises for a future
 
 | Capability | How you use it | Status and limits | Implementation |
 | --- | --- | --- | --- |
-| Explain earlier choices with evidence | Ask an active assistant to review retrieved passages and later changes | Agent-assisted. A proposal, explicit user instruction, and completed action require different evidence. No general automatic decision extractor exists. | [Retrieval procedure](../workspace/chief_of_staff/skills/archive-retrieval/SKILL.md) |
-| Resume a project | Ask for a briefing using current project files and captured history | Agent-assisted. `brief ID` itself only displays a generated conversation index. Source/file access and interpretation are still needed. | [Briefing procedure](../workspace/chief_of_staff/skills/project-briefing/SKILL.md) |
-| File conversation context into project folders | `file-projects` after verified ownership | Implemented narrow delivery of managed context indexes. It writes externally and currently has personal path restrictions. Richer filing of decisions/tasks is an assistant workflow. | [Delivery](../src/chatos/routing.py), [routing procedure](../workspace/chief_of_staff/skills/project-router/SKILL.md) |
+| Explain earlier choices with evidence | Ask an active assistant to review retrieved passages and later changes | Agent-assisted. A proposal, explicit user instruction, and completed action require different evidence. No general automatic decision extractor exists. | [Retrieval procedure](assistant-workflow.md#retrieve-and-explain-evidence) |
+| Resume a project | Ask for a briefing using current project files and captured history | Agent-assisted. `brief ID` itself only displays a generated conversation index. Source/file access and interpretation are still needed. | [Briefing procedure](assistant-workflow.md#resume-a-project) |
+| File conversation context into project folders | `file-projects` after verified ownership | Implemented narrow delivery of managed context indexes. It writes externally only within explicitly configured delivery roots in version-2 workspaces. Richer filing of decisions/tasks is an assistant workflow. | [Delivery](../src/chatos/routing.py), [filing procedure](assistant-workflow.md#preserve-useful-outcomes) |
 | Inspect skills, memory, and instructions | Skills & memory in the app, skills inventory, or dated behavior snapshots | Implemented for accessible configured roots. A discovered file is not proof of host activation; archived copies do not update live installed resources. | [Inventory](../src/chatos/maintenance/system_inventory.py), [snapshots](../src/chatos/maintenance/snapshot_codex_state.py) |
 
 ## Inspect operations and recover
@@ -45,17 +45,17 @@ This is a map of the current implementation, not a list of promises for a future
 
 ## Workspace initialization
 
-`init DESTINATION` creates a version-2 workspace with an empty project registry and Codex capture disabled unless `--codex-home PATH` is supplied. It refuses an existing nonempty destination and does not install a host skill or schedule. This basic initializer is implemented; it does not complete broader onboarding. See [setup code](../src/chatos/setup.py) and [workspace tests](../tests/test_workspace.py).
+`init DESTINATION` creates a version-2 workspace with an empty project registry and Codex capture disabled unless `--codex-home PATH` is supplied. It refuses an existing nonempty destination and does not install a host skill or schedule. The app's Setup & handoff page adds source choice, reviewed context and selected local handoff. See [setup code](../src/chatos/setup.py) and [workspace tests](../tests/test_workspace.py).
 
 ## Setup, evaluation and portable handoff
 
-- Implemented: independent basic initialization, setup readiness checks and an optional generated ASSISTANT.md access guide. It does not install a host integration, source connection or schedule. Two fictional-user home/workspace flows are tested; see [Onboarding](onboarding.md).
-- Implemented: provenance-aware JSON context import, explicit acceptance, accepted-note retrieval and a preparation/review guide. Unreviewed artifacts are excluded; no hidden provider-memory export is claimed. See [Context artifacts](context-artifacts.md).
+- Implemented: independent initialization, browser setup readiness/source choices and an optional generated ASSISTANT.md access guide. It does not install a host integration, source connection or schedule. Two fictional-user home/workspace flows are tested; see [Onboarding](onboarding.md).
+- Implemented: provenance-aware JSON context import, explicit acceptance/retirement with retained review history, accepted-note retrieval and a preparation/review guide. Unreviewed artifacts are excluded; no hidden provider-memory export is claimed. See [Context artifacts](context-artifacts.md).
 - Implemented: exact-passage and message-hit evaluation, negative-query noise, scope diagnostics, corpus/case fingerprints, and saved map diagnostics with optional topic-pair labels. These measure known limitations; they do not establish general semantic quality. See [Evaluation](search-evaluation.md).
-- Implemented: selected portable local bundle export, separate annotations, opt-in reviewed context and integrity checking. No destination-native import or transmission is performed. See [Portable bundles](portable-bundles.md).
+- Implemented: selected portable local bundle export in the app or CLI, separate annotations, opt-in reviewed context and integrity checking. No destination-native import or transmission is performed. See [Portable bundles](portable-bundles.md).
 
 ## Remaining access and validation gaps
 
-Fuller unavailable history still needs actual accessible source material. The current user has no ChatGPT export to extend capture, and raw Muse work remains deferred. Stronger semantic quality evidence, clean-machine setup, wider source-format compatibility and cross-platform validation are open. Public release and native destination-account import are not established by these local checks.
+Fuller unavailable history still needs actual accessible source material. ChatGPT exports must be supplied by the user, and raw Muse work remains deferred. Stronger semantic quality evidence, clean-machine setup, wider source-format compatibility and cross-platform validation are open. Public release and native destination-account import are not established by these local checks.
 
 Deletion, renaming, sending replies, and synchronizing labels back into every source application are not implemented here. The local HTTP API serves the browser app; no generic assistant API/MCP server or built-in AI reply service is shipped. See [product choices still open](product.md#what-must-be-resolved-before-a-public-release) and the [roadmap](../workspace/IMPLEMENTATION.md).

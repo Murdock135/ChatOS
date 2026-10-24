@@ -1,4 +1,5 @@
 """Loopback-only chat management interface over the existing local workspace."""
+
 from .workspace import workspace_path
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -32,10 +33,12 @@ class LocalServer(ThreadingHTTPServer):
         codex_home: Optional[Union[str, Path]] = None,
     ):
         self.root = Path(root).resolve()
-        status_path = workspace_path(self.root, 'System/State/status.json')
+        status_path = workspace_path(self.root, "System/State/status.json")
         saved = json.loads(status_path.read_text()) if status_path.exists() else {}
         paths = Workspace(self.root)
-        configured = codex_home or (saved.get("codex_home") if paths.version == 1 else None)
+        configured = codex_home or (
+            saved.get("codex_home") if paths.version == 1 else None
+        )
         self.codex_home = paths.codex_home(configured).resolve()
         self.token = secrets.token_urlsafe(32)
         self.sync_lock = threading.Lock()
@@ -151,7 +154,7 @@ class Handler(BaseHTTPRequestHandler):
             }
             try:
                 with self.server.log_lock:
-                    logs = workspace_path(store.root, 'System/Logs')
+                    logs = workspace_path(store.root, "System/Logs")
                     logs.mkdir(parents=True, exist_ok=True)
                     with (logs / "interface-errors.jsonl").open("a") as output:
                         output.write(json.dumps(event) + "\n")
@@ -169,6 +172,59 @@ class Handler(BaseHTTPRequestHandler):
             store.close()
 
     def api(self, store: Store, method: str, path: str, query: dict) -> dict:
+        if path == "/api/setup" and method == "GET":
+            from .web_workflows import setup_details
+
+            return setup_details(store.root)
+        if path in ["/api/artifacts", "/api/artifact"] and method == "GET":
+            from .web_workflows import artifacts
+
+            return artifacts(
+                store.root, query.get("id") if path == "/api/artifact" else None
+            )
+        if (
+            path
+            in [
+                "/api/source/codex",
+                "/api/artifact/import",
+                "/api/artifact/accept",
+                "/api/artifact/retire",
+                "/api/guide",
+                "/api/bundle",
+            ]
+            and method == "POST"
+        ):
+            from .core import locked
+            from .web_workflows import (
+                configure_codex,
+                receive_artifact,
+                review_artifact,
+                create_handoff,
+            )
+            from .onboarding import write_guide
+
+            data = self.body()
+            with locked(store.state / "sync.lock", blocking=False):
+                if path == "/api/source/codex":
+                    result = configure_codex(
+                        store.root, data.get("enabled"), data.get("path")
+                    )
+                    self.server.codex_home = (
+                        Workspace(store.root).codex_home().resolve()
+                    )
+                    return result
+                if path == "/api/artifact/import":
+                    return receive_artifact(store, data)
+                if path in ["/api/artifact/accept", "/api/artifact/retire"]:
+                    return review_artifact(
+                        store,
+                        data.get("id"),
+                        data.get("review_note"),
+                        path.endswith("/retire"),
+                    )
+                if path == "/api/guide":
+                    return write_guide(store.root)
+                return create_handoff(store, data)
         if path == "/api/overview" and method == "GET":
             status_path = store.state / "status.json"
             status = (
@@ -266,7 +322,11 @@ class Handler(BaseHTTPRequestHandler):
                     continue
                 if source.name == "SKILL.md":
                     category = "skills"
-                elif "/System/Memory/" in source.as_posix() or source.name in {"memory.md", "profile.md", "preferences.md"}:
+                elif "/System/Memory/" in source.as_posix() or source.name in {
+                    "memory.md",
+                    "profile.md",
+                    "preferences.md",
+                }:
                     category = "memory"
                 elif source.name in {"AGENTS.md", "instructions.md"}:
                     category = "instructions"
@@ -288,7 +348,8 @@ class Handler(BaseHTTPRequestHandler):
             if not selected:
                 raise LookupError("Captured context file not found")
             manifest_root = (
-                workspace_path(store.root, 'System/Snapshots') / manifest["captured_at_utc"]
+                workspace_path(store.root, "System/Snapshots")
+                / manifest["captured_at_utc"]
             )
             file = (manifest_root / selected["snapshot"]).resolve()
             if (
@@ -307,7 +368,7 @@ class Handler(BaseHTTPRequestHandler):
                 "captured_at": manifest["captured_at_utc"],
             }
         if path == "/api/map" and method == "GET":
-            page = workspace_path(store.root, 'Humans/explorer.html')
+            page = workspace_path(store.root, "Humans/explorer.html")
             if not page.is_file():
                 return {
                     "documents": [],
