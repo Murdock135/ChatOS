@@ -1,9 +1,8 @@
 """Local passage retrieval for the Chief of Staff's grounded answers; no model/API call."""
-from pathlib import Path
 import hashlib
 import json
 import re
-from .core import now, safe_id
+from .core import now
 
 STOP = set('a an and are as at be been by can could did do does for from had has have how i if in into is it me my of on or our should so that the their them there these they this to us was we were what when where which who why will with would you your'.split())
 VERSION = 'passages-v1'
@@ -39,7 +38,8 @@ def sources(store):
                                   'line':markers[ordinal] if ordinal<len(markers) else None,
                                   'timestamp':message.get('timestamp'),'model':message.get('model'),
                                   'parent_id':message.get('parent_id'),
-                                  'origin_hint':message.get('origin_hint')})
+                                  'origin_hint':message.get('origin_hint'),
+                                  **{key:message[key] for key in ['origin_conversation_id','inherited'] if key in message}})
         yield {'key':record['source']+':'+record['id'],'source':record['source'],'id':record['id'],
                'title':record['title'],'path':str(path),'projects':record.get('projects',[]),
                'capture':record.get('capture'),'documents':documents}
@@ -157,6 +157,8 @@ def render(result):
                   'Source origin hint: '+str(item.get('origin_hint'))+' (markup is not proof of a human decision or scheduled execution)',
                   'Message index: '+str(item.get('message_index'))+'; ID: '+str(item.get('message_id'))+
                   '; text offsets: '+str(item['start'])+'–'+str(item['end']), '']
+        if item.get('origin_conversation_id'):
+            lines += ['Message origin: '+item['origin_conversation_id']+'; inherited into this fork: '+str(item.get('inherited',False)), '']
         fence='`'*(max([len(x) for x in re.findall(r'`+',item['excerpt'])]+[2])+1)
         lines += [fence+'text',item['excerpt'],fence,'']
     lines += ['Limits:']+['- '+x for x in result['limits']]

@@ -118,3 +118,16 @@ The user resumed this chat to finish the reorganization and stop at that boundar
 - The initial health check found database integrity and generated conversation files intact, with behavior drift in three recently changed routing files. Manual sync run 64 reconciled those files, and inventory and doctor checks subsequently passed with 262 records. The existing mixed-identity fork import and partial source coverage remain separate limitations; this pass does not claim to repair them.
 
 No application code, source connector, new onboarding feature or model inference was added in this final pass. The unrelated existing Home.md recap-link edit was left in place.
+
+## 2026-10-23 — Source-coverage pass after migration
+
+- Read-only inspection found that a rejected Codex file explicitly declared its fork owner and parent, then repeated parent metadata around inherited history. Added bounded ancestry validation rather than accepting arbitrary mismatched IDs. The parser retains the fork's own metadata and labels inherited messages, turn model history and run events with origin IDs. Readable records and retrieved evidence expose message origin.
+- Synthetic tests cover wrong owners, undeclared identities, transitive ancestry, cyclic/conflicting relationships, source-file immutability, idempotent imports and citation provenance. Desktop tests cover every-page identity validation, narrower tool windows, retained missing-reply references and their removal only when matching message text becomes available. Coverage tests distinguish absent source files from histories already retained in the archive.
+- All 90 tests passed on system Python. New lineage/coverage modules and tests passed Ruff lint/format; touched existing Python modules passed scoped F/E9 checks. The two new modules passed BasedPyright basic/Python 3.9 with zero errors/warnings. This is not a repository-wide type/style conversion.
+- Manual sync run 65 completed with status ok and no errors, adding the rejected fork. It retained 230 Codex records and 33 partial ChatGPT records. The recovered fork has 13 visible messages: 11 inherited and two child messages. Comparison against 31 saved pre-update revisions found zero removed messages and zero changes to message text.
+- Supported app reads still report missing source rollouts for the two known uncaptured Codex IDs. A bounded archived-ChatGPT listing returned zero entries. A prior cursor expired; a fresh read returned four turns with no next page. Existing captures retained all 113 visible ChatGPT messages and 38 unresolved reply references. No account-wide completeness or recovered missing replies are claimed.
+- `coverage --json` reports observed records/capture types, inherited messages, missing-model metadata, absent rollout files and genuinely uncaptured IDs. It does not perform a source scan or infer a complete account denominator. Raw Muse capture remains deferred.
+
+See [Source coverage](source-coverage.md) for interpretation and the supported fuller-export path.
+
+Final follow-through: run 66 also completed with status ok and no errors. Doctor and behavior inventory checks passed, a fresh 263-record database backup verified, and the bounded 32-page active documentation/navigation audit found no missing targets. Source-completeness limitations above remain unchanged.

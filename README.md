@@ -73,11 +73,12 @@ You can also use the terminal:
 ./scripts/chatos --root workspace sync
 ./scripts/chatos --root workspace search "reading notes"
 ./scripts/chatos --root workspace retrieve "Markdown reading notes"
+./scripts/chatos --root workspace coverage --json
 ./scripts/chatos --root workspace doctor
 ./scripts/chatos --root workspace backup --fresh
 ```
 
-`search` finds conversations; `retrieve` finds specific passages. Both return captured evidence that you or an assistant can inspect. An assistant acting as your **Chief of Staff** can use those passages and current project files to help resume work. That role needs an active host with file/tool access; ChatOS does not include an always-running AI agent.
+`search` finds conversations; `retrieve` finds specific passages. Both return captured evidence that you or an assistant can inspect. `coverage` reports retained records and known gaps; see [Source coverage](docs/source-coverage.md). An assistant acting as your **Chief of Staff** can use those passages and current project files to help resume work. That role needs an active host with file/tool access; ChatOS does not include an always-running AI agent.
 
 [Chat-library guide](docs/chat-library.md) · [Using earlier conversations](docs/using-history.md)
 

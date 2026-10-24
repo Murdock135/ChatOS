@@ -231,6 +231,8 @@ class Store:
             if message.get('origin_hint'):
                 label += ' / source hint: ' + title(message['origin_hint'])
             lines += ['## ' + label, '', 'Message ID: `' + safe_id(message['id']) + '`', '']
+            if message.get('origin_conversation_id'):
+                lines += ['Origin conversation: `'+safe_id(message['origin_conversation_id'])+'`; inherited into this fork: '+str(message.get('inherited',False)), '']
             if message.get('export_node_id'):
                 lines+=['Export node: '+str(message['export_node_id'])+'; parent node: '+str(message.get('parent_id')),'']
             body = message['text']

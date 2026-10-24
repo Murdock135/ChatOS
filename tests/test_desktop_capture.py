@@ -38,5 +38,29 @@ class DesktopTests(unittest.TestCase):
         new=normalize(capture(text='A visible question'))
         self.assertEqual(merge(old,new)['messages'][0]['text'],'A visible question with more context')
 
+    def test_every_page_requires_matching_identity(self):
+        value=capture()
+        value['pages'].append(capture('another')['pages'][0])
+        with self.assertRaises(ValueError):normalize(value)
+
+    def test_narrower_tool_window_retains_old_messages_and_unresolved_replies(self):
+        old=normalize(capture())
+        fresh=capture()
+        fresh['pages'][0]['turns'][0]['items']=[{'type':'userMessage','id':'new','content':[{'type':'text','text':'Newer question'}]}]
+        merged=merge(old,normalize(fresh))
+        self.assertEqual({m['id'] for m in merged['messages']},{'u','new'})
+        self.assertEqual([gap['id'] for gap in merged['evidence']['unavailable_message_text']],['a'])
+        full=capture()
+        full['pages'][0]['turns'][0]['items'][1]['text']='An actually available answer'
+        merged=merge(merged,normalize(full))
+        self.assertEqual(merged['evidence']['unavailable_message_text'],[])
+        self.assertIn('new',{m['id'] for m in merged['messages']})
+
+    def test_oldest_returned_page_determines_remaining_pagination(self):
+        first=capture();first['pages'][0]['page']={'hasMore':True}
+        last=capture()['pages'][0];last['turns']=[]
+        first['pages'].append(last)
+        self.assertFalse(normalize(first)['evidence']['tool_has_more'])
+
 
 if __name__=='__main__':unittest.main()

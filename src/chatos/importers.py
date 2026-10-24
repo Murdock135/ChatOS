@@ -5,6 +5,7 @@ import re
 import sqlite3
 import zipfile
 from .core import timestamp
+from .codex_lineage import SessionLineage
 
 from .visibility import clean_text, origin_hint
 
@@ -41,6 +42,7 @@ def read_codex(path, info=None):
     messages, history, runs, warnings = [], [], [], []
     model, effort, turn_id = info.get('model'), info.get('reasoning_effort'), None
     meta, last_time = {}, None
+    lineage = SessionLineage(info.get('id'))
     with Path(path).open() as f:
         for line_number, line in enumerate(f, 1):
             try:
@@ -51,14 +53,13 @@ def read_codex(path, info=None):
             kind, payload = event.get('type'), event.get('payload') or {}
             last_time = event.get('timestamp') or last_time
             if kind == 'session_meta':
-                if info.get('id') and payload.get('id') != info['id']:
-                    raise ValueError('Source conversation identity mismatch')
-                meta = {k: payload.get(k) for k in ['id','timestamp','cwd','originator','cli_version','source','model_provider']}
+                lineage.observe(payload)
+                meta = lineage.metadata
             elif kind == 'turn_context':
                 model = payload.get('model') or model
                 effort = payload.get('effort') or payload.get('reasoning_effort') or effort
                 turn_id = payload.get('turn_id')
-                history.append({'turn_id': turn_id, 'timestamp': last_time, 'model': model, 'effort': effort})
+                history.append({'turn_id': turn_id, 'timestamp': last_time, 'model': model, 'effort': effort, **lineage.origin()})
             elif kind == 'response_item' and payload.get('type') == 'message':
                 role = payload.get('role')
                 phase = payload.get('phase') or payload.get('channel')
@@ -77,11 +78,11 @@ def read_codex(path, info=None):
                                  'phase': phase, 'text': text, 'timestamp': last_time, 'turn_id': turn_id,
                                  'model': model if role == 'assistant' else None,
                                  'reasoning_effort': effort if role == 'assistant' else None,
-                                 'attachments': attachments, **origin_hint(role,text)})
+                                 'attachments': attachments, **origin_hint(role,text), **lineage.origin()})
             elif kind == 'event_msg' and payload.get('type') in ['task_complete','turn_aborted','task_started']:
                 runs.append({'event': payload['type'], 'turn_id': payload.get('turn_id'),
                              'timestamp': last_time, 'started_at': payload.get('started_at'),
-                             'completed_at': payload.get('completed_at')})
+                             'completed_at': payload.get('completed_at'), **lineage.origin()})
     identity = info.get('id') or meta.get('id')
     if not identity:
         raise ValueError('Source session ID is missing')
@@ -98,9 +99,10 @@ def read_codex(path, info=None):
         'workspace': meta.get('cwd') or info.get('cwd'), 'client': meta.get('originator'),
         'client_version': meta.get('cli_version'), 'messages': messages, 'model_history': history,
         'runs': runs, 'capture': 'available_visible_messages',
-        'evidence': {'path': str(Path(path).resolve()), 'parser': 'codex-jsonl-v1', 'warnings': warnings},
+        'evidence': {'path': str(Path(path).resolve()), 'parser': 'codex-jsonl-v1', 'warnings': warnings, **lineage.evidence()},
         'limits': ['Only visible messages retained in this local source file are included.',
-                   'Attachment references are retained; remote media is not downloaded.']}
+                   'Attachment references are retained; remote media is not downloaded.'] +
+                  (['Inherited fork messages retain their origin conversation ID; they were not newly authored in this fork.'] if lineage.evidence() else [])}
 
 
 def codex_sources(home):

@@ -13,6 +13,10 @@ def normalize(capture,text_cap=20000):
     thread=pages[0]['thread']
     if thread.get('kind')!='chatgpt' or thread['id']!=listing['id']:
         raise ValueError('Desktop conversation identity/source mismatch')
+    for page in pages:
+        identity=page.get('thread',{})
+        if identity.get('kind')!='chatgpt' or identity.get('id')!=listing['id']:
+            raise ValueError('Desktop page belongs to a different conversation')
     messages=[];unavailable=[]
     turns=[turn for page in pages for turn in page.get('turns',[])]
     turns.sort(key=lambda turn:timestamp(turn.get('startedAt')) or '')
@@ -23,7 +27,7 @@ def normalize(capture,text_cap=20000):
             if role=='user':text='\n'.join(p.get('text','') for p in item.get('content',[]) if p.get('type')=='text')
             else:text=item.get('text','')
             if '::chatgpt-content-reference{' in text:
-                unavailable.append({'id':item.get('id'),'role':role,'reason':'Source tool supplied a content reference, not message text'})
+                unavailable.append({'id':item.get('id'),'turn_id':turn['id'],'role':role,'reason':'Source tool supplied a content reference, not message text'})
                 continue
             text=clean_text(role,text)
             if text is None or not text:continue
@@ -38,7 +42,7 @@ def normalize(capture,text_cap=20000):
             'source_app_project_id':listing.get('projectId'),'model':None,'provider':'openai',
             'messages':messages,'model_history':[],'capture':CAPTURE,
             'evidence':{'adapter':'supported-desktop-list_threads/read_thread','text_cap_per_item':text_cap,
-                        'pages_read':len(pages),'tool_has_more':any(page.get('page',{}).get('hasMore') for page in pages),
+                        'pages_read':len(pages),'tool_has_more':bool(pages[-1].get('page',{}).get('hasMore')),
                         'unavailable_message_text':unavailable},
             'limits':['Partial desktop tool capture, not a full transcript or live source subscription.',
                       'Assistant content references are recorded as unavailable; they are never substituted for real replies.',
@@ -55,6 +59,15 @@ def merge(previous,incoming):
         if old and len(old['text'])>len(message['text']) and old['text'].startswith(message['text']):continue
         by_id[message['id']]=message
     incoming['messages']=sorted(by_id.values(),key=lambda m:(m.get('timestamp') or '',m.get('source_item_index',0),m['id']))
+    # A smaller tool window must not erase known gaps. Remove a gap only when
+    # actual text for that same stable message ID has been captured.
+    gaps={}
+    for record in [previous,incoming]:
+        for item in record.get('evidence',{}).get('unavailable_message_text',[]):
+            if item.get('id') and item['id'] in by_id:continue
+            key=(item.get('id'),item.get('role')) if item.get('id') else (None,item.get('turn_id'),item.get('role'))
+            gaps[key]=item
+    incoming.setdefault('evidence',{})['unavailable_message_text']=list(gaps.values())
     return incoming
 
 

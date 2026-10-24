@@ -10,7 +10,6 @@ import re
 import subprocess
 import sys
 import time
-import traceback
 from .core import ROOT, Store, atomic, write_json, locked, now, digest, title
 from .importers import codex_sources, read_codex, read_export_file, read_codex_history
 from .workspace import Workspace
@@ -221,7 +220,7 @@ def sync(root=ROOT, codex_home=None, force=False):
             recovered_history=[]
             unrecovered_history=[]
             warnings = []
-            parser_fingerprint=digest([Path(__file__).with_name(name).read_text() for name in ['importers.py','visibility.py']])
+            parser_fingerprint=digest([Path(__file__).with_name(name).read_text() for name in ['importers.py','visibility.py','codex_lineage.py']])
             routing_files=[workspace_path(root, 'System/Projects/registry.json'),workspace_path(root, 'System/Projects/overrides.json'),Path(__file__).with_name('core.py')]
             routing_fingerprint=digest([p.read_text() if p.exists() else None for p in routing_files])
             for name, info in sources:

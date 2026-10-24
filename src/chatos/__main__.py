@@ -1,7 +1,6 @@
 from pathlib import Path
 import argparse
 import json
-import sys
 from .core import ROOT,Store
 from .runtime import sync
 from .terminal import print_report
@@ -20,6 +19,7 @@ def main():
     cmd=commands.add_parser('context-accept');cmd.add_argument('identity');cmd.add_argument('--review-note',required=True)
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
     commands.add_parser('status')
+    commands.add_parser('coverage',help='Report captured records and known source gaps')
     commands.add_parser('doctor')
     cmd=commands.add_parser('serve');cmd.add_argument('--port',type=int,default=8765);cmd.add_argument('--open',action='store_true');cmd.add_argument('--codex-home',type=Path)
     cmd=commands.add_parser('library');cmd.add_argument('source',choices=['codex','chatgpt','muse']);cmd.add_argument('identity');cmd.add_argument('--title');cmd.add_argument('--note')
@@ -147,7 +147,10 @@ def main():
         emit(json.loads(p.read_text()) if p.exists() else {'status':'never_run'});return 0
     store=Store(args.root)
     try:
-        if args.command=='search':
+        if args.command=='coverage':
+            from .coverage import report
+            emit(report(store))
+        elif args.command=='search':
             if args.semantic:
                 from .semantic import query,refresh
                 refresh(store)
