@@ -359,28 +359,40 @@ async function openChat(source, id, messageId) {
   };
   head.append(back);
   head.append(node("h2", annotation.title || record.title));
-  head.append(
-    node(
-      "p",
-      record.source +
-        " · " +
-        record.messages.length +
-        " messages · " +
-        captureLabel(record.capture),
-      "muted",
-    ),
+  const captureMeta = node(
+    "p",
+    record.source +
+      " · " +
+      record.messages.length +
+      " messages · " +
+      captureLabel(record.capture),
+    "muted",
   );
-  const sourceInfo = node("details", "", "capture-details");
-  sourceInfo.append(node("summary", "Source details"), node("p", "Source ID: " + record.id, "source-details"));
-  head.append(sourceInfo);
-  if (annotation.title)
-    sourceInfo.append(node("p", "Original title: " + record.title, "source-details"));
-  if (record.limits?.length) {
-    const capture = node("details", "", "capture-details");
-    capture.append(node("summary", "About this capture"));
-    for (const limit of record.limits) capture.append(node("p", limit));
-    head.append(capture);
+  const incompleteCapture =
+    record.capture?.startsWith("partial_") ||
+    record.evidence?.warnings?.length ||
+    record.evidence?.tool_has_more ||
+    record.evidence?.unavailable_message_text?.length;
+  if (incompleteCapture) {
+    const note = node("span", "", "capture-note");
+    const icon = node("button", "!", "capture-note-icon");
+    icon.type = "button";
+    icon.setAttribute("aria-label", "About this incomplete capture");
+    icon.setAttribute("aria-describedby", "capture-note-text");
+    const tooltip = node("span", "", "capture-note-tooltip");
+    tooltip.id = "capture-note-text";
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.append(node("strong", "About this capture"));
+    const limits = record.limits?.length
+      ? record.limits
+      : ["Some conversation content could not be captured."];
+    for (const limit of limits) tooltip.append(node("span", limit));
+    note.append(icon, tooltip);
+    captureMeta.append(note);
   }
+  head.append(captureMeta);
+  if (annotation.title)
+    head.append(node("p", "Original title: " + record.title, "source-details"));
   const details = node("details", "", "annotations");
   details.append(node("summary", "Local title, notes & project"));
   const form = node("form", "", "form-grid");
@@ -490,27 +502,21 @@ async function openChat(source, id, messageId) {
   for (const message of record.messages) {
     const section = node("section", "", "message");
     section.dataset.messageId = message.id;
+    const header = node("div", "", "message-header");
+    const tags = node("div", "", "message-tags");
+    const model = message.model?.trim();
+    const modelKnown =
+      !!model && !["unknown", "model unknown"].includes(model.toLowerCase());
+    const tagClass = "metadata-tag " + (modelKnown ? "model-known" : "model-unknown");
+    const modelTag = node("span", modelKnown ? model : "Model unknown", tagClass);
+    modelTag.title = modelKnown ? "Captured model name / ID" : "Model not captured";
+    tags.append(modelTag);
+    header.append(node("span", message.role, "role " + message.role), tags);
     section.append(
-      node("span", message.role, "role " + message.role),
-      node(
-        "p",
-        date(message.timestamp) +
-          " · " +
-          (message.model || "Model unknown") +
-          " · " +
-          message.id,
-        "message-meta",
-      ),
+      header,
+      node("p", date(message.timestamp), "message-meta"),
       messageContent(message.text),
     );
-    if (message.parent_id || message.export_node_id) {
-      const branch = node("details", "", "branch-details");
-      branch.append(node("summary", "Branch relationship"));
-      if (message.export_node_id)
-        branch.append(node("p", "Branch node: " + message.export_node_id));
-      branch.append(node("p", "Parent node: " + (message.parent_id || "Root")));
-      section.append(branch);
-    }
     transcript.append(section);
   }
   reader.append(head, details, transcript);
