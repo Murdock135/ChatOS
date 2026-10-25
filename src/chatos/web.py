@@ -1,26 +1,47 @@
 """Loopback-only chat management interface over the existing local workspace."""
 
-from .workspace import workspace_path
-
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-from urllib.parse import parse_qs, urlsplit
 import hashlib
 import hmac
 import json
+import os
+import re
 import secrets
 import threading
 import traceback
 import uuid
 import webbrowser
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Optional, Union
+from urllib.parse import parse_qs, urlsplit
 
-from .core import ROOT, Store, digest, now
-from .workspace import Workspace
 from . import library
 from .changes import snapshot_manifest
+from .core import ROOT, Store, digest, now
+from .workspace import Workspace, workspace_path
 
 STATIC = Path(__file__).with_name("static")
+
+
+def workspace_token(root: Path) -> str:
+    """Keep existing browser connections valid when this workspace restarts."""
+    directory = workspace_path(root, "System/State")
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / "browser-token"
+    try:
+        descriptor = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        if path.is_symlink():
+            raise ValueError("Browser authorization file must not be a symlink")
+        value = path.read_text().strip()
+        if not re.fullmatch(r"[A-Za-z0-9_-]{43}", value):
+            raise ValueError("Invalid saved browser authorization")
+        path.chmod(0o600)
+        return value
+    value = secrets.token_urlsafe(32)
+    with os.fdopen(descriptor, "w") as stream:
+        stream.write(value)
+    return value
 
 
 class LocalServer(ThreadingHTTPServer):
@@ -40,7 +61,7 @@ class LocalServer(ThreadingHTTPServer):
             saved.get("codex_home") if paths.version == 1 else None
         )
         self.codex_home = paths.codex_home(configured).resolve()
-        self.token = secrets.token_urlsafe(32)
+        self.token = workspace_token(self.root)
         self.sync_lock = threading.Lock()
         self.log_lock = threading.Lock()
         super().__init__(("127.0.0.1", port), Handler)
@@ -117,8 +138,21 @@ class Handler(BaseHTTPRequestHandler):
                 "/": ("index.html", "text/html"),
                 "/app.js": ("app.js", "text/javascript"),
                 "/styles.css": ("styles.css", "text/css"),
+                "/workspace.css": ("workspace.css", "text/css"),
             }
             if method != "GET" or parsed.path not in assets:
+                if method == "GET" and re.fullmatch(
+                    r"/_astro/[A-Za-z0-9_.-]+\.(css|js)", parsed.path
+                ):
+                    asset = STATIC / "_astro" / parsed.path.rsplit("/", 1)[-1]
+                    if asset.is_file() and not asset.is_symlink():
+                        self.reply(
+                            asset.read_bytes(),
+                            content_type="text/css"
+                            if asset.suffix == ".css"
+                            else "text/javascript",
+                        )
+                        return
                 self.reply({"error": "Not found"}, 404)
                 return
             name, kind = assets[parsed.path]
@@ -196,13 +230,13 @@ class Handler(BaseHTTPRequestHandler):
             and method == "POST"
         ):
             from .core import locked
+            from .onboarding import write_guide
             from .web_workflows import (
                 configure_codex,
+                create_handoff,
                 receive_artifact,
                 review_artifact,
-                create_handoff,
             )
-            from .onboarding import write_guide
 
             data = self.body()
             with locked(store.state / "sync.lock", blocking=False):
@@ -244,11 +278,50 @@ class Handler(BaseHTTPRequestHandler):
                 "archived": library.list_chats(store, archived=True)["total"],
                 "status": status,
             }
+        if path == "/api/search-models" and method == "GET":
+            from .search_models import status
+
+            return status(store.root)
+        if path == "/api/search-models" and method == "PUT":
+            from .search_models import save
+
+            return {"settings": save(store.root, self.body())}
+        if path == "/api/search-models/download" and method == "POST":
+            from .search_models import download
+
+            data = self.body()
+            return download(store.root, data.get("kind", ""))
+        if path == "/api/search-models/build" and method == "POST":
+            from .core import locked
+            from .dense import build
+
+            with locked(store.state / "sync.lock", blocking=False):
+                return build(store, limit=64)
+        if path == "/api/chief-of-staff" and method == "GET":
+            from .assistant_skill import skill_files
+
+            return {
+                "workspace": str(store.root),
+                "skill_path": str(store.root / "shared_context/skills/chatos/SKILL.md"),
+                "commands": skill_files(store.root)["references/connection.md"],
+                "boundary": "The Chief of Staff must have local file and terminal access; this app does not transmit chats.",
+            }
         if path == "/api/retrieve" and method == "GET":
             from .retrieval import retrieve
 
             return retrieve(store, query.get("q", ""), query.get("project") or None)
         if path == "/api/chats" and method == "GET":
+            if query.get("review"):
+                from .search_review import results
+
+                return results(
+                    store,
+                    query["review"],
+                    query.get("q", ""),
+                    query.get("source", ""),
+                    query.get("project", ""),
+                    query.get("archived") == "true",
+                )
             limit = max(1, min(int(query.get("limit", 50)), 100))
             return library.list_chats(
                 store,
@@ -258,10 +331,22 @@ class Handler(BaseHTTPRequestHandler):
                 query.get("archived") == "true",
                 max(0, int(query.get("offset", 0))),
                 limit,
+                query.get("mode", "keyword"),
             )
         if path == "/api/chat" and method == "GET":
             record, annotation = library.get(store, query["source"], query["id"])
             return {"record": record, "annotation": annotation}
+        if path == "/api/search-review" and method == "POST":
+            from .search_review import prepare
+
+            data = self.body()
+            return prepare(
+                store,
+                data.get("q", ""),
+                data.get("source", ""),
+                data.get("project", ""),
+                data.get("archived") is True,
+            )
         if path == "/api/annotation" and method == "PUT":
             data = self.body()
             return library.update(store, data["source"], data["id"], data["changes"])
@@ -295,8 +380,8 @@ class Handler(BaseHTTPRequestHandler):
                 query.get("format", ""),
             )
         if path == "/api/backup" and method == "POST":
-            from .runtime import backup
             from .core import locked
+            from .runtime import backup
 
             with locked(store.state / "sync.lock", blocking=False):
                 return backup(store, fresh=True)

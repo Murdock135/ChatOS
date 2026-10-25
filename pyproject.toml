@@ -20,7 +20,7 @@ terminal = ["rich>=13,<15"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-chatos = ["static/*", "templates/*", "skills/chatos/SKILL.md", "skills/chatos/agents/*.yaml", "skills/chatos/references/*.md"]
+chatos = ["static/*", "static/_astro/*", "templates/*", "skills/chatos/SKILL.md", "skills/chatos/agents/*.yaml", "skills/chatos/references/*.md"]
 
 [tool.ruff]
 target-version = "py39"

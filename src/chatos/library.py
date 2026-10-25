@@ -1,9 +1,9 @@
 """Local library annotations, kept separate from captured source messages."""
-from .workspace import workspace_path
 
 import json
 from pathlib import Path
 from typing import Any
+
 from .core import Store, atomic, now, safe_id
 
 
@@ -45,9 +45,8 @@ def get(store: Store, source: str, identity: str) -> tuple[dict, dict]:
 
 
 def annotation_path(store: Store, source: str, identity: str) -> Path:
-    return (
-        store.paths.annotations(source)
-        / (safe_id(source) + "-" + safe_id(identity) + ".md")
+    return store.paths.annotations(source) / (
+        safe_id(source) + "-" + safe_id(identity) + ".md"
     )
 
 
@@ -95,6 +94,42 @@ def update(store: Store, source: str, identity: str, changes: dict[str, Any]) ->
     return annotation
 
 
+def search_matches(store: Store, query: str) -> dict:
+    """Keep the best matching passage for each conversation, including local notes."""
+    from .retrieval import refresh, terms
+
+    words = terms(query)
+    if not words:
+        return {}
+    refresh(store)
+    expression = " AND ".join('"' + word + '"' for word in words)
+    rows = store.db.execute(
+        """SELECT metadata, snippet(passage_index, 2, '', '', ' … ', 32) AS excerpt,
+                  bm25(passage_index, 0, 2, 1, 0) AS score
+           FROM passage_index WHERE passage_index MATCH ?
+           ORDER BY score, rowid""",
+        (expression,),
+    )
+    matches = {}
+    for row in rows:
+        passage = json.loads(row["metadata"])
+        if passage["role"] == "local_annotation":
+            _, source, identity = passage["id"].split(":", 2)
+        elif passage["source"] == "workspace":
+            continue
+        else:
+            source, identity = passage["source"], passage["id"]
+        key = source, identity
+        if key not in matches:
+            matches[key] = {
+                "score": row["score"],
+                "excerpt": row["excerpt"],
+                "message_id": passage.get("message_id"),
+                "role": passage["role"],
+            }
+    return matches
+
+
 def list_chats(
     store: Store,
     query: str = "",
@@ -103,20 +138,40 @@ def list_chats(
     archived: bool = False,
     offset: int = 0,
     limit: int = 50,
+    mode: str = "keyword",
 ) -> dict:
     """Filter captured chats and annotations, returning a stable page."""
     initialize(store)
     matches = None
     if query.strip():
-        matches = {
-            (item["source"], item["conversation_id"])
-            for item in store.search(query, 100000)
-        }
+        if mode == "hybrid":
+            from .dense import retrieve as hybrid_retrieve
+
+            eligible = list_chats(store, "", source, project, archived, limit=100000)[
+                "items"
+            ]
+            allowed = {(item["source"], item["id"]) for item in eligible}
+            evidence = hybrid_retrieve(
+                store, query, project or None, 30, allowed=allowed
+            )
+            matches = {}
+            for passage in evidence["passages"]:
+                key = (passage.get("source"), passage.get("id"))
+                matches.setdefault(
+                    key,
+                    {
+                        "score": -passage.get("rank", 0),
+                        "excerpt": passage.get("excerpt", ""),
+                        "message_id": passage.get("message_id"),
+                        "role": passage.get("role"),
+                    },
+                )
+        else:
+            matches = search_matches(store, query)
     annotations = {
         (row["source"], row["id"]): dict(row)
         for row in store.db.execute("SELECT * FROM library_annotations")
     }
-    words = query.lower().split()
     result = []
     for record in store.records():
         key = record["source"], record["id"]
@@ -127,12 +182,7 @@ def list_chats(
             continue
         if project and project not in record.get("projects", []):
             continue
-        local_text = (local.get("title", "") + " " + local.get("note", "")).lower()
-        if (
-            matches is not None
-            and key not in matches
-            and not all(word in local_text for word in words)
-        ):
+        if matches is not None and key not in matches:
             continue
         result.append(
             {
@@ -146,11 +196,15 @@ def list_chats(
                 "messages": len(record["messages"]),
                 "has_note": bool(local.get("note")),
                 "archived": bool(local.get("archived")),
+                "match": matches.get(key) if matches is not None else None,
             }
         )
     result.sort(
         key=lambda item: (item.get("updated_at") or "", item["id"]), reverse=True
     )
+    if matches is not None:
+        # Stable sorting preserves newest-first order only for equal relevance.
+        result.sort(key=lambda item: item["match"]["score"])
     return {
         "total": len(result),
         "items": result[offset : offset + limit],

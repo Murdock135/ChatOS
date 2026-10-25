@@ -1,4 +1,79 @@
 "use strict";
+// Keep native select values as the form contract while presenting visible choices.
+function enhanceChoices(select) {
+  if (select.dataset.enhanced) return;
+  select.dataset.enhanced = "true";
+  const wrapper = document.createElement("div");
+  wrapper.className = "choice-control";
+  wrapper.classList.toggle("menu-choices", select.dataset.presentation === "menu");
+  const label = select.closest("label");
+  const name = label?.firstChild?.textContent?.trim() || "Choose an option";
+  wrapper.setAttribute("role", "group");
+  wrapper.setAttribute("aria-label", name);
+  select.after(wrapper);
+  select.hidden = true;
+  let filter = "";
+  let updateSelection = () => {};
+  select.addEventListener("change", () => updateSelection());
+  select.addEventListener("choices-refresh", () => updateSelection());
+  function build() {
+    wrapper.replaceChildren();
+    const options = [...select.options];
+    const long = options.length > 5 || select.dataset.searchable === "true";
+    wrapper.classList.toggle("choice-panel", long);
+    if (long) {
+      const search = document.createElement("input");
+      search.type = "search";
+      search.placeholder = "Find " + name.toLowerCase() + "…";
+      search.setAttribute("aria-label", "Filter " + name.toLowerCase() + " options");
+      search.value = filter;
+      search.oninput = () => {
+        filter = search.value;
+        for (const button of wrapper.querySelectorAll("button"))
+          button.hidden = !button.textContent.toLowerCase().includes(filter.toLowerCase());
+      };
+      wrapper.append(search);
+    }
+    const items = document.createElement("div");
+    items.className = "choice-items";
+    const buttons = [];
+    function update() {
+      buttons.forEach(([button, option]) => {
+        button.setAttribute("aria-pressed", String(option.selected));
+        button.disabled = select.disabled || option.disabled;
+      });
+    }
+    for (const option of options) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = option.textContent;
+      button.hidden = !option.textContent.toLowerCase().includes(filter.toLowerCase());
+      button.onclick = () => {
+        if (select.multiple) option.selected = !option.selected;
+        else select.value = option.value;
+        update();
+        select.dispatchEvent(new Event("change", {bubbles: true}));
+      };
+      buttons.push([button, option]);
+      items.append(button);
+    }
+    wrapper.append(items);
+    updateSelection = update;
+    update();
+  }
+  new MutationObserver(build).observe(select, {childList: true, subtree: true});
+  build();
+}
+if (typeof MutationObserver !== "undefined") {
+  for (const select of document.querySelectorAll("select")) enhanceChoices(select);
+  new MutationObserver((changes) => {
+    for (const change of changes) for (const added of change.addedNodes) {
+      if (added.nodeType !== 1) continue;
+      if (added.matches("select")) enhanceChoices(added);
+      for (const select of added.querySelectorAll("select")) enhanceChoices(select);
+    }
+  }).observe(document.body, {childList: true, subtree: true});
+}
 const $ = (id) => document.getElementById(id);
 const node = (tag, text = "", className = "") => {
   const result = document.createElement(tag);
@@ -6,13 +81,57 @@ const node = (tag, text = "", className = "") => {
   if (className) result.className = className;
   return result;
 };
+// Build formatted message content with DOM text nodes; source HTML stays inert.
+function messageContent(text) {
+  const body = node("div", "", "message-body formatted");
+  function inline(parent, value) {
+    const tokens = /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\(https?:\/\/[^\s)]+\))/g;
+    let start = 0;
+    for (const match of value.matchAll(tokens)) {
+      parent.append(document.createTextNode(value.slice(start, match.index)));
+      const token = match[0];
+      if (token.startsWith("`")) parent.append(node("code", token.slice(1, -1)));
+      else if (token.startsWith("**")) parent.append(node("strong", token.slice(2, -2)));
+      else {
+        const split = token.indexOf("](");
+        const link = node("a", token.slice(1, split));
+        link.href = token.slice(split + 2, -1);
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        parent.append(link);
+      }
+      start = match.index + token.length;
+    }
+    parent.append(document.createTextNode(value.slice(start)));
+  }
+  const blocks = text.split(/(```[^\n]*\n[\s\S]*?(?:```|$))/g);
+  for (const block of blocks) {
+    if (block.startsWith("```")) {
+      const firstLine = block.indexOf("\n");
+      const pre = node("pre");
+      pre.append(node("code", block.slice(firstLine + 1).replace(/```$/, "")));
+      body.append(pre);
+      continue;
+    }
+    for (const paragraph of block.split(/\n\s*\n/)) {
+      if (!paragraph.trim()) continue;
+      const heading = paragraph.match(/^(#{1,4}) (.*)$/);
+      const element = node(heading ? "h" + Math.min(heading[1].length + 2, 6) : "p");
+      inline(element, heading ? heading[2] : paragraph);
+      body.append(element);
+    }
+  }
+  return body;
+}
 const storageKey = "chatos-token:" + location.origin;
-let token = sessionStorage.getItem(storageKey) || "";
+const connectionStorage = typeof localStorage === "undefined" ? sessionStorage : localStorage;
+let token = connectionStorage.getItem(storageKey) || sessionStorage.getItem(storageKey) || "";
 function acceptLaunchToken() {
   const fragment = new URLSearchParams(location.hash.slice(1));
   if (!fragment.has("token")) return false;
   token = fragment.get("token") || "";
   sessionStorage.setItem(storageKey, token);
+  connectionStorage.setItem(storageKey, token);
   history.replaceState(null, "", location.pathname);
   return true;
 }
@@ -50,7 +169,13 @@ async function api(path, method = "GET", body) {
           : JSON.stringify(body),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error || "Request failed");
+  if (!response.ok) {
+    if (response.status === 401) {
+      $("result-count").textContent = "Workspace disconnected";
+      throw new Error("This browser is disconnected from your workspace. Open ChatOS using its launch link to reconnect; your conversations are still stored locally.");
+    }
+    throw new Error(data.error || "Request failed");
+  }
   return data;
 }
 function safely(action) {
@@ -139,13 +264,21 @@ async function showView(view) {
 }
 async function loadChats(append = false) {
   const id = ++requestId;
+  const activeFilters = [$("source").value, $("project").value, $("archived").checked].filter(Boolean).length;
+  $("filter-summary").textContent = activeFilters ? `Filters · ${activeFilters}` : "Filters";
+  const searchState = [activeFilters ? `${activeFilters} filters active` : "", $("search-mode").value === "hybrid" ? "Smart search" : ""].filter(Boolean);
+  $("search-tools-summary").title = "Search options" + (searchState.length ? " · " + searchState.join(" · ") : "");
+  $("search-tools-summary").classList.toggle("has-filters", activeFilters > 0);
+  $("result-count").textContent = $("search").value.trim() ? "Searching your library…" : "Loading conversations…";
   const query = new URLSearchParams({
     q: $("search").value,
+    mode: $("search-mode").value || "keyword",
     source: $("source").value,
     project: $("project").value,
     archived: $("archived").checked,
     offset: append ? loaded : 0,
   });
+  if (reviewId && useReview) query.set("review", reviewId);
   const data = await api("chats?" + query);
   if (id !== requestId) return;
   if (!append) {
@@ -163,15 +296,21 @@ async function loadChats(append = false) {
         chat.id === current.record.id,
     );
     card.append(node("strong", chat.title));
-    const meta = node("small");
+    const meta = node("small", "", "result-meta");
     meta.append(
       node("span", chat.source, "pill"),
       document.createTextNode(
         chat.messages + " messages" + (chat.has_note ? " · Note" : ""),
       ),
     );
-    card.append(meta, node("small", date(chat.updated_at)));
-    card.onclick = safely(() => openChat(chat.source, chat.id));
+    card.append(meta, node("small", date(chat.updated_at), "result-date"));
+    if (chat.match) {
+      const label = chat.match.role === "local_annotation" ? "Local note: " : "";
+      card.append(node("p", label + chat.match.excerpt, "search-excerpt"));
+    }
+    card.onclick = safely(() =>
+      openChat(chat.source, chat.id, chat.match?.message_id),
+    );
     $("chat-list").append(card);
   }
   loaded += data.items.length;
@@ -208,6 +347,17 @@ async function openChat(source, id, messageId) {
     reader = $("reader");
   reader.replaceChildren();
   const head = node("div", "", "reader-head");
+  const back = node("button", "Close conversation · Esc", "reader-close");
+  back.onclick = () => {
+    if (dirty && !confirm("Discard unsaved annotation changes?")) return;
+    dirty = false;
+    reader.close();
+  };
+  reader.oncancel = (event) => {
+    if (dirty && !confirm("Discard unsaved annotation changes?")) event.preventDefault();
+    else dirty = false;
+  };
+  head.append(back);
   head.append(node("h2", annotation.title || record.title));
   head.append(
     node(
@@ -220,9 +370,11 @@ async function openChat(source, id, messageId) {
       "muted",
     ),
   );
-  head.append(node("p", "Source ID: " + record.id, "source-details"));
+  const sourceInfo = node("details", "", "capture-details");
+  sourceInfo.append(node("summary", "Source details"), node("p", "Source ID: " + record.id, "source-details"));
+  head.append(sourceInfo);
   if (annotation.title)
-    head.append(node("p", "Original title: " + record.title, "source-details"));
+    sourceInfo.append(node("p", "Original title: " + record.title, "source-details"));
   if (record.limits?.length) {
     const capture = node("details", "", "capture-details");
     capture.append(node("summary", "About this capture"));
@@ -349,7 +501,7 @@ async function openChat(source, id, messageId) {
           message.id,
         "message-meta",
       ),
-      node("div", message.text, "message-body"),
+      messageContent(message.text),
     );
     if (message.parent_id || message.export_node_id) {
       const branch = node("details", "", "branch-details");
@@ -362,80 +514,14 @@ async function openChat(source, id, messageId) {
     transcript.append(section);
   }
   reader.append(head, details, transcript);
+  if (!reader.open) reader.showModal();
   if (messageId) {
     const message = [...transcript.children].find(
       (item) => item.dataset.messageId === messageId,
     );
-    if (message) message.scrollIntoView({ block: "center" });
+    if (message) transcript.scrollTop = message.offsetTop - transcript.offsetTop;
   }
 }
-$("evidence").onclick = safely(async () => {
-  if (!$("search").value.trim()) {
-    notice("Enter a subject or question first.");
-    return;
-  }
-  if (dirty && !confirm("Discard unsaved annotation changes?")) return;
-  dirty = false;
-  const packet = await api(
-    "retrieve?" +
-      new URLSearchParams({
-        q: $("search").value,
-        project: $("project").value,
-      }),
-  );
-  const reader = $("reader");
-  reader.replaceChildren();
-  const head = node("div", "", "reader-head");
-  head.append(
-    node("h2", "Source evidence"),
-    node(
-      "p",
-      "Candidate passages, not an automatically generated answer. Check speaker, context, and later changes.",
-      "muted",
-    ),
-  );
-  reader.append(head);
-  const body = node("div", "", "transcript");
-  for (const item of packet.passages) {
-    const section = node("section", "", "message");
-    section.append(
-      node(
-        "span",
-        { local_annotation: "Local note", workspace_note: "Workspace note" }[
-          item.role
-        ] || item.role,
-        "role",
-      ),
-      node("h3", item.title),
-      node(
-        "p",
-        captureLabel(item.capture) +
-          " · " +
-          item.path +
-          (item.line ? ":" + item.line : ""),
-        "message-meta",
-      ),
-      node("div", item.excerpt, "message-body"),
-    );
-    if (item.source !== "workspace") {
-      const open = node("button", "Open captured chat");
-      open.onclick = safely(() =>
-        openChat(item.source, item.id, item.message_id),
-      );
-      section.append(open);
-    }
-    body.append(section);
-  }
-  if (!packet.passages.length)
-    body.append(
-      node(
-        "p",
-        "No matching passages found. Try different wording; missing results do not prove a discussion never happened.",
-        "callout",
-      ),
-    );
-  reader.append(body);
-});
 async function loadContext() {
   const data = await api("context");
   contextItems = data.items;
@@ -704,13 +790,151 @@ for (const button of document.querySelectorAll("[data-view]"))
     await showView(button.dataset.view);
   });
 let timer;
+const navigationLabels = {chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff"};
+for (const button of document.querySelectorAll("[data-view]")) {
+  button.setAttribute("aria-label", navigationLabels[button.dataset.view]);
+  button.title = navigationLabels[button.dataset.view];
+}
+$("nav-toggle").onclick = () => {
+  const collapsed = $("app-shell").classList.toggle("nav-collapsed");
+  const label = collapsed ? "Expand navigation" : "Collapse navigation";
+  $("nav-toggle").setAttribute("aria-expanded", String(!collapsed));
+  $("nav-toggle").setAttribute("aria-label", label);
+  $("nav-toggle").title = label;
+};
+$("show-previews").onchange = () => $("chat-list").classList.toggle("show-previews", $("show-previews").checked);
+window.addEventListener("keydown", (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    showView("chats").then(() => $("search").focus());
+  }
+});
 $("search").oninput = () => {
+  useReview = false;
   clearTimeout(timer);
   timer = setTimeout(
     safely(() => loadChats()),
     220,
   );
 };
+let reviewId = "", useReview = false, modelConfig;
+function initializeSearchFilters() {
+  const reset = $("reset-search-filters");
+  // This component is absent from minimal startup fixtures.
+  if (!document.querySelectorAll(".filter-menu").length) return;
+  const filters = $("search-filters");
+  const project = $("project");
+  function updateProjectLabel() {
+    $("selected-filter-project").textContent = project.selectedOptions[0]?.textContent || "All projects";
+  }
+  project.addEventListener("change", updateProjectLabel);
+  reset.onclick = safely(() => {
+    for (const id of ["source", "project"]) {
+      $(id).value = "";
+      $(id).dispatchEvent(new Event("choices-refresh"));
+    }
+    $("archived").checked = false;
+    $("show-previews").checked = false;
+    $("chat-list").classList.remove("show-previews");
+    updateProjectLabel();
+    useReview = false;
+    return loadChats();
+  });
+  document.addEventListener("click", event => {
+    if (!filters.contains(event.target)) filters.open = false;
+  });
+  filters.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      filters.open = false;
+      $("search-tools-summary").focus();
+    }
+  });
+}
+initializeSearchFilters();
+// Quick icons and the explanatory chooser share the existing search contract.
+function initializeSearchModePicker() {
+  const select = $("search-mode");
+  const chooser = $("mode-chooser");
+  if (!chooser) return;
+  const buttons = document.querySelectorAll("[data-search-mode]");
+  if (!buttons.length) return;
+  function update() {
+    for (const button of buttons)
+      button.setAttribute("aria-pressed", String(button.dataset.searchMode === select.value));
+    $("selected-search-mode").textContent = select.selectedOptions[0].textContent;
+  }
+  for (const button of buttons) button.onclick = () => {
+    const changed = select.value !== button.dataset.searchMode;
+    select.value = button.dataset.searchMode;
+    const wasOpen = chooser.open;
+    chooser.open = false;
+    if (wasOpen) chooser.querySelector("summary").focus();
+    update();
+    if (changed) select.dispatchEvent(new Event("change", {bubbles: true}));
+  };
+  select.addEventListener("change", update);
+  document.addEventListener("click", event => {
+    if (!chooser.contains(event.target)) chooser.open = false;
+  });
+  chooser.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      chooser.open = false;
+      chooser.querySelector("summary").focus();
+    }
+  });
+  update();
+}
+initializeSearchModePicker();
+$("search-mode").onchange = safely(() => { useReview = false; return loadChats(); });
+$("chief-search").onclick = safely(async () => {
+  const request = await api("search-review", "POST", {
+    q: $("search").value, source: $("source").value,
+    project: $("project").value, archived: $("archived").checked,
+  });
+  reviewId = request.id;
+  $("chief-prompt").hidden = false;
+  $("chief-prompt").value = request.prompt;
+  $("chief-results").hidden = false;
+  notice("Give this request to your Chief of Staff with local file access, then load its results here.");
+});
+$("chief-results").onclick = safely(async () => { useReview = true; await loadChats(); });
+async function loadSearchModels() {
+  const state = await api("search-models");
+  modelConfig = state.settings;
+  $("embedding-model").value = modelConfig.embedding.model_id;
+  $("reranker-model").value = modelConfig.reranker.model_id;
+  $("model-json").value = JSON.stringify(modelConfig, null, 2);
+  $("model-status").textContent = (state.runtime_ready ? "Runtime ready. " : "Install optional semantic dependencies and restart the app in that environment. ") +
+    "Embedding: " + (state.downloaded.embedding ? "downloaded" : "not downloaded") +
+    "; reranker: " + (state.downloaded.reranker ? "downloaded" : "not downloaded");
+}
+$("save-models").onclick = safely(async () => {
+  modelConfig.embedding.model_id = $("embedding-model").value.trim();
+  modelConfig.reranker.model_id = $("reranker-model").value.trim();
+  await api("search-models", "PUT", modelConfig);
+  await loadSearchModels();
+});
+$("save-model-json").onclick = safely(async () => {
+  await api("search-models", "PUT", JSON.parse($("model-json").value));
+  await loadSearchModels();
+});
+for (const kind of ["embedding", "reranker"]) $("download-" + kind).onclick = safely(async () => {
+  $("download-" + kind).disabled = true;
+  notice("Downloading the saved " + kind + " model. This may take a few minutes.");
+  try {
+    await api("search-models/download", "POST", {kind});
+    await loadSearchModels();
+    notice("Model download complete.");
+  } finally { $("download-" + kind).disabled = false; }
+});
+$("build-embeddings").onclick = safely(async () => {
+  $("build-embeddings").disabled = true;
+  notice("Indexing a batch of captured passages…");
+  try {
+    const state = await api("search-models/build", "POST", {});
+    notice(state.current_vectors + " passages indexed; " + state.remaining + " remaining. Repeat to continue.");
+  } finally { $("build-embeddings").disabled = false; }
+});
 for (const id of ["source", "project", "archived"])
   $(id).onchange = safely(() => loadChats());
 $("more").onclick = safely(() => loadChats(true));
@@ -810,6 +1034,7 @@ window.addEventListener(
 );
 
 async function loadSetup() {
+  await loadSearchModels();
   const status = await api("setup");
   $("setup-controls").hidden = !status.supported;
   $("setup-summary").textContent = status.supported

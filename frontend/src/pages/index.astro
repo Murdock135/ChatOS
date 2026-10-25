@@ -1,0 +1,39 @@
+---
+import WorkspaceLayout from "../layouts/WorkspaceLayout.astro";
+import Conversations from "../components/Conversations.astro";
+import Map from "../components/Map.astro";
+import Context from "../components/Context.astro";
+import Health from "../components/Health.astro";
+import Setup from "../components/Setup.astro";
+---
+<WorkspaceLayout>
+      <main>
+        <header>
+          <div>
+            <h1 id="page-title">Conversations</h1>
+            <p id="subtitle">Find a conversation. Pick up a thread.</p>
+          </div>
+          <div class="header-actions">
+            <button id="import" title="Import a ChatGPT JSON or ZIP export">
+              Import chats</button
+            ><input
+              id="import-file"
+              type="file"
+              accept=".json,.zip"
+              hidden
+            /><button id="sync" class="primary">Sync workspace</button>
+          </div>
+        </header>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <Conversations />
+        <Map />
+        <Context />
+        <Health />
+        <Setup />
+        <footer>
+          Captured conversations are historical records. A suggestion is not an
+          accepted decision; a saved schedule is not proof that it ran.
+        </footer>
+      </main>
+
+</WorkspaceLayout>

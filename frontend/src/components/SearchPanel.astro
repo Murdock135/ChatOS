@@ -1,0 +1,18 @@
+---
+import SearchModePicker from "./SearchModePicker.astro";
+import SearchFilters from "./SearchFilters.astro";
+---
+          <h2 class="search-heading text-center text-2xl font-normal tracking-tight">What would you like to revisit?</h2>
+          <div class="toolbar search-bar">
+            <label class="search"
+              >Search transcripts and local notes<input
+                id="search"
+                type="search"
+                placeholder="Search conversations…" /></label>
+            <span class="search-shortcut" aria-hidden="true">⌘ K</span>
+          <div class="composer-actions">
+          <SearchModePicker />
+          <SearchFilters />
+          <button id="chief-search" class="assistant-action" title="Prepare a search handoff for your assistant">Chief of Staff <span aria-hidden="true">↗</span></button>
+          </div>
+          </div>

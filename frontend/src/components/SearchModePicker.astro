@@ -1,0 +1,26 @@
+---
+const modes = [
+  { value: 'keyword', title: 'Keyword', description: 'Find the words you remember. Fast and fully local.', icon: 'M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0ZM15 15l6 6' },
+  { value: 'hybrid', title: 'Smart search', description: 'Find related ideas with local models and reranking.', icon: 'm12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z' },
+];
+---
+<select id="search-mode" data-enhanced="true" hidden aria-label="Search method">
+  <option value="keyword">Keyword</option><option value="hybrid">Smart search</option>
+</select>
+<div class="mode-picker">
+  <div class="mode-segments" role="group" aria-label="Search method">
+    {modes.map(mode => <button type="button" data-search-mode={mode.value} aria-label={mode.title} aria-pressed={mode.value === 'keyword' ? 'true' : 'false'} title={mode.title}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d={mode.icon}/></svg>
+    </button>)}
+  </div>
+  <details id="mode-chooser" class="mode-chooser">
+    <summary aria-label="Choose search method"><span id="selected-search-mode">Keyword</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
+    <div class="mode-menu" role="group" aria-label="Search methods explained">
+      {modes.map(mode => <button type="button" data-search-mode={mode.value} aria-label={`${mode.title}. ${mode.description}`} aria-pressed={mode.value === 'keyword' ? 'true' : 'false'}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d={mode.icon}/></svg>
+        <span><strong>{mode.title}</strong><small>{mode.description}</small></span>
+        <span class="mode-check" aria-hidden="true">✓</span>
+      </button>)}
+    </div>
+  </details>
+</div>

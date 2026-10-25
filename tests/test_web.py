@@ -3,18 +3,18 @@
 import hashlib
 import http.client
 import json
-from pathlib import Path
 import tempfile
 import threading
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
-from chatos.core import Store, digest
-from chatos.web import LocalServer
 from chatos import library
+from chatos.core import Store, digest
+from chatos.recovery import restore, verify_backup
 from chatos.retrieval import retrieve
 from chatos.runtime import backup
-from chatos.recovery import restore, verify_backup
+from chatos.web import LocalServer
 
 
 class WebTests(unittest.TestCase):
@@ -109,6 +109,37 @@ class WebTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertNotIn("<script>alert(1)</script>", html)
 
+    def test_browser_authorization_survives_restart_and_is_workspace_scoped(self):
+        from chatos.web import workspace_token
+
+        self.assertEqual(workspace_token(self.root), self.server.token)
+        other = Path(self.temp.name) / "independent-workspace"
+        self.assertNotEqual(workspace_token(other), self.server.token)
+        token_file = self.root / "System/State/browser-token"
+        self.assertEqual(token_file.stat().st_mode & 0o777, 0o600)
+        # A new server process uses the saved token, so open browser tabs survive.
+        replacement = LocalServer(self.root, 0)
+        try:
+            self.assertEqual(replacement.token, self.server.token)
+        finally:
+            replacement.server_close()
+
+    def test_compiled_frontend_assets_are_served_without_exposing_paths(self):
+        import re
+
+        html = self.request("/", authenticated=False)[1]
+        stylesheet = re.search(r'href="(/_astro/[^\"]+\.css)"', html)
+        self.assertIsNotNone(stylesheet)
+        status, content = self.request(stylesheet.group(1), authenticated=False)
+        self.assertEqual(status, 200)
+        self.assertIn("search-bar", content)
+        self.assertEqual(
+            self.request("/_astro/missing.css", authenticated=False)[0], 404
+        )
+        self.assertEqual(
+            self.request("/_astro/../../pyproject.toml", authenticated=False)[0], 404
+        )
+
     def test_annotations_search_archive_restore_and_source_preservation(self):
         self.assertEqual(self.request("/api/chats?q=readable")[1]["total"], 1)
         changes = {"title": "My local title", "note": "Remember the violet protocol"}
@@ -148,6 +179,73 @@ class WebTests(unittest.TestCase):
             self.assertTrue(all(item["source"] == "workspace" for item in passages))
         finally:
             store.close()
+
+    def test_search_ranks_passages_groups_chats_and_preserves_filters(self):
+        store = Store(self.root)
+        try:
+            for identity, title, date, texts in [
+                (
+                    "focused",
+                    "LangChain agent skills",
+                    "2020-01-01",
+                    [
+                        "How do LangChain agent skills work?",
+                        "LangChain skills documentation",
+                    ],
+                ),
+                (
+                    "incidental",
+                    "Weekly planning",
+                    "2026-01-01",
+                    [
+                        (
+                            "Discuss hiring, calendars and meeting plans. "
+                            "LangChain is one resume skill."
+                        )
+                    ],
+                ),
+                ("unrelated", "Cooking", "2027-01-01", ["Bake bread."]),
+            ]:
+                store.put(
+                    {
+                        "source": "codex",
+                        "id": identity,
+                        "title": title,
+                        "updated_at": date,
+                        "projects": ["research"],
+                        "messages": [
+                            {"id": identity + str(n), "role": "user", "text": text}
+                            for n, text in enumerate(texts)
+                        ],
+                    }
+                )
+        finally:
+            store.close()
+        data = self.request("/api/chats?q=langchain")[1]
+        self.assertEqual(data["total"], 2)
+        self.assertEqual(
+            [item["id"] for item in data["items"]], ["focused", "incidental"]
+        )
+        match = data["items"][0]["match"]
+        self.assertIn("LangChain", match["excerpt"])
+        self.assertIn(match["message_id"], ["focused0", "focused1"])
+        self.assertEqual(
+            self.request("/api/chats?q=langchain&source=chatgpt")[1]["total"], 0
+        )
+        self.assertEqual(
+            self.request("/api/chats?q=langchain&project=missing")[1]["total"], 0
+        )
+        self.assertEqual(
+            self.request("/api/chats?q=langchain&archived=true")[1]["total"], 0
+        )
+        self.assertEqual(self.request("/api/chats?q=langchain%20skills")[1]["total"], 1)
+        self.assertEqual(self.request("/api/chats?q=nonexistentterm")[1]["total"], 0)
+        page = self.request("/api/chats?q=langchain&limit=1&offset=1")[1]
+        self.assertEqual(page["total"], 2)
+        self.assertEqual(page["items"][0]["id"], "incidental")
+        self.assertEqual(self.request("/api/chats")[1]["items"][0]["id"], "unrelated")
+        html = self.request("/", authenticated=False)[1]
+        self.assertNotIn('id="evidence"', html)
 
     def test_assignment_and_invalid_annotation_do_not_change_source_messages(self):
         self.assertEqual(

@@ -1,6 +1,17 @@
 # Contributing
 
-Application code and bundled browser assets live in `src/chatos/`. Tests live in `tests/`; documentation, adopted software decisions, and proposals live in `docs/`. `workspace/` is private user data and is excluded from Git and the Python package.
+Python application code and compiled browser assets live in `src/chatos/`. The frontend source is in `frontend/`, using Astro components and Tailwind CSS. Tests live in `tests/`; documentation, adopted software decisions, and proposals live in `docs/`. `workspace/` is private user data and is excluded from Git and the Python package.
+
+Build the frontend after editing its components, styles or `frontend/public/app.js`:
+
+```bash
+cd frontend
+npm ci
+npm run check
+npm run build
+```
+
+Commit the compiled `src/chatos/static/` output with its source changes. The Python server serves that output directly; end users do not need Node. Do not edit generated browser files directly. Component-specific styles can use Tailwind utilities; shared compatibility rules remain in `frontend/src/styles/` while they are consolidated. Runtime JavaScript remains framework-independent and uses the existing authenticated Python API.
 
 From this checkout, `./scripts/chatos --help` works with Python 3.9+ without installing dependencies. For development with uv:
 

@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "./base.css" layer(components);
+@import "./workspace.css" layer(components);
+
+@theme {
+  --color-canvas: #111218;
+  --color-panel: #191b23;
+  --color-accent: #a7c1ff;
+  --color-ink: #eceef5;
+  --color-subtle: #a2a6b6;
+}

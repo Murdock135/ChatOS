@@ -355,6 +355,13 @@ header p {
   margin-top: 7px;
   overflow-wrap: anywhere;
 }
+.search-excerpt {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
 .pill {
   display: inline-block;
   font-size: 10px;

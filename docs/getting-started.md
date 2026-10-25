@@ -30,7 +30,7 @@ Start the dedicated chat library:
 ./scripts/chatos --root Demo serve --open
 ```
 
-Keep the terminal running; stop with Ctrl+C. Select the sample chat. Expand Local title, notes & project to add a local note or archive/restore it. Find evidence returns cited passages; Import chats receives supported exports before sync; Health & sync reports coverage, checks health, and creates fresh database backups. See the [library guide](chat-library.md) for the full workflow. The server uses the demo configuration, which keeps Codex capture disabled.
+Keep the terminal running; stop with Ctrl+C. Select the sample chat. Expand Local title, notes & project to add a local note or archive/restore it. Search ranks matching chats by relevance and shows matching passages; Import chats receives supported exports before sync; Health & sync reports coverage, checks health, and creates fresh database backups. See the [library guide](chat-library.md) for the full workflow. The server uses the demo configuration, which keeps Codex capture disabled.
 
 You can also open the older `Demo/library/dashboard.html` in a browser. Filter for “reading” to find the chat, then follow its source link. This filter searches titles, project fields, and short previews; use the CLI for full transcript search.
 

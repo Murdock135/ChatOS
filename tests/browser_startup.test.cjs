@@ -59,6 +59,7 @@ test("navigation requested during startup survives the initial default view", as
       let data;
       if (url === "/api/overview") data = await overview;
       else if (url.startsWith("/api/chats?")) data = { items: [], total: 0 };
+      else if (url === "/api/search-models") data = {settings: {embedding: {model_id: "fixture/embed"}, reranker: {model_id: "fixture/rank"}}, downloaded: {}, runtime_ready: false};
       else if (url === "/api/setup")
         data = { supported: false, detail: "Fixture setup" };
       else throw new Error("Unexpected fixture request: " + url);

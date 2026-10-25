@@ -1,0 +1,21 @@
+<details class="search-tools" id="search-filters">
+  <summary id="search-tools-summary" title="Filter conversations">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="var(--panel, #1a1d27)"/><circle cx="15" cy="17" r="3" fill="var(--panel, #1a1d27)"/></svg>
+    <span id="filter-summary">Filters</span>
+  </summary>
+  <div class="filter-menu">
+    <div class="filter-menu-heading"><span>Refine your search</span><button id="reset-search-filters" type="button">Reset</button></div>
+    <label class="filter-source">Source<select id="source" data-presentation="menu">
+      <option value="">All sources</option><option value="codex">Codex</option><option value="chatgpt">ChatGPT</option><option value="muse">Muse</option>
+    </select></label>
+    <details class="project-filter">
+      <summary><span>Project</span><span id="selected-filter-project">All projects</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true"><path d="m6 4 4 4-4 4"/></svg></summary>
+      <label class="project-filter-options">Choose a project<select id="project" data-presentation="menu" data-searchable="true"><option value="">All projects</option></select></label>
+    </details>
+    <div class="filter-switches">
+      <label class="filter-switch" for="archived"><span>Archived only</span><input id="archived" type="checkbox" role="switch"/></label>
+      <label class="filter-switch" for="show-previews"><span>Matching passages</span><input id="show-previews" type="checkbox" role="switch"/></label>
+    </div>
+    <button id="chief-results" hidden>Load Chief of Staff results</button>
+  </div>
+</details>

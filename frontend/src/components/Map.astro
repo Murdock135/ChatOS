@@ -1,0 +1,39 @@
+        <section id="view-map" hidden>
+          <div class="toolbar">
+            <label class="search"
+              >Find on the map<input
+                id="map-query"
+                type="search"
+                placeholder="Filter conversation titles" /></label
+            ><label
+              >Project<select id="map-project">
+                <option value="">All projects</option>
+              </select></label
+            ><label
+              >Source<select id="map-source">
+                <option value="">All sources</option>
+                <option value="codex">Codex</option>
+                <option value="chatgpt">ChatGPT</option>
+                <option value="muse">Muse</option>
+              </select></label
+            >
+          </div>
+          <p id="map-summary" class="muted"></p>
+          <details class="capture-details">
+            <summary>About this map</summary>
+            <p id="map-method"></p>
+          </details>
+          <div class="map-controls">
+            <button id="map-in">Zoom in</button
+            ><button id="map-out">Zoom out</button
+            ><button id="map-reset">Reset</button>
+          </div>
+          <canvas
+            id="map-canvas"
+            aria-label="Conversation map; use the title list below for keyboard access"
+          ></canvas>
+          <p id="map-hover" class="muted">
+            Select a point or conversation title to read its messages.
+          </p>
+          <div id="map-list" class="map-list"></div>
+        </section>

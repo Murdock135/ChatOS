@@ -1,0 +1,129 @@
+        <section id="view-setup" hidden>
+          <details id="model-settings"><summary>Local search models</summary>
+            <p>Choose compatible public Hugging Face models: a Sentence Transformer embedding model and a scalar CrossEncoder reranker. Downloads stay on this device. Models requiring custom Python code are unsupported.</p>
+            <p id="model-status" role="status"></p>
+            <label>Embedding model<input id="embedding-model" /></label>
+            <label>Reranker model<input id="reranker-model" /></label>
+            <button id="save-models">Save model choices</button>
+            <button id="download-embedding">Download embedding model</button>
+            <button id="download-reranker">Download reranker</button>
+            <button id="build-embeddings">Index next 64 passages</button>
+            <details><summary>Advanced settings</summary><label>Model revisions, prompts, token limits, candidate limit and optional relevance cutoff<textarea id="model-json" rows="16"></textarea></label><button id="save-model-json">Save advanced settings</button></details>
+          </details>
+          <div id="setup-summary" class="callout"></div>
+          <div id="setup-controls" class="setup-grid">
+            <article class="setup-card">
+              <h2>1. Choose your sources</h2>
+              <p>
+                Use Import chats for a ChatGPT export. Local Codex history is
+                optional. Saving a source choice does not scan it; select Sync
+                workspace when ready.
+              </p>
+              <form id="source-form" class="form-grid">
+                <label class="check"
+                  ><input id="codex-enabled" type="checkbox" />Capture local
+                  Codex history</label
+                >
+                <label
+                  >Codex directory<input
+                    id="codex-path"
+                    placeholder="/absolute/path/to/.codex"
+                    autocomplete="off"
+                /></label>
+                <button type="submit">Save source choice</button>
+              </form>
+            </article>
+            <article class="setup-card">
+              <h2>2. Choose assistant access</h2>
+              <p>
+                An assistant with local file access can use your workspace
+                through ASSISTANT.md. Give that file to your chosen assistant;
+                creating it does not connect an account or activate memory.
+              </p>
+              <button id="make-guide">Create or refresh assistant guide</button>
+              <p id="guide-path" class="source-details"></p>
+              <p>
+                Let your Chief of Staff use ChatOS through its reusable skill.
+                New workspaces include a copy connected to their paths.
+                Preparing the folder does not install it in your assistant.
+              </p>
+              <button id="make-skill">Prepare Chief of Staff skill</button>
+              <p id="skill-path" class="source-details"></p>
+              <details>
+                <summary>Load the skill in your assistant</summary>
+                <p>
+                  Give the assistant the full SKILL.md path and ask it to read
+                  and use it. In Codex, you can instead copy the whole chatos
+                  folder to your project's .agents/skills/chatos or your own
+                  ~/.agents/skills/chatos, preserving the references and agents
+                  folders. Do not replace a folder you have customized. Verify
+                  that chatos appears in the skill picker, then try: Use $chatos
+                  to find our earlier discussion about my current project and
+                  cite the messages. Skill instructions need local file and
+                  terminal access; a hosted chat cannot read this folder
+                  automatically.
+                </p>
+              </details>
+            </article>
+            <article class="setup-card">
+              <h2>3. Review reusable context</h2>
+              <p>
+                Import a context JSON artifact prepared from visible
+                conversations. Inspect its text, sources, scope and uncertainty
+                before accepting it. Accepted notes become searchable; they are
+                not installed as host instructions.
+              </p>
+              <details>
+                <summary>Ask your AI to prepare an artifact</summary>
+                <p>
+                  Use only messages and files you can actually inspect. Separate
+                  explicit preferences from suggestions. Return JSON with
+                  schema_version: 1, kind: profile, preferences or
+                  project_context, body, created_at (ISO timestamp with
+                  timezone), generated_by, source_references (list), and
+                  uncertainties (list). State missing evidence; do not claim
+                  access to hidden memory. I will review before accepting.
+                </p>
+              </details>
+              <label
+                >Context artifact<input
+                  id="artifact-file"
+                  type="file"
+                  accept=".json"
+              /></label>
+              <div id="artifact-list" class="artifact-list"></div>
+              <div id="artifact-review"></div>
+            </article>
+            <article class="setup-card">
+              <h2>4. Take context to another app</h2>
+              <p>
+                Create a verified local folder of Markdown and JSON. Nothing is
+                uploaded. Review it before supplying files to another assistant.
+                Missing messages and attachments are not recovered.
+              </p>
+              <form id="handoff-form" class="form-grid">
+                <label
+                  >Include<select id="handoff-selection">
+                    <option value="chat">One conversation</option>
+                    <option value="project">One project</option>
+                    <option value="all">
+                      All captured conversations, including archived
+                    </option>
+                  </select></label
+                >
+                <label id="handoff-chat-label"
+                  >Conversation<select id="handoff-chat"></select
+                ></label>
+                <label id="handoff-project-label" hidden
+                  >Project<select id="handoff-project"></select
+                ></label>
+                <label class="check"
+                  ><input id="handoff-context" type="checkbox" />Include
+                  profile, preferences and accepted context</label
+                >
+                <button type="submit">Create portable bundle</button>
+              </form>
+              <div id="handoff-result" role="status"></div>
+            </article>
+          </div>
+        </section>

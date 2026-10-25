@@ -54,7 +54,7 @@ cp docs/examples/conversations.json Demo/your_ais/chatgpt/imports/conversations.
 
 ### Optional semantic search and clustering
 
-The pretrained semantic features need **Qwen/Qwen3-Embedding-0.6B** downloaded locally, additional Python packages, and embeddings built from your chats. HDBSCAN creates clusters; UMAP creates the 2D projection. No separate chat-generation model or inference API key is required.
+Local hybrid search uses user-selected embedding and reranking models. Choose and explicitly download compatible models in **Setup & handoff → Local search models**, then index your passages. Optional Python dependencies are required; no inference API key is needed. Chief of Staff search review also works without local models. HDBSCAN creates optional clusters and UMAP creates the map projection.
 
 These are separate from the core setup above. Follow [Semantic setup](docs/semantic-search.md) to install the optional runtime and pinned model, build passage embeddings, and generate the map. The pretrained map needs at least six conversations with current embeddings; the one-chat demo cannot produce it. Ordinary sync does not download the model or rebuild embeddings.
 
@@ -64,7 +64,7 @@ Open the app with `./scripts/chatos --root workspace serve --open` whenever you 
 
 - **Find a chat:** search its transcript text or your local notes; filter by source or project.
 - **Read and organize:** select a conversation, add a local title or note, or archive/restore it. These changes stay separate from the captured messages.
-- **Inspect evidence:** choose **Find evidence** to see matching passages with message citations.
+- **See why a chat matched:** search results show matching passages, ordered by relevance. Select a result to jump to its matching message.
 - **Set up and hand off:** open **Setup & handoff** to choose source capture, review or retire context, create assistant instructions, and export a selected portable bundle.
 - **Check your archive:** open **Health & sync** to inspect coverage, run checks, or create a fresh database backup.
 
