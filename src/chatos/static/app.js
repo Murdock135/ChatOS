@@ -280,8 +280,21 @@ async function loadChats(append = false) {
     offset: append ? loaded : 0,
   });
   if (reviewId && useReview) query.set("review", reviewId);
-  const data = await api("chats?" + query);
+  let data;
+  try {
+    data = await api("chats?" + query);
+  } catch (error) {
+    if (id !== requestId) return;
+    $("result-count").textContent = "Search failed. Try again or use keyword search.";
+    if (!append) {
+      $("chat-list").replaceChildren();
+      loaded = 0;
+    }
+    $("more").hidden = true;
+    throw error;
+  }
   if (id !== requestId) return;
+  notice("");
   if (!append) {
     $("chat-list").replaceChildren();
     loaded = 0;

@@ -5,6 +5,7 @@ import importlib.util
 import json
 import math
 import re
+import threading
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -85,7 +86,8 @@ def settings(root: Path) -> dict:
 def save(root: Path, data: dict) -> dict:
     config = validate(data)
     write_json(config_path(root), config)
-    load_model.cache_clear()
+    with _MODEL_LOAD_LOCK:
+        _load_model.cache_clear()
     return config
 
 
@@ -206,8 +208,21 @@ def status(root: Path) -> dict:
     }
 
 
-@lru_cache(maxsize=2)
+_MODEL_LOAD_LOCK = threading.Lock()
+
+
 def load_model(
+    root: str, kind: str, serialized_spec: str, model_fingerprint: str
+) -> Any:
+    """Serialize cold loads, including cache lookup, across request threads."""
+    # Runtime initialization changes process-wide state; concurrent cold loads
+    # can leave tensors uninitialized. lru_cache alone permits duplicate misses.
+    with _MODEL_LOAD_LOCK:
+        return _load_model(root, kind, serialized_spec, model_fingerprint)
+
+
+@lru_cache(maxsize=2)
+def _load_model(
     root: str, kind: str, serialized_spec: str, model_fingerprint: str
 ) -> Any:
     """Load explicitly downloaded weights offline; cache only the selected models."""
@@ -258,7 +273,7 @@ def load_model(
                     "Choose a reranker that returns one relevance score per passage"
                 )
         return model
-    except (OSError, TypeError, ValueError) as error:
+    except (OSError, TypeError, ValueError, RuntimeError, NotImplementedError) as error:
         raise ValueError(
             "Selected "
             + kind

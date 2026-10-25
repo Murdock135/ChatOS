@@ -5,7 +5,7 @@ const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
 
-test("navigation requested during startup survives the initial default view", async () => {
+test("startup navigation survives and failed smart searches recover without stale results", async () => {
   const elements = new Map();
   function element(id) {
     if (!elements.has(id))
@@ -86,4 +86,37 @@ test("navigation requested during startup survives the initial default view", as
   assert.equal(element("view-setup").hidden, false);
   assert.equal(element("view-chats").hidden, true);
   assert.equal(element("notice").textContent, "");
+
+  element("search").value = "langchain";
+  element("search-mode").value = "hybrid";
+  sandbox.fetch = async () => ({
+    ok: false,
+    status: 400,
+    json: async () => ({ error: "Local model could not initialize" }),
+  });
+  await vm.runInNewContext("safely(() => loadChats())()", sandbox);
+  assert.match(element("result-count").textContent, /Search failed/);
+  assert.equal(element("more").hidden, true);
+  assert.equal(element("notice").textContent, "Local model could not initialize");
+
+  sandbox.fetch = async () => ({
+    ok: true,
+    json: async () => ({ items: [], total: 0 }),
+  });
+  await vm.runInNewContext("loadChats()", sandbox);
+  assert.equal(element("result-count").textContent, "0 conversations matching your search");
+  assert.equal(element("notice").textContent, "");
+
+  let rejectOlder;
+  sandbox.fetch = () => new Promise((resolve, reject) => { rejectOlder = reject; });
+  const olderSearch = vm.runInNewContext("safely(() => loadChats())()", sandbox);
+  sandbox.fetch = async () => ({
+    ok: true,
+    json: async () => ({ items: [], total: 0 }),
+  });
+  await vm.runInNewContext("loadChats()", sandbox);
+  rejectOlder(new Error("Older search failed"));
+  await olderSearch;
+  assert.equal(element("notice").textContent, "");
+  assert.equal(element("result-count").textContent, "0 conversations matching your search");
 });
