@@ -1,10 +1,8 @@
 """Optional pretrained conversation map; cluster before the two-dimensional projection."""
 
 import os
-from collections import Counter, defaultdict
 
 from .core import digest, now, write_json
-from .dense import passages
 from .workspace import workspace_path
 
 
@@ -17,43 +15,53 @@ def build(store):
     from umap import UMAP
 
     from .explorer import neighbor_retention, write_page
-    from .semantic import tokens
-
-    items = passages(store)
-    from .search_models import fingerprint, settings
+    from .map_topics import LABEL_VERSION, label_groups, semantic_samples
+    from .search_models import fingerprint, model, settings
 
     config = settings(store.root)
     revision = fingerprint(store.root, config["embedding"])
-    cache = {
-        row[0]: np.frombuffer(row[1], dtype="<f4")
-        for row in store.db.execute(
-            "SELECT identity,vector FROM dense_vectors WHERE revision=?", (revision,)
-        )
-    }
     records = store.records()
-    groups = defaultdict(list)
-    available = 0
-    for item in items:
-        if item["identity"] in cache:
-            groups[(item["source"], item["id"])].append(item)
-            available += 1
     represented = []
     vectors = []
+    samples = []
+    spans = []
     assistant_fallback = 0
     for record in records:
-        parts = groups[(record["source"], record["id"])]
-        users = [p for p in parts if p["role"] == "user"]
-        if not users and parts:
-            assistant_fallback += 1
-        selected = users or parts
+        selected, fallback = semantic_samples(record)
         if not selected:
             continue
-        vector = np.mean([cache[p["identity"]] for p in selected], axis=0)
+        assistant_fallback += int(fallback)
+        spans.append((len(samples), len(samples) + len(selected)))
+        samples.extend(selected)
+        represented.append(record)
+    if len(represented) < 6:
+        raise ValueError(
+            "At least six conversations with visible topic text are required"
+        )
+    encoder = model(store.root, "embedding", config)
+    encoded = encoder.encode(
+        [config["embedding"]["document_prompt"] + sample for sample in samples],
+        batch_size=16,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+        convert_to_numpy=True,
+    )
+    encoded = np.asarray(encoded, dtype=np.float64)
+    if (
+        encoded.ndim != 2
+        or len(encoded) != len(samples)
+        or not np.isfinite(encoded).all()
+    ):
+        raise ValueError("Invalid topic sample embeddings")
+    usable = []
+    for record, (start, end) in zip(represented, spans):
+        vector = np.mean(encoded[start:end], axis=0)
         norm = np.linalg.norm(vector)
         if norm < 1e-10:
             continue
-        represented.append(record)
+        usable.append(record)
         vectors.append(vector / norm)
+    represented = usable
     if len(vectors) < 6:
         raise ValueError(
             "At least six conversations with current embeddings are required"
@@ -62,17 +70,19 @@ def build(store):
     distances = np.maximum(cosine_distances(matrix), 0)
     np.fill_diagonal(distances, 0)
     labels = HDBSCAN(
-        min_cluster_size=4, min_samples=2, metric="precomputed", n_jobs=1, copy=True
-    ).fit_predict(distances)
-    plane = UMAP(
-        n_neighbors=min(15, len(vectors) - 1),
-        n_components=2,
-        min_dist=0.15,
-        metric="cosine",
-        random_state=42,
-        n_jobs=1,
-    ).fit_transform(matrix)
-    group_labels = {}
+        min_cluster_size=4, min_samples=2, metric="precomputed", n_jobs=1
+    ).fit_predict(distances.copy())
+    plane = np.asarray(
+        UMAP(
+            n_neighbors=min(15, len(vectors) - 1),
+            n_components=2,
+            min_dist=0.15,
+            metric="cosine",
+            random_state=42,
+            n_jobs=1,
+        ).fit_transform(matrix),
+        dtype=np.float64,
+    )
     group_for = {}
     for label in sorted(set(labels)):
         indices = [i for i, value in enumerate(labels) if value == label]
@@ -86,30 +96,11 @@ def build(store):
                 )
             )[:10]
         )
-        words = Counter()
-        for i in indices:
-            record = represented[i]
-            # Limit each conversation's contribution so one long transcript does not name the group.
-            words.update(
-                set(
-                    tokens(
-                        record["title"]
-                        + " "
-                        + " ".join(
-                            m["text"][:500]
-                            for m in record["messages"][:4]
-                            if m["role"] == "user"
-                        )
-                    )
-                )
-            )
-        group_labels[identity] = (
-            "Unclustered"
-            if label < 0
-            else " / ".join(w for w, _ in words.most_common(3))
-        )
         for i in indices:
             group_for[i] = identity
+    group_labels = label_groups(
+        represented, [group_for[i] for i in range(len(represented))]
+    )
     documents = []
     for i, record in enumerate(represented):
         neighbors = np.argsort(distances[i]).tolist()
@@ -133,23 +124,24 @@ def build(store):
         )
     data = {
         "checked_at": now(),
-        "backend": "qwen-umap-hdbscan-v1",
+        "backend": "configured-topic-umap-hdbscan-v2",
         "model": config["embedding"]["model_id"],
         "revision": revision,
         "input_fingerprint": digest(records),
         "documents": documents,
         "groups": group_labels,
+        "label_method": LABEL_VERSION,
         "variance_2d": None,
         "neighbor_retention_5": neighbor_retention(matrix.tolist(), plane.tolist()),
         "coverage": {
             "represented_conversations": len(represented),
             "total_conversations": len(records),
-            "current_vectors": available,
-            "current_passages": len(items),
+            "sample_vectors": len(samples),
+            "sample_limit_per_conversation": 13,
             "assistant_fallback": assistant_fallback,
         },
-        "method": "Mean normalized user-passage vectors from the configured embedding model; HDBSCAN on original cosine distances (min cluster 4, min samples 2); UMAP 2D (15 neighbors, min distance 0.15, seed 42). Topic labels are frequent source terms.",
-        "limits": "Experimental local pretrained representation. HDBSCAN may leave conversations unclustered; labels and clusters need human/agent review. UMAP can distort distance and density. Groups and map proximity do not establish ownership, truth, or accepted decisions. Averages can blur multi-topic conversations; assistant passages are used only if no user passage is available. Embedding text has a 512-token cap per passage.",
+        "method": "Mean normalized embeddings of title and up to 12 evenly spaced user samples; capture wrappers and filesystem paths excluded from derived topic input; HDBSCAN on original cosine distances (min cluster 4, min samples 2); UMAP 2D (15 neighbors, min distance 0.15, seed 42). Topic labels use corpus-weighted distinctive source phrases sampled across user messages.",
+        "limits": "Experimental local pretrained representation. HDBSCAN may leave conversations unclustered; labels and clusters need human/agent review. UMAP can distort distance and density. Groups and map proximity do not establish ownership, truth, or accepted decisions. Bounded samples and averaging can blur multi-topic conversations; assistant passages are used only if no user passage is available. Embedding text uses the configured token cap per passage.",
     }
     write_json(store.state / "dense-map.json", data)
     write_page(store, data)

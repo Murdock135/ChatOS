@@ -293,6 +293,20 @@ class WebTests(unittest.TestCase):
         self.assertIn(event["id"], result["error"])
         self.assertTrue(event["frames"])
 
+    def test_map_rebuild_is_authenticated_and_uses_the_workspace_lock(self):
+        self.assertEqual(
+            self.request("/api/map/rebuild", "POST", {}, authenticated=False)[0], 401
+        )
+        with patch("chatos.dense_map.build", return_value={"clusters": 3}) as build:
+            self.assertEqual(
+                self.request("/api/map/rebuild", "POST", {})[1], {"clusters": 3}
+            )
+            self.assertEqual(build.call_args.args[0].root, self.root.resolve())
+            from chatos.core import locked
+
+            with locked(self.root / "System/State/sync.lock", blocking=False):
+                self.assertEqual(self.request("/api/map/rebuild", "POST", {})[0], 409)
+
     def test_map_uses_current_local_titles_and_project_assignments(self):
         page = self.root / "Humans/explorer.html"
         page.parent.mkdir(parents=True)
@@ -337,6 +351,25 @@ class WebTests(unittest.TestCase):
         self.assertEqual(point["projects"], ["research"])
         self.assertEqual((point["x"], point["y"]), (1, 2))
         self.assertEqual(page.read_text(), original)
+        self.assertEqual(
+            self.request("/api/map/handoff", "POST", {}, authenticated=False)[0], 401
+        )
+        code, packet = self.request(
+            "/api/map/handoff",
+            "POST",
+            {
+                "selection": [{"source": "chatgpt", "id": "one"}],
+                "filters": {"query": "source answer", "mode": "keyword"},
+            },
+        )
+        self.assertEqual(code, 200)
+        self.assertEqual(
+            packet["snapshot"]["selection"][0]["title"], "Current local title"
+        )
+        self.assertTrue(Path(packet["path"]).is_file())
+        self.assertEqual(
+            self.request("/api/map/handoff", "POST", {"selection": []})[0], 400
+        )
 
     def test_import_action_validates_before_publishing_a_local_inbox_file(self):
         payload = (

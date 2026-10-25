@@ -1,6 +1,6 @@
 # Rich clustering exploration
 
-Date: 2026-10-24. Status: future requirement, recorded only; no implementation authorized by this note.
+Date: 2026-10-24. Original status: future requirement, recorded only. Implementation was subsequently authorized for the October 25 overnight task; see the delivery note below.
 
 Authority: Zayan requested, “for the clustering, i want the features you see in the image i attached. just note it for now”, in codex:01a16510-7f12-78b0-afa9-d5aee24d915b. The supplied screenshot is preserved privately at workspace/chief_of_staff/reference/Design references/2026-10-24-clustering-exploration.png; it is not distributed with the app.
 
@@ -32,3 +32,9 @@ Zayan clarified on October 24: “Don't need another side-by-side chat or assist
 Proposed connection: preserve an inspectable exploration snapshot or stable selection reference containing the query/filters, selected source-qualified conversation IDs, cluster labels/membership, generation time/method/freshness and cited evidence. The user's assistant reads that selection through the ChatOS skill and local commands, then responds in the user's existing chat. Authorized view changes could be passed back through explicit structured tool operations; historical text and assistant suggestions do not become approved edits automatically. Keep source records separate from exploration labels and view state.
 
 Current basis: the bundled skill and CLI provide archive access, cited retrieval and explicitly selected portable bundles. A stable current-map/cluster selection handoff and tool operations for refining that exploration are future work, not shipped behavior. Local assistants need file/terminal access; a hosted assistant without that access needs a deliberately supplied bundle or another explicitly configured integration. Do not imply every assistant can access the browser's current state automatically. This clarification remains note-only.
+
+## October 25 implementation
+
+The overnight task in Codex chat `01a17120-0b72-7073-9847-ae25e24d509f` subsequently authorized implementation, local model downloads, derived-index rebuilds, local validation and scoped commits. The coordinated map/legend/results, content and semantic search, source/project/date filters, sorting, display controls, zoom/pan/expand, image/results exports and explicit existing-assistant selection handoff are implemented. See [the adopted design](../adr/0006-semantic-map-exploration.md) and [validation and limits](../verification/semantic-map-exploration.md).
+
+The screenshot's ambiguous controls were defined as point-size presets, topic-label visibility and unclustered-item visibility. The map expands inside the app rather than requiring browser fullscreen. A local selection packet supports assistant explanation; a structured assistant-to-browser view-control protocol remains future work. These choices preserve the user's request to use their existing assistant without adding another chat pane.

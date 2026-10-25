@@ -1,39 +1,51 @@
-        <section id="view-map" hidden>
-          <div class="toolbar">
-            <label class="search"
-              >Find on the map<input
-                id="map-query"
-                type="search"
-                placeholder="Filter conversation titles" /></label
-            ><label
-              >Project<select id="map-project">
-                <option value="">All projects</option>
-              </select></label
-            ><label
-              >Source<select id="map-source">
-                <option value="">All sources</option>
-                <option value="codex">Codex</option>
-                <option value="chatgpt">ChatGPT</option>
-                <option value="muse">Muse</option>
-              </select></label
-            >
-          </div>
-          <p id="map-summary" class="muted"></p>
-          <details class="capture-details">
-            <summary>About this map</summary>
-            <p id="map-method"></p>
-          </details>
-          <div class="map-controls">
-            <button id="map-in">Zoom in</button
-            ><button id="map-out">Zoom out</button
-            ><button id="map-reset">Reset</button>
-          </div>
-          <canvas
-            id="map-canvas"
-            aria-label="Conversation map; use the title list below for keyboard access"
-          ></canvas>
-          <p id="map-hover" class="muted">
-            Select a point or conversation title to read its messages.
-          </p>
-          <div id="map-list" class="map-list"></div>
-        </section>
+<section id="view-map" hidden>
+  <form id="map-search-form" class="map-search toolbar">
+    <label class="search">Explore a concept
+      <input id="map-query" type="search" placeholder="Search the ideas inside your conversations" maxlength="2000" />
+    </label>
+    <label>Search method<select id="map-search-mode">
+      <option value="keyword">Text in conversations</option>
+      <option value="hybrid">Local semantic search</option>
+    </select></label>
+    <button type="submit" class="primary">Explore</button>
+  </form>
+  <details class="map-filter-panel"><summary>Filters &amp; sort</summary>
+  <div class="map-filters">
+    <label>Project<select id="map-project"><option value="">All projects</option></select></label>
+    <label>Source<select id="map-source"><option value="">All sources</option><option value="codex">Codex</option><option value="chatgpt">ChatGPT</option><option value="muse">Muse</option></select></label>
+    <label>From<input id="map-after" type="date" /></label>
+    <label>Through<input id="map-before" type="date" /></label>
+    <label>Sort<select id="map-sort"><option value="relevance">Best match</option><option value="newest">Newest first</option><option value="title">Title</option></select></label>
+    <button id="map-clear" type="button">Clear filters</button>
+  </div>
+  </details>
+  <p id="map-summary" class="muted" aria-live="polite"></p>
+  <button id="map-rebuild" type="button">Rebuild semantic map</button>
+  <p id="map-search-note" class="muted"></p>
+  <details class="capture-details"><summary>About this map</summary><p id="map-method"></p></details>
+  <div id="map-surface" class="map-surface">
+    <div class="map-controls">
+      <button id="map-in" aria-label="Zoom in">＋</button><button id="map-out" aria-label="Zoom out">−</button><button id="map-reset">Fit map</button>
+      <label>Display<select id="map-density"><option value="balanced">Balanced</option><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select></label>
+      <label class="check"><input id="map-labels" type="checkbox" checked />Topic labels</label>
+      <label class="check"><input id="map-noise" type="checkbox" checked />Unclustered</label>
+      <button id="map-expand" aria-pressed="false">Expand map</button>
+      <button id="map-export-image">Download map PNG</button>
+    </div>
+    <canvas id="map-canvas" aria-label="Conversation topics; use the topic legend and results below for keyboard access"></canvas>
+  </div>
+  <p id="map-hover" class="muted">Select a point to highlight its conversation below. Drag to pan; scroll to zoom.</p>
+  <div id="map-legend" class="map-legend" role="group" aria-label="Filter by topic"></div>
+  <div class="map-selection-bar">
+    <span id="map-selected-count" aria-live="polite">No conversations selected</span>
+    <button id="map-select-visible">Select visible</button><button id="map-clear-selection">Clear selection</button>
+    <button id="map-export-data">Export results JSON</button><button id="map-assistant" class="primary">Explore with my assistant</button>
+  </div>
+  <div id="map-handoff" hidden>
+    <label>Give this request to your existing assistant<textarea id="map-handoff-prompt" readonly rows="5"></textarea></label>
+    <p class="muted">The selection is saved locally with source citations and map freshness. Your assistant needs local file access; you can download the selection for an assistant without it. Nothing is sent automatically.</p>
+    <button id="map-copy-prompt">Copy request</button><button id="map-download-handoff">Download selection JSON</button>
+  </div>
+  <div id="map-list" class="map-list map-results"></div>
+  <button id="map-more" hidden>Show more conversations</button>
+</section>

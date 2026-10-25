@@ -313,3 +313,48 @@ dialog.reader::backdrop { background: #080a11b8; backdrop-filter: blur(4px); }
 .capture-note-tooltip strong, .capture-note-tooltip > span { display: block; }
 .capture-note-tooltip > span { margin-top: 6px; }
 .capture-note:hover .capture-note-tooltip, .capture-note:focus-within .capture-note-tooltip { display: block; }
+
+/* Coordinated topic map, legend, and source-backed exploration results. */
+.map-search { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; margin-bottom: 16px; }
+.map-search .search { flex: 1; min-width: 230px; }
+.map-search input { font-size: 16px; min-height: 44px; }
+.map-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.map-filters label, .map-search label { font-size: 11px; }
+.map-filters input, .map-filters select, .map-search select { margin-top: 6px; }
+.map-filters label { flex: 1; min-width: 125px; max-width: 220px; }
+#map-summary { margin: 20px 0 5px; font-size: 12px; }
+#map-search-note { font-size: 11px; margin: 0 0 8px; }
+.map-surface { margin-top: 16px; border: 1px solid #394155; border-radius: 16px; overflow: hidden; background: #171b25; }
+.map-surface .map-controls { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin: 0; padding: 12px 16px; border-bottom: 1px solid #303849; }
+.map-controls label { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+.map-controls select { width: auto; min-height: 30px; margin: 0; padding: 4px 22px 4px 8px; font-size: 11px; }
+.map-controls input[type=checkbox], .map-result input[type=checkbox] { width: 16px; height: 16px; min-height: 16px; accent-color: #8eafff; margin: 0; }
+#map-canvas { display: block; width: 100%; height: clamp(320px, 48vh, 540px); border: 0; border-radius: 0; touch-action: none; }
+.map-surface.expanded { position: fixed; inset: 18px; z-index: 20; box-shadow: 0 0 0 30px #090b12da; display: flex; flex-direction: column; }
+.map-surface.expanded #map-canvas { flex: 1; min-height: 0; height: 100%; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 24px; }
+.topic-chip { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #3d4557; border-radius: 999px; padding: 7px 12px; font-size: 11px; }
+.topic-chip:hover { background: #252e40; border: 1px solid #60759b; text-decoration: none; }
+.topic-chip[aria-pressed=true] { background: #283b5c; color: #e2ebff; border-color: #92b4ff; }
+.topic-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.map-selection-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; border-top: 1px solid #303849; padding-top: 12px; font-size: 11px; }
+#map-selected-count { color: #b8c6e0; margin-right: auto; }
+button:disabled { opacity: .45; cursor: default; }
+.map-results { display: grid; gap: 0; max-height: none; }
+.map-result { display: flex; gap: 14px; padding: 22px 12px; border-bottom: 1px solid #303849; border-radius: 8px; }
+.map-result.selected { background: #202d44; }
+.map-result-select { padding-top: 5px; }
+.map-result-body { min-width: 0; }
+.map-result-topic { display: block; font-size: 11px; margin-bottom: 7px; }
+.map-result-title { display: block; color: #e3e9f6; font-size: 15px; padding: 0; text-align: left; line-height: 1.5; }
+.map-result .muted { font-size: 11px; margin: 6px 0; }
+.map-result-excerpt { font-size: 12px; line-height: 1.7; color: #b7c0d4; margin: 7px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+#map-handoff { margin: 18px 0; padding: 18px; border: 1px solid #4a6085; border-radius: 12px; background: #202a3a; }
+#map-handoff textarea { width: 100%; margin-top: 10px; font-size: 12px; line-height: 1.6; }
+#map-handoff .muted { font-size: 11px; line-height: 1.7; }
+@media (max-width: 600px) { .map-filters label { max-width: none; min-width: 110px; } .map-controls { gap: 5px; padding: 10px; } .map-search > label { width: 100%; } .map-surface.expanded { inset: 6px; } }
+
+.map-search input[type=search] { background: #1a1d27; color: var(--text); border: 1px solid #46516b; border-radius: 12px; padding: 12px 16px; }
+.map-filter-panel { margin: 10px 0 0; }
+.map-filter-panel > summary { display: inline-block; cursor: pointer; color: #b4c8ee; font-size: 12px; padding: 8px 0; }
+.map-filter-panel .map-filters { padding: 10px 0; }

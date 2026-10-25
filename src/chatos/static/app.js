@@ -644,14 +644,97 @@ function renderHealth(health) {
 }
 let mapData,
   visibleMapDocuments = [],
+  mapBaseDocuments = [],
   mapZoom = 1,
   panX = 0,
   panY = 0,
   dragging,
   moved = false,
-  mapPositions = [];
+  mapPositions = [],
+  selectedMapKeys = new Set(),
+  mapGroup = "",
+  mapExpanded = false,
+  mapShowAllGroups = false,
+  mapListLimit = 40,
+  mapRequest = 0,
+  mapHandoff;
+const mapPalette = [
+  "#8eb5ff",
+  "#79d4bb",
+  "#e5a77d",
+  "#b9a0f4",
+  "#f18fb8",
+  "#e0d780",
+  "#79cedf",
+  "#b1cd8a",
+];
+function mapKey(item) {
+  return JSON.stringify([item.source, item.id]);
+}
+function mapColor(group) {
+  if (!group || group === "unclustered") return "#a0a7b6";
+  const groups = Object.keys(mapData?.groups || {})
+    .filter((key) => key !== "unclustered")
+    .sort();
+  const index = Math.max(0, groups.indexOf(group));
+  return mapPalette[index] || `hsl(${(index * 137.5) % 360}, 65%, 70%)`;
+}
+function mapFilters() {
+  return {
+    query: $("map-query").value.trim(),
+    mode: $("map-search-mode").value,
+    source: $("map-source").value,
+    project: $("map-project").value,
+    group: mapGroup,
+    after: $("map-after").value,
+    before: $("map-before").value,
+    sort: $("map-sort").value,
+  };
+}
+function mapViewFilters() {
+  return {
+    ...mapFilters(),
+    query: mapData?.search?.query || "",
+    mode: mapData?.search?.mode || "keyword",
+  };
+}
 async function loadMap() {
-  mapData = await api("map");
+  const request = ++mapRequest;
+  const filters = mapFilters();
+  $("map-summary").textContent = "Loading conversation map…";
+  for (const id of [
+    "map-assistant",
+    "map-export-data",
+    "map-export-image",
+    "map-select-visible",
+  ])
+    $(id).disabled = true;
+  $("map-handoff").hidden = true;
+  const parameters = new URLSearchParams({
+    q: filters.query,
+    mode: filters.mode,
+    source: filters.source,
+    project: filters.project,
+  });
+  try {
+    const data = await api("map?" + parameters);
+    if (request !== mapRequest) return;
+    mapData = data;
+  } catch (error) {
+    if (request === mapRequest) {
+      // Do not leave results from the previous query masquerading as this search.
+      mapData = null;
+      visibleMapDocuments = [];
+      $("map-list").replaceChildren();
+      $("map-legend").replaceChildren();
+      $("map-summary").textContent =
+        "Map search failed. Choose text search or configure local models in Setup & handoff.";
+      selectedMapKeys.clear();
+      updateMapSelection();
+      drawMap();
+    }
+    throw error;
+  }
   const selected = $("map-project").value;
   $("map-project").replaceChildren(option("", "All projects"));
   for (const project of overview.projects)
@@ -661,37 +744,169 @@ async function loadMap() {
 }
 function filterMap() {
   if (!mapData) return;
-  const query = $("map-query").value.toLowerCase(),
-    project = $("map-project").value,
-    source = $("map-source").value;
-  visibleMapDocuments = (mapData.documents || []).filter(
-    (item) =>
-      item.title.toLowerCase().includes(query) &&
-      (!project || item.projects.includes(project)) &&
-      (!source || item.source === source),
-  );
-  $("map-summary").textContent =
-    visibleMapDocuments.length +
-    " of " +
-    (mapData.documents || []).length +
-    " mapped conversations · Built " +
-    date(mapData.checked_at) +
-    " · " +
-    (mapData.freshness_note || "Run sync to generate the map.");
-  $("map-method").textContent =
-    (mapData.method || "Experimental representation") +
-    " " +
-    (mapData.limits || "");
-  $("map-list").replaceChildren();
-  for (const item of visibleMapDocuments) {
-    const button = node("button", item.title);
-    button.onclick = safely(() => openChat(item.source, item.id));
-    $("map-list").append(button);
+  const filters = mapFilters();
+  if (filters.after && filters.before && filters.after > filters.before) {
+    notice("The start date must be on or before the end date.");
   }
+  mapBaseDocuments = (mapData.documents || []).filter(
+    (item) =>
+      (!filters.project || item.projects.includes(filters.project)) &&
+      (!filters.source || item.source === filters.source) &&
+      (!filters.after || item.date >= filters.after) &&
+      (!filters.before || (item.date && item.date <= filters.before)) &&
+      ($("map-noise").checked || item.group !== "unclustered"),
+  );
+  if (mapGroup && !mapBaseDocuments.some((item) => item.group === mapGroup))
+    mapGroup = "";
+  visibleMapDocuments = mapBaseDocuments.filter(
+    (item) => !mapGroup || item.group === mapGroup,
+  );
+  visibleMapDocuments.sort((a, b) => {
+    if (filters.sort === "title") return a.title.localeCompare(b.title);
+    if (filters.sort === "newest")
+      return (b.date || "").localeCompare(a.date || "");
+    return (
+      (a.rank ?? 0) - (b.rank ?? 0) ||
+      (b.date || "").localeCompare(a.date || "")
+    );
+  });
+  const visible = new Set(visibleMapDocuments.map(mapKey));
+  selectedMapKeys = new Set(
+    [...selectedMapKeys].filter((key) => visible.has(key)),
+  );
+  mapListLimit = 40;
+  $("map-handoff").hidden = true;
+  $("map-summary").textContent =
+    `${visibleMapDocuments.length} of ${mapData.mapped_total ?? mapData.documents.length} mapped conversations · Built ${date(mapData.checked_at)} · ${mapData.freshness_note || "Freshness unverified."}`;
+  $("map-search-note").textContent = mapData.search?.note || "";
+  $("map-method").textContent =
+    `${mapData.method || "Experimental representation"} ${mapData.limits || ""} Labels: distinctive source phrases; sampled text, not verified summaries. Projection quality (neighbor retention): ${mapData.neighbor_retention_5 == null ? "not measured" : Math.round(mapData.neighbor_retention_5 * 100) + "%"}.`;
+  renderMapLegend();
+  renderMapResults();
+  updateMapSelection();
   drawMap();
 }
+function renderMapLegend() {
+  const legend = $("map-legend");
+  legend.replaceChildren();
+  const all = node(
+    "button",
+    "All topics · " + mapBaseDocuments.length,
+    "topic-chip",
+  );
+  all.setAttribute("aria-pressed", String(!mapGroup));
+  all.onclick = () => {
+    mapGroup = "";
+    filterMap();
+  };
+  legend.append(all);
+  const counts = new Map();
+  for (const item of mapBaseDocuments)
+    counts.set(item.group, (counts.get(item.group) || 0) + 1);
+  const groups = [...counts].sort((a, b) => b[1] - a[1]);
+  for (const [group, count] of groups.filter(
+    ([group], index) => mapShowAllGroups || index < 6 || group === mapGroup,
+  )) {
+    const button = node("button", "", "topic-chip");
+    const swatch = node("span", "", "topic-dot");
+    swatch.style.backgroundColor = mapColor(group);
+    button.append(
+      swatch,
+      document.createTextNode(
+        (mapData.groups[group] || "Mixed topics") + " · " + count,
+      ),
+    );
+    button.setAttribute("aria-pressed", String(mapGroup === group));
+    button.onclick = () => {
+      mapGroup = mapGroup === group ? "" : group;
+      filterMap();
+    };
+    legend.append(button);
+  }
+  if (groups.length > 6) {
+    const more = node(
+      "button",
+      mapShowAllGroups ? "Fewer topics" : `+${groups.length - 6} more topics`,
+      "topic-chip",
+    );
+    more.onclick = () => {
+      mapShowAllGroups = !mapShowAllGroups;
+      renderMapLegend();
+    };
+    legend.append(more);
+  }
+}
+function renderMapResults() {
+  const list = $("map-list");
+  list.replaceChildren();
+  if (!visibleMapDocuments.length)
+    list.append(
+      node(
+        "p",
+        "No conversations match this view. Clear filters or try another concept.",
+        "muted",
+      ),
+    );
+  for (const item of visibleMapDocuments.slice(0, mapListLimit)) {
+    const card = node("article", "", "map-result");
+    card.dataset.mapKey = mapKey(item);
+    const selectLabel = node("label", "", "map-result-select");
+    const select = node("input");
+    select.type = "checkbox";
+    select.checked = selectedMapKeys.has(mapKey(item));
+    select.setAttribute("aria-label", "Select " + item.title);
+    select.onchange = () => {
+      if (select.checked) selectedMapKeys.add(mapKey(item));
+      else selectedMapKeys.delete(mapKey(item));
+      updateMapSelection();
+      drawMap();
+    };
+    selectLabel.append(select);
+    const body = node("div", "", "map-result-body");
+    const topic = node(
+      "span",
+      mapData.groups[item.group] || "Mixed topics",
+      "map-result-topic",
+    );
+    topic.style.color = mapColor(item.group);
+    const open = node("button", item.title, "map-result-title");
+    open.onclick = safely(() =>
+      openChat(item.source, item.id, item.match?.message_id),
+    );
+    body.append(
+      topic,
+      open,
+      node(
+        "p",
+        `${item.source} · ${item.date || "Date unknown"} · ${captureLabel(item.capture)}`,
+        "muted",
+      ),
+      node(
+        "p",
+        item.match?.excerpt || item.excerpt || "No captured text preview.",
+        "map-result-excerpt",
+      ),
+    );
+    card.append(selectLabel, body);
+    list.append(card);
+  }
+  $("map-more").hidden = mapListLimit >= visibleMapDocuments.length;
+}
+function updateMapSelection() {
+  $("map-selected-count").textContent = selectedMapKeys.size
+    ? `${selectedMapKeys.size} selected${selectedMapKeys.size > 200 ? " · select at most 200 for an assistant handoff" : ""}`
+    : "No conversations selected";
+  $("map-assistant").disabled =
+    !selectedMapKeys.size || selectedMapKeys.size > 200;
+  $("map-export-data").disabled = !visibleMapDocuments.length;
+  $("map-export-image").disabled = !visibleMapDocuments.length;
+  $("map-select-visible").disabled = !visibleMapDocuments.length;
+  $("map-handoff").hidden = true;
+  for (const card of document.querySelectorAll(".map-result"))
+    card.classList.toggle("selected", selectedMapKeys.has(card.dataset.mapKey));
+}
 function drawMap() {
-  if (!mapData || currentView !== "map") return;
+  if (currentView !== "map") return;
   const canvas = $("map-canvas"),
     context = canvas.getContext("2d"),
     docs = visibleMapDocuments,
@@ -701,9 +916,15 @@ function drawMap() {
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#171b25";
+  context.fillRect(0, 0, width, height);
   mapPositions = [];
-  if (!docs.length) return;
+  if (!mapData || !docs.length) {
+    context.fillStyle = "#a2a6b6";
+    context.font = "13px system-ui";
+    context.fillText("No mapped conversations in this view", 24, 42);
+    return;
+  }
   const xs = docs.map((item) => item.x),
     ys = docs.map((item) => item.y),
     minX = Math.min(...xs),
@@ -712,27 +933,119 @@ function drawMap() {
     maxY = Math.max(...ys),
     scale =
       Math.min(
-        (width - 60) / (maxX - minX || 1),
-        (height - 60) / (maxY - minY || 1),
+        (width - 120) / (maxX - minX || 1),
+        (height - 110) / (maxY - minY || 1),
       ) * mapZoom;
-  const colors = ["#286548", "#597cac", "#b37b46", "#8967a0", "#a46b7a"];
+  const radii = { compact: 3, balanced: 5, comfortable: 8 },
+    radius = radii[$("map-density").value] || 5;
+  const centers = new Map();
   for (const item of docs) {
     const x = width / 2 + (item.x - (minX + maxX) / 2) * scale + panX,
       y = height / 2 - (item.y - (minY + maxY) / 2) * scale + panY;
-    let hash = 0;
-    for (const c of item.group || "")
-      hash = (hash * 31 + c.charCodeAt(0)) >>> 0;
     context.beginPath();
-    context.arc(x, y, 6, 0, Math.PI * 2);
-    context.fillStyle =
-      item.group === "unclustered" ? "#95a295" : colors[hash % colors.length];
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = mapColor(item.group);
     context.fill();
+    if (selectedMapKeys.has(mapKey(item))) {
+      context.strokeStyle = "#fff";
+      context.lineWidth = 2;
+      context.stroke();
+    }
     mapPositions.push({ x, y, item });
+    const center = centers.get(item.group) || { x: 0, y: 0, count: 0 };
+    center.x += x;
+    center.y += y;
+    center.count++;
+    centers.set(item.group, center);
+  }
+  if ($("map-labels").checked) {
+    context.font = "600 12px system-ui";
+    const placed = [];
+    for (const [group, center] of [...centers].sort(
+      (a, b) => b[1].count - a[1].count,
+    )) {
+      if (group === "unclustered") continue;
+      const raw = mapData.groups[group] || "Mixed topics",
+        text = raw.length > 40 ? raw.slice(0, 39) + "…" : raw;
+      const w = Math.min(context.measureText(text).width + 16, width - 16),
+        h = 25;
+      const x = Math.max(
+        8,
+        Math.min(width - w - 8, center.x / center.count - w / 2),
+      );
+      let y = center.y / center.count - 34;
+      for (
+        let attempt = 0;
+        attempt < 5 &&
+        placed.some(
+          (p) => x < p.x + p.w && x + w > p.x && y < p.y + h && y + h > p.y,
+        );
+        attempt++
+      )
+        y += 30;
+      if (
+        y < 8 ||
+        y + h > height - 8 ||
+        placed.some(
+          (p) => x < p.x + p.w && x + w > p.x && y < p.y + h && y + h > p.y,
+        )
+      )
+        continue;
+      context.fillStyle = "#171b25e8";
+      context.fillRect(x, y, w, h);
+      context.fillStyle = mapColor(group);
+      context.fillText(text, x + 8, y + 17, w - 16);
+      placed.push({ x, y, w });
+    }
   }
 }
 function zoom(factor) {
   mapZoom = Math.max(0.25, Math.min(20, mapZoom * factor));
   drawMap();
+}
+function downloadMapFile(blob, filename) {
+  const url = URL.createObjectURL(blob),
+    link = node("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function mapSnapshot() {
+  const documents = selectedMapKeys.size
+    ? visibleMapDocuments.filter((item) => selectedMapKeys.has(mapKey(item)))
+    : visibleMapDocuments;
+  return {
+    schema_version: 1,
+    kind: "map_results",
+    exported_at: new Date().toISOString(),
+    filters: mapViewFilters(),
+    map_built_at: mapData?.checked_at,
+    map_generation: mapData?.generation,
+    method: mapData?.method,
+    label_method: mapData?.label_method,
+    freshness_note: mapData?.freshness_note,
+    selection: documents.map((item) => ({
+      source: item.source,
+      id: item.id,
+      title: item.title,
+      path: item.path,
+      topic: mapData.groups[item.group],
+      group: item.group,
+      date: item.date,
+      capture: item.capture,
+      x: item.x,
+      y: item.y,
+      evidence: item.match || {
+        message_id: item.message_id,
+        excerpt: item.excerpt,
+      },
+    })),
+    limits:
+      "Exported metadata and preview excerpts, not full transcripts. Topic labels are suggestions. No chats were transmitted.",
+  };
 }
 const canvas = $("map-canvas");
 canvas.onpointerdown = (event) => {
@@ -749,8 +1062,10 @@ canvas.onpointermove = (event) => {
       (point) => (point.x - x) ** 2 + (point.y - y) ** 2 < 144,
     );
     $("map-hover").textContent = point
-      ? point.item.title
-      : "Select a point or conversation title to read its messages.";
+      ? point.item.title +
+        " · " +
+        (mapData.groups[point.item.group] || "Mixed topics")
+      : "Select a point to highlight its conversation below. Drag to pan; scroll to zoom.";
     return;
   }
   const dx = event.clientX - dragging.x,
@@ -760,18 +1075,33 @@ canvas.onpointermove = (event) => {
   panY = dragging.panY + dy;
   drawMap();
 };
-canvas.onpointerup = safely(async (event) => {
-  if (!moved) {
-    const box = canvas.getBoundingClientRect(),
-      x = event.clientX - box.left,
-      y = event.clientY - box.top;
+canvas.onpointerup = () => {
+  if (!moved && dragging) {
     const point = mapPositions.find(
-      (point) => (point.x - x) ** 2 + (point.y - y) ** 2 < 144,
+      (point) =>
+        (point.x - (dragging.x - canvas.getBoundingClientRect().left)) ** 2 +
+          (point.y - (dragging.y - canvas.getBoundingClientRect().top)) ** 2 <
+        144,
     );
-    if (point) await openChat(point.item.source, point.item.id);
+    if (point) {
+      const key = mapKey(point.item);
+      if (selectedMapKeys.has(key)) selectedMapKeys.delete(key);
+      else selectedMapKeys.add(key);
+      mapListLimit = Math.max(
+        mapListLimit,
+        visibleMapDocuments.indexOf(point.item) + 1,
+      );
+      renderMapResults();
+      updateMapSelection();
+      drawMap();
+      const card = [...document.querySelectorAll(".map-result")].find(
+        (card) => card.dataset.mapKey === key,
+      );
+      card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }
   dragging = null;
-});
+};
 canvas.onpointercancel = () => {
   dragging = null;
 };
@@ -790,7 +1120,115 @@ $("map-reset").onclick = () => {
   panX = panY = 0;
   drawMap();
 };
+$("map-expand").onclick = () => {
+  mapExpanded = !mapExpanded;
+  $("map-surface").classList.toggle("expanded", mapExpanded);
+  $("map-expand").textContent = mapExpanded ? "Collapse map" : "Expand map";
+  $("map-expand").setAttribute("aria-pressed", String(mapExpanded));
+  drawMap();
+};
+$("map-export-image").onclick = () =>
+  $("map-canvas").toBlob((blob) => {
+    if (blob) downloadMapFile(blob, "chatos-map.png");
+  });
+$("map-export-data").onclick = () =>
+  downloadMapFile(
+    new Blob([JSON.stringify(mapSnapshot(), null, 2)], {
+      type: "application/json",
+    }),
+    "chatos-map-results.json",
+  );
+$("map-select-visible").onclick = () => {
+  selectedMapKeys = new Set(visibleMapDocuments.map(mapKey));
+  renderMapResults();
+  updateMapSelection();
+  drawMap();
+};
+$("map-clear-selection").onclick = () => {
+  selectedMapKeys.clear();
+  renderMapResults();
+  updateMapSelection();
+  drawMap();
+};
+$("map-more").onclick = () => {
+  mapListLimit += 40;
+  renderMapResults();
+};
+$("map-search-form").onsubmit = safely(async (event) => {
+  event.preventDefault();
+  await loadMap();
+});
+$("map-clear").onclick = safely(async () => {
+  for (const id of [
+    "map-query",
+    "map-source",
+    "map-project",
+    "map-after",
+    "map-before",
+  ])
+    $(id).value = "";
+  $("map-search-mode").value = "keyword";
+  mapGroup = "";
+  $("map-noise").checked = true;
+  for (const id of ["map-source", "map-project", "map-search-mode"])
+    $(id).dispatchEvent(new Event("choices-refresh"));
+  await loadMap();
+});
+for (const id of ["map-project", "map-source"])
+  $(id).onchange = safely(loadMap);
+for (const id of ["map-after", "map-before", "map-sort", "map-noise"])
+  $(id).onchange = filterMap;
+for (const id of ["map-labels", "map-density"]) $(id).onchange = drawMap;
+$("map-rebuild").onclick = safely(async () => {
+  $("map-rebuild").disabled = true;
+  notice(
+    "Rebuilding the local semantic map… This may take a moment. Download an embedding model in Setup & handoff first if needed.",
+  );
+  try {
+    await api("map/rebuild", "POST", {});
+    await loadMap();
+    notice("Semantic map rebuilt from current captured conversations.");
+  } finally {
+    $("map-rebuild").disabled = false;
+  }
+});
+$("map-assistant").onclick = safely(async () => {
+  $("map-assistant").disabled = true;
+  try {
+    const selection = visibleMapDocuments
+      .filter((item) => selectedMapKeys.has(mapKey(item)))
+      .map((item) => ({ source: item.source, id: item.id }));
+    mapHandoff = await api("map/handoff", "POST", {
+      selection,
+      filters: mapViewFilters(),
+      map_fingerprint: mapData.input_fingerprint,
+      map_generation: mapData.generation,
+    });
+    $("map-handoff-prompt").value = mapHandoff.prompt;
+    $("map-handoff").hidden = false;
+  } finally {
+    $("map-assistant").disabled =
+      !selectedMapKeys.size || selectedMapKeys.size > 200;
+  }
+});
+$("map-copy-prompt").onclick = safely(async () => {
+  await navigator.clipboard.writeText($("map-handoff-prompt").value);
+  notice("Assistant request copied.");
+});
+$("map-download-handoff").onclick = () => {
+  if (mapHandoff)
+    downloadMapFile(
+      new Blob([JSON.stringify(mapHandoff.snapshot, null, 2)], {
+        type: "application/json",
+      }),
+      "chatos-exploration-selection.json",
+    );
+};
 window.addEventListener("resize", drawMap);
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && mapExpanded) $("map-expand").click();
+});
+
 for (const button of document.querySelectorAll("[data-view]"))
   button.onclick = safely(async () => {
     await startup;
@@ -1027,8 +1465,7 @@ $("backup").onclick = safely(async () => {
   }
 });
 
-$("map-query").oninput = filterMap;
-for (const id of ["map-project", "map-source"]) $(id).onchange = filterMap;
+
 
 window.addEventListener(
   "hashchange",

@@ -73,7 +73,7 @@ def refresh(store,index):
     saved=store.state/'dense-map.json'
     if saved.exists():
         data=json.loads(saved.read_text())
-        if data.get('backend')=='qwen-umap-hdbscan-v1':
+        if data.get('backend') in {'qwen-umap-hdbscan-v1', 'configured-topic-umap-hdbscan-v2'}:
             data['freshness_note']=('Source records changed since this map was built; semantic refresh is pending.'
                                     if data.get('input_fingerprint')!=digest(store.records()) else 'Map matches current captured records.')
             write_page(store,data)

@@ -17,7 +17,7 @@ from urllib.parse import parse_qs, urlsplit
 
 from . import library
 from .changes import snapshot_manifest
-from .core import ROOT, Store, digest, now
+from .core import ROOT, Store, now
 from .workspace import Workspace, workspace_path
 
 STATIC = Path(__file__).with_name("static")
@@ -458,47 +458,19 @@ class Handler(BaseHTTPRequestHandler):
                 "captured_at": manifest["captured_at_utc"],
             }
         if path == "/api/map" and method == "GET":
-            page = workspace_path(store.root, "Humans/explorer.html")
-            if not page.is_file():
-                return {
-                    "documents": [],
-                    "groups": {},
-                    "limits": "Run sync to generate the map.",
-                }
-            text = page.read_text()
-            start = text.index('<script type="application/json" id="data">') + len(
-                '<script type="application/json" id="data">'
-            )
-            data = json.loads(text[start : text.index("</script>", start)])
-            captured_records = store.records()
-            records = {
-                (record["source"], record["id"]): record for record in captured_records
-            }
-            if data.get("input_fingerprint"):
-                data["freshness_note"] = (
-                    "Matches current captured records."
-                    if data["input_fingerprint"] == digest(captured_records)
-                    else "Captured records changed; the map needs a refresh."
-                )
-            else:
-                data["freshness_note"] = (
-                    "Freshness is unverified; inspect the generation time."
-                )
+            from .map_exploration import read_map
 
-            library.initialize(store)
-            annotations = {
-                (row["source"], row["id"]): row["title"]
-                for row in store.db.execute(
-                    "SELECT source,id,title FROM library_annotations"
-                )
-            }
-            # Local organization can change without rebuilding experimental coordinates.
-            for point in data.get("documents", []):
-                key = point["source"], point["id"]
-                if key in records:
-                    point["projects"] = records[key].get("projects", [])
-                    point["title"] = annotations.get(key) or records[key]["title"]
-            return data
+            return read_map(store, query)
+        if path == "/api/map/rebuild" and method == "POST":
+            from .core import locked
+            from .dense_map import build
+
+            with locked(store.state / "sync.lock", blocking=False):
+                return build(store)
+        if path == "/api/map/handoff" and method == "POST":
+            from .map_exploration import prepare_handoff
+
+            return prepare_handoff(store, self.body())
         raise LookupError("Not found")
 
 
