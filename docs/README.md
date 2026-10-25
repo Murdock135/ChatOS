@@ -1,6 +1,6 @@
-# Understand and use chat-OS
+# Understand and use ChatGrep
 
-chat-OS keeps captured AI conversations and related context in a visible local workspace. You can browse and search the records yourself. An assistant with access to the workspace can also use them to help you continue earlier work.
+ChatGrep keeps captured AI conversations and related context in a visible local workspace. You can browse and search the records yourself. An assistant with access to the workspace can also use them to help you continue earlier work.
 
 Start with the problem and product, then follow a conversation through the system:
 
@@ -28,6 +28,8 @@ The [implementation roadmap](../workspace/IMPLEMENTATION.md) tracks incomplete w
 Links into `workspace/` describe a configured installation and are absent from a fresh clone. The public guides and fictional walkthrough do not require those private records.
 
 [Optional semantic setup](semantic-search.md) — embedding-model and dependency installation, indexing, hybrid retrieval, clustering and map freshness.
+
+[Structured-summary clustering proposal](proposals/0003-structured-conversation-summaries.md) — proposed whole-conversation summaries, optional user review, implementation phases, research limits and measured Bedrock costs; implementation remains deferred.
 
 ## Complete your own workflow
 

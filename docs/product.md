@@ -4,7 +4,7 @@
 
 Useful information accumulates across AI conversations: explanations, code discussions, research notes, preferences, and choices about ongoing work. Finding it later often requires remembering which app, chat, or wording you used. A new conversation may begin without that earlier context, so you repeat yourself or reconstruct the work manually.
 
-chat-OS gives those captured conversations a common, inspectable home. You should be able to find a discussion, read the original messages, understand their limitations, and use relevant context when continuing work.
+ChatGrep gives those captured conversations a common, inspectable home. You should be able to find a discussion, read the original messages, understand their limitations, and use relevant context when continuing work.
 
 ## What kind of product is it?
 
@@ -31,7 +31,7 @@ It is a role played by an active AI assistant: help maintain continuity across y
 
 For example, you can ask: “Find our earlier discussion about the evaluation method, show what I actually chose, and compare it with the current project files.” The code retrieves candidate passages. The assistant reads them, checks their context and later changes, and explains the result with links. Its tool access and permissions determine what it can read or change.
 
-The assistant role adds value, but people can browse and search the archive without an active assistant. Today, natural-language interpretation happens in the connected assistant, not in a built-in chat-OS chat service.
+The assistant role adds value, but people can browse and search the archive without an active assistant. Today, natural-language interpretation happens in the connected assistant, not in a built-in ChatGrep chat service.
 
 ## Interaction surfaces
 
