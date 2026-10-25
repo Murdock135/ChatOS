@@ -255,6 +255,7 @@ async function showView(view) {
     ],
   };
   $("page-title").textContent = titles[view][0];
+  $("page-title").hidden = view === "chats";
   $("subtitle").textContent = titles[view][1];
   if (view === "chats") await loadChats();
   if (view === "context") await loadContext();
