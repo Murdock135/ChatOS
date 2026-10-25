@@ -38,3 +38,5 @@ Links into `workspace/` describe a configured installation and are absent from a
 3. [Context artifacts](context-artifacts.md): ask your AI for scoped context, inspect it and record explicit review.
 4. [Guided onboarding](onboarding.md): initialize independently, inspect readiness, choose assistant access and verify backup.
 5. [Portable bundles](portable-bundles.md): select local records/context for a different assistant without automatic transmission.
+
+The product name is **ChatGrep**. Existing `chatos` commands, Python package/skill paths, saved project IDs and authentication-header identifiers remain compatible. Historical proposals, decisions and evaluation records may retain the former name.

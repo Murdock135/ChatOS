@@ -35,8 +35,8 @@ def deliver(root=ROOT):
                     raise ValueError('Project destination resolves outside project')
                 if destination.is_symlink():raise ValueError('Refusing a symlink destination')
                 if destination.exists() and not destination.read_text().startswith(marker):
-                    raise ValueError('Existing note is not managed by chat-OS; left untouched')
-                lines=[marker,'# Chat OS conversations','',
+                    raise ValueError('Existing note is not managed by ChatGrep; left untouched')
+                lines=[marker,'# ChatGrep conversations','',
                        'Generated source-linked context for this project. It does not create accepted tasks or decisions.',
                        'The conversation archive contains the source messages; check them before acting.', '']
                 for r in certain:

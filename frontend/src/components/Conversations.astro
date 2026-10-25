@@ -3,16 +3,30 @@ import SearchPanel from "./SearchPanel.astro";
 ---
         <section id="view-chats">
           <SearchPanel />
+          <div id="search-error" class="search-error" role="alert" hidden>
+            <svg class="search-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v6m0 3v1" /></svg>
+            <div class="search-error-content">
+              <strong id="search-error-title">Search error</strong>
+              <p id="search-error-message"></p>
+              <button id="search-error-retry" type="button">Retry search</button>
+            </div>
+            <button id="search-error-dismiss" class="search-error-dismiss" type="button" aria-label="Dismiss search error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+          </div>
           <textarea id="chief-prompt" hidden readonly aria-label="Chief of Staff search request"></textarea>
           <p id="result-count" class="muted"></p>
           <div class="library-layout">
-            <div>
+            <div class="conversation-table">
+              <nav class="pagination" aria-label="Conversation pages">
+                <label class="page-size-control">Show <select id="page-size" data-native="true" aria-label="Conversations per page"><option value="10">10</option><option value="50" selected>50</option><option value="100">100</option></select> per page</label>
+                <span id="page-range" class="page-range"></span>
+                <div class="page-navigation"><button id="previous-page" type="button" disabled>← Previous</button><span id="page-label" aria-live="polite">Page 1 of 1</span><button id="next-page" type="button" disabled>Next →</button></div>
+              </nav>
+              <div class="conversation-columns" aria-hidden="true"><span>Conversation</span><span>Last updated</span><span>Model</span><span></span></div>
               <div
                 id="chat-list"
                 class="chat-list"
                 aria-label="Conversations"
               ></div>
-              <button id="more" class="secondary" hidden>Load more</button>
             </div>
             <dialog id="reader" class="reader" aria-label="Conversation reader">
               <div class="empty">
@@ -31,7 +45,7 @@ import SearchPanel from "./SearchPanel.astro";
                     />
                     <path d="M8 10h8M8 14h5" /></svg
                 ></span>
-                <p class="eyebrow">YOUR CONVERSATION LIBRARY</p>
+                <p class="eyebrow">Your conversation library</p>
                 <h2>Pick up where you left off.</h2>
                 <p>
                   Find a past conversation, revisit a decision, or connect an idea. Select a chat to start reading.

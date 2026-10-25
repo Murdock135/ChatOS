@@ -41,7 +41,7 @@ def initialize(destination: Path, codex_home: Optional[Path] = None) -> dict:
         (staging / "chatos.json").write_text(json.dumps(config, indent=2) + "\n")
         files = {
             "ASSISTANT.md": assistant_guide(destination),
-            "README.md": "# Your chatOS workspace\n\nBrowse your chats with `chatos --root THIS_DIRECTORY serve --open`.\n\n"
+            "README.md": "# Your ChatGrep workspace\n\nBrowse your chats with `chatos --root THIS_DIRECTORY serve --open`.\n\n"
             "- `your_ais/`: source records, export inboxes and captured-context links.\n"
             "- `shared_context/`: your reviewed profile, preferences and context artifacts.\n"
             "- `chief_of_staff/`: instructions, memory and project registry for an organizing assistant.\n"

@@ -216,7 +216,7 @@ def prepare_handoff(store: Store, request: dict[str, Any]) -> dict[str, Any]:
     target = store.state / "map-explorations" / (identity + ".json")
     write_json(target, packet)
     prompt = (
-        "Explore the ChatOS conversation selection in " + str(target) + ". "
+        "Explore the ChatGrep conversation selection in " + str(target) + ". "
         "Use its query, filters and cited excerpts to explain the main themes and useful connections. "
         "Inspect the selected original records under "
         + str(store.root)

@@ -35,7 +35,7 @@ Core sync does not call `file-projects`. External project-index delivery and sub
 
 The [archive-retrieval skill](../workspace/chief_of_staff/skills/archive-retrieval/SKILL.md) tells an active assistant to inspect passages and neighboring turns, distinguish proposals from user instructions, check later evidence, and answer with links. The [project-briefing skill](../workspace/chief_of_staff/skills/project-briefing/SKILL.md) adds current project files when resuming work. This reasoning happens in the host assistant. Core import and default retrieval run locally; using an assistant is governed by that host's access and data handling. Local storage does not mean every assistant interaction runs offline.
 
-Today, indexed workspace notes are working memory, current state, operating guidance, recorded chat-OS decisions, and local library annotations. The basic index does not search every document in every registered project. Reading those other project files is a separate assistant action.
+Today, indexed workspace notes are working memory, current state, operating guidance, recorded ChatGrep decisions, and local library annotations. The basic index does not search every document in every registered project. Reading those other project files is a separate assistant action.
 
 ## Storage and editing boundaries
 

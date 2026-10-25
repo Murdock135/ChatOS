@@ -1,4 +1,4 @@
-# Select a ChatOS workspace
+# Select a ChatGrep workspace
 
 This is the unbound copy shipped with the app. Ask the user for the workspace they want to use, or use the explicit CHATOS_WORKSPACE environment value after verifying its chatos.json. Do not assume a home directory, profile, project registry or account.
 

@@ -1,7 +1,7 @@
 "use strict";
 // Keep native select values as the form contract while presenting visible choices.
 function enhanceChoices(select) {
-  if (select.dataset.enhanced) return;
+  if (select.dataset.native === "true" || select.dataset.enhanced) return;
   select.dataset.enhanced = "true";
   const wrapper = document.createElement("div");
   wrapper.className = "choice-control";
@@ -139,7 +139,8 @@ acceptLaunchToken();
 let overview,
   current,
   currentView = "chats",
-  loaded = 0,
+  chatPage = 1,
+  chatPages = 1,
   requestId = 0,
   contextItems = [],
   dirty = false;
@@ -172,7 +173,7 @@ async function api(path, method = "GET", body) {
   if (!response.ok) {
     if (response.status === 401) {
       $("result-count").textContent = "Workspace disconnected";
-      throw new Error("This browser is disconnected from your workspace. Open ChatOS using its launch link to reconnect; your conversations are still stored locally.");
+      throw new Error("This browser is disconnected from your workspace. Open ChatGrep using its launch link to reconnect; your conversations are still stored locally.");
     }
     throw new Error(data.error || "Request failed");
   }
@@ -231,7 +232,7 @@ async function showView(view) {
     return;
   if (view !== currentView) dirty = false;
   currentView = view;
-  for (const section of ["chats", "map", "context", "health", "setup"])
+  for (const section of ["chats", "map", "context", "health", "setup", "settings"])
     $("view-" + section).hidden = section !== view;
   for (const button of document.querySelectorAll("[data-view]")) {
     const selected = button.dataset.view === view;
@@ -239,7 +240,7 @@ async function showView(view) {
     button.setAttribute("aria-pressed", String(selected));
   }
   const titles = {
-    chats: ["Conversations", "Find a conversation. Pick up a thread."],
+    chats: ["Conversations", ""],
     map: [
       "Conversation map",
       "Explore related chats. Similarity is a suggestion, not a decision.",
@@ -249,6 +250,7 @@ async function showView(view) {
       "Setup & handoff",
       "Choose sources, review context, and carry it with you.",
     ],
+    settings: ["Settings", "Manage your workspace, imports, sync and search models."],
     health: [
       "Health & sync",
       "Know what is captured, current, and still missing.",
@@ -257,14 +259,23 @@ async function showView(view) {
   $("page-title").textContent = titles[view][0];
   $("page-title").hidden = view === "chats";
   $("subtitle").textContent = titles[view][1];
+  $("subtitle").hidden = view === "chats";
   if (view === "chats") await loadChats();
   if (view === "context") await loadContext();
   if (view === "health") renderHealth();
   if (view === "map") await loadMap();
   if (view === "setup") await loadSetup();
+  if (view === "settings") await loadSettings();
 }
-async function loadChats(append = false) {
+async function loadChats(page = 1) {
   const id = ++requestId;
+  const pageSize = [10, 50, 100].includes(Number($("page-size").value)) ? Number($("page-size").value) : 50;
+  chatPage = Math.max(1, page);
+  const offset = (chatPage - 1) * pageSize;
+  $("previous-page").disabled = true;
+  $("next-page").disabled = true;
+  $("page-label").textContent = "Loading…";
+  $("search-error").hidden = true;
   const activeFilters = [$("source").value, $("project").value, $("archived").checked].filter(Boolean).length;
   $("filter-summary").textContent = activeFilters ? `Filters · ${activeFilters}` : "Filters";
   const searchState = [activeFilters ? `${activeFilters} filters active` : "", $("search-mode").value === "hybrid" ? "Smart search" : ""].filter(Boolean);
@@ -277,7 +288,8 @@ async function loadChats(append = false) {
     source: $("source").value,
     project: $("project").value,
     archived: $("archived").checked,
-    offset: append ? loaded : 0,
+    offset,
+    limit: pageSize,
   });
   if (reviewId && useReview) query.set("review", reviewId);
   let data;
@@ -285,20 +297,19 @@ async function loadChats(append = false) {
     data = await api("chats?" + query);
   } catch (error) {
     if (id !== requestId) return;
-    $("result-count").textContent = "Search failed. Try again or use keyword search.";
-    if (!append) {
-      $("chat-list").replaceChildren();
-      loaded = 0;
-    }
-    $("more").hidden = true;
-    throw error;
+    $("result-count").textContent = "";
+    $("chat-list").replaceChildren();
+    $("page-range").textContent = "";
+    $("page-label").textContent = "Unavailable";
+    $("search-error-title").textContent = $("search-mode").value === "hybrid" ? "Smart search error" : "Search error";
+    $("search-error-message").textContent = error.message;
+    $("search-error").hidden = false;
+    return;
   }
   if (id !== requestId) return;
-  notice("");
-  if (!append) {
-    $("chat-list").replaceChildren();
-    loaded = 0;
-  }
+  chatPages = Math.max(1, Math.ceil(data.total / pageSize));
+  if (chatPage > chatPages) return loadChats(chatPages);
+  $("chat-list").replaceChildren();
   for (const chat of data.items) {
     const card = node("button", "", "chat-card");
     card.dataset.source = chat.source;
@@ -309,33 +320,48 @@ async function loadChats(append = false) {
         chat.source === current.record.source &&
         chat.id === current.record.id,
     );
-    card.append(node("strong", chat.title));
-    const meta = node("small", "", "result-meta");
-    meta.append(
-      node("span", chat.source, "pill"),
-      document.createTextNode(
-        chat.messages + " messages" + (chat.has_note ? " · Note" : ""),
-      ),
-    );
-    card.append(meta, node("small", date(chat.updated_at), "result-date"));
+    const subject = node("span", "", "conversation-subject");
+    const description = node("span", "", "conversation-description");
+    description.append(node("strong", chat.title));
+    description.append(node("small", `${chat.source === "chatgpt" ? "ChatGPT" : chat.source === "codex" ? "Codex" : chat.source} · ${quantity(chat.messages, "message")}${chat.has_note ? " · Note" : ""}`, "result-meta"));
     if (chat.match) {
       const label = chat.match.role === "local_annotation" ? "Local note: " : "";
-      card.append(node("p", label + chat.match.excerpt, "search-excerpt"));
+      description.append(node("span", label + chat.match.excerpt, "search-excerpt"));
     }
+    subject.append(description);
+    const timestamp = node("span", "", "result-date");
+    const updated = chat.updated_at ? new Date(chat.updated_at) : null;
+    if (updated && !Number.isNaN(updated.getTime())) {
+      timestamp.append(node("span", updated.toLocaleDateString(undefined, {month: "short", day: "numeric", year: "numeric"})));
+      timestamp.append(node("small", updated.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"})));
+      timestamp.title = date(chat.updated_at);
+    } else timestamp.append(node("span", "Date unknown"));
+    timestamp.setAttribute("aria-label", "Last updated: " + date(chat.updated_at));
+    const models = node("span", "", "conversation-models");
+    const names = chat.models || [];
+    const model = node("span", names[0] || "Unknown", "metadata-tag " + (names.length ? "model-known" : "model-unknown"));
+    model.title = names.length ? names.join(", ") : "Model not captured";
+    models.append(model);
+    if (names.length > 1) models.append(node("small", `+${names.length - 1} more`));
+    const arrow = node("span", "›", "conversation-open");
+    arrow.setAttribute("aria-hidden", "true");
+    card.append(subject, timestamp, models, arrow);
     card.onclick = safely(() =>
       openChat(chat.source, chat.id, chat.match?.message_id),
     );
     $("chat-list").append(card);
   }
-  loaded += data.items.length;
   $("result-count").textContent =
     data.total +
     " " +
     ($("archived").checked ? "archived " : "") +
     (data.total === 1 ? "conversation" : "conversations") +
     ($("search").value ? " matching your search" : " in your library");
-  $("more").hidden = loaded >= data.total;
-  if (!loaded)
+  $("page-range").textContent = data.total ? `${offset + 1}–${offset + data.items.length} of ${data.total}` : "0 conversations";
+  $("page-label").textContent = `Page ${chatPage} of ${chatPages}`;
+  $("previous-page").disabled = chatPage <= 1;
+  $("next-page").disabled = chatPage >= chatPages;
+  if (!data.items.length)
     $("chat-list").append(
       node(
         "p",
@@ -929,11 +955,11 @@ function drawMap() {
   canvas.width = width * ratio;
   canvas.height = height * ratio;
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  context.fillStyle = "#171b25";
+  context.fillStyle = "#ffffff";
   context.fillRect(0, 0, width, height);
   mapPositions = [];
   if (!mapData || !docs.length) {
-    context.fillStyle = "#a2a6b6";
+    context.fillStyle = "#69746c";
     context.font = "13px system-ui";
     context.fillText("No mapped conversations in this view", 24, 42);
     return;
@@ -1004,7 +1030,7 @@ function drawMap() {
         )
       )
         continue;
-      context.fillStyle = "#171b25e8";
+      context.fillStyle = "#fffffff0";
       context.fillRect(x, y, w, h);
       context.fillStyle = mapColor(group);
       context.fillText(text, x + 8, y + 17, w - 16);
@@ -1248,7 +1274,7 @@ for (const button of document.querySelectorAll("[data-view]"))
     await showView(button.dataset.view);
   });
 let timer;
-const navigationLabels = {chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff"};
+const navigationLabels = {chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff", settings: "Settings"};
 for (const button of document.querySelectorAll("[data-view]")) {
   button.setAttribute("aria-label", navigationLabels[button.dataset.view]);
   button.title = navigationLabels[button.dataset.view];
@@ -1343,6 +1369,8 @@ function initializeSearchModePicker() {
   update();
 }
 initializeSearchModePicker();
+$("search-error-retry").onclick = safely(() => loadChats(chatPage));
+$("search-error-dismiss").onclick = () => { $("search-error").hidden = true; };
 $("search-mode").onchange = safely(() => { useReview = false; return loadChats(); });
 $("chief-search").onclick = safely(async () => {
   const request = await api("search-review", "POST", {
@@ -1395,7 +1423,9 @@ $("build-embeddings").onclick = safely(async () => {
 });
 for (const id of ["source", "project", "archived"])
   $(id).onchange = safely(() => loadChats());
-$("more").onclick = safely(() => loadChats(true));
+$("page-size").onchange = safely(() => loadChats());
+$("previous-page").onclick = safely(() => loadChats(Math.max(1, chatPage - 1)));
+$("next-page").onclick = safely(() => loadChats(Math.min(chatPages, chatPage + 1)));
 $("context-query").oninput = filterContext;
 $("context-type").onchange = filterContext;
 $("check-health").onclick = safely(async () => {
@@ -1406,32 +1436,47 @@ $("check-health").onclick = safely(async () => {
     $("check-health").disabled = false;
   }
 });
-$("sync").onclick = safely(async () => {
+function syncStatus(message, error = false) {
+  $("sync-status").hidden = !message;
+  $("sync-message").textContent = message;
+  $("sync-status").classList.toggle("has-error", error);
+  for (const id of ["sync", "settings-sync"]) $(id).classList.toggle("has-error", error);
+}
+async function syncWorkspace() {
   await startup;
-  $("sync").disabled = true;
-  $("sync").textContent = "Syncing…";
-  notice("Sync is running. You can keep reading captured records.");
+  for (const id of ["sync", "settings-sync"]) {
+    $(id).disabled = true;
+    $(id).classList.toggle("is-syncing", true);
+  }
+  $("sync-label").textContent = "Syncing…";
+  $("settings-sync-label").textContent = "Syncing…";
+  syncStatus("Syncing workspace…");
   try {
     const result = await api("sync", "POST", {});
-    await refreshOverview();
-    await showView(currentView);
-    notice(
-      "Run " +
-        result.run_id +
-        " · " +
-        result.status +
-        " · " +
-        result.changes.chats.new +
-        " new chats, " +
-        result.changes.chats.updated +
-        " updated chats.",
-      result.status !== "ok",
-    );
+    const changes = result.changes.chats;
+    const failed = result.status !== "ok";
+    const summary = `${quantity(changes.new, "new chat")}, ${quantity(changes.updated, "updated chat")}`;
+    const errors = (result.errors || []).map((item) => item.error).filter(Boolean);
+    syncStatus(failed ? `Sync needs attention · ${summary}${errors.length ? " · " + errors.join("; ") : ". Check Health & sync for details."}` : `Sync complete · ${summary}`, failed);
+    try {
+      await refreshOverview();
+      await showView(currentView);
+    } catch (error) {
+      syncStatus(`Sync ${failed ? "needs attention" : "completed"}, but the view could not refresh: ${error.message}`, true);
+    }
+  } catch (error) {
+    syncStatus(`Sync error · ${error.message}`, true);
   } finally {
-    $("sync").disabled = false;
-    $("sync").textContent = "Sync workspace";
+    for (const id of ["sync", "settings-sync"]) {
+      $(id).disabled = false;
+      $(id).classList.toggle("is-syncing", false);
+    }
+    $("sync-label").textContent = "Sync";
+    $("settings-sync-label").textContent = "Sync now";
   }
-});
+}
+$("sync").onclick = syncWorkspace;
+$("settings-sync").onclick = syncWorkspace;
 // Queue navigation until the initial overview and default view are ready.
 const startup = (async () => {
   await refreshOverview();
@@ -1457,7 +1502,7 @@ $("import-file").onchange = safely(async () => {
         (result.conversations === 1
           ? " conversation received."
           : " conversations received.") +
-        " Select Sync workspace to import them. The export stays in your local inbox.",
+        " Select Sync now to import them. The export stays in your local inbox.",
     );
   } finally {
     $("import").disabled = false;
@@ -1490,8 +1535,13 @@ window.addEventListener(
   }),
 );
 
-async function loadSetup() {
+async function loadSettings() {
+  const status = overview.status || {};
+  $("settings-last-sync").textContent = status.finished_at ? `Last sync: ${date(status.finished_at)} · ${status.status || "Outcome unknown"}` : "No completed sync recorded yet.";
   await loadSearchModels();
+}
+
+async function loadSetup() {
   const status = await api("setup");
   $("setup-controls").hidden = !status.supported;
   $("setup-summary").textContent = status.supported
@@ -1746,7 +1796,7 @@ $("make-skill").onclick = safely(async () => {
     const result = await api("assistant-skill", "POST", {});
     $("skill-path").textContent = result.entrypoint;
     notice(
-      "ChatOS skill prepared. Give SKILL.md to your assistant or install the folder in its documented skill location, then verify discovery.",
+      "ChatGrep skill prepared. Give SKILL.md to your assistant or install the folder in its documented skill location, then verify discovery.",
     );
   } finally {
     button.disabled = false;

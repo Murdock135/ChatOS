@@ -1,4 +1,4 @@
-# Working on ChatOS
+# Working on ChatGrep
 
 - Application code is in `src/chatos/`, bundled browser assets in `src/chatos/static/`, checkout entrypoints in `scripts/`, tests in `tests/`, and public documentation in `docs/`.
 - Read README.md and CONTRIBUTING.md for setup and verification. Keep code readable and modular, preserve source identity/text, and distinguish implemented behavior from proposals and measured results.

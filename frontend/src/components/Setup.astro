@@ -1,21 +1,10 @@
         <section id="view-setup" hidden>
-          <details id="model-settings"><summary>Local search models</summary>
-            <p>Choose compatible public Hugging Face models: a Sentence Transformer embedding model and a scalar CrossEncoder reranker. Downloads stay on this device. Models requiring custom Python code are unsupported.</p>
-            <p id="model-status" role="status"></p>
-            <label>Embedding model<input id="embedding-model" /></label>
-            <label>Reranker model<input id="reranker-model" /></label>
-            <button id="save-models">Save model choices</button>
-            <button id="download-embedding">Download embedding model</button>
-            <button id="download-reranker">Download reranker</button>
-            <button id="build-embeddings">Index next 64 passages</button>
-            <details><summary>Advanced settings</summary><label>Model revisions, prompts, token limits, candidate limit and optional relevance cutoff<textarea id="model-json" rows="16"></textarea></label><button id="save-model-json">Save advanced settings</button></details>
-          </details>
           <div id="setup-summary" class="callout"></div>
           <div id="setup-controls" class="setup-grid">
             <article class="setup-card">
               <h2>1. Choose your sources</h2>
               <p>
-                Use Import chats for a ChatGPT export. Local Codex history is
+                Use Settings → Import chats for a ChatGPT export. Local Codex history is
                 optional. Saving a source choice does not scan it; select Sync
                 workspace when ready.
               </p>
@@ -43,7 +32,7 @@
               <button id="make-guide">Create or refresh assistant guide</button>
               <p id="guide-path" class="source-details"></p>
               <p>
-                Let your Chief of Staff use ChatOS through its reusable skill.
+                Let your Chief of Staff use ChatGrep through its reusable skill.
                 New workspaces include a copy connected to their paths.
                 Preparing the folder does not install it in your assistant.
               </p>

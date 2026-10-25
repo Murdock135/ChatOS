@@ -248,7 +248,7 @@ def _load_model(
         from sentence_transformers import CrossEncoder, SentenceTransformer
     except ImportError as error:
         raise ValueError(
-            "Install optional search dependencies and restart ChatOS in that environment"
+            "Install optional search dependencies and restart ChatGrep in that environment"
         ) from error
     torch.set_num_threads(4)
     try:

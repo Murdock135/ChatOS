@@ -16,3 +16,7 @@ Verification:
 - Ruff lint and format checks and scoped BasedPyright pass. Astro check reports zero errors and warnings (one existing deprecation hint), and browser assets were rebuilt.
 
 No model weights, conversation text, embeddings or clustering settings changed. The successful search verifies execution, not a general relevance-quality improvement. Inference remains local.
+
+## Search-error placement
+
+Search failures now render in a bordered alert card directly below the conversation search bar rather than the page-wide notice above the heading. The user-supplied reference informed its alert icon, emphasized title, explanation, Retry search action and dismiss button; colors follow the existing dark theme. A controlled failure in an isolated empty workspace verified the rendered placement. Browser regression checks verify the inline message/title, empty global notice, dismissal, retry recovery and protection against stale failures. The rendered fixture also verified the retry and dismiss controls; the duplicate failure text below the card was removed. Astro check/build and the Node regression pass; source and bundled assets are synchronized.

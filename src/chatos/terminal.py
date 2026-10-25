@@ -75,7 +75,7 @@ def print_report(data, command: str, as_json: bool = False, stream=None):
     if as_json:
         print(json.dumps(data, indent=2, ensure_ascii=False), file=output.stream)
         return
-    output.text('chat-OS · ' + command, 'bold')
+    output.text('ChatGrep · ' + command, 'bold')
     if isinstance(data, str):
         if output.console:
             output.console.print(Markdown(data))

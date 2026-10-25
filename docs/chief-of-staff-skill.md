@@ -1,8 +1,8 @@
-# Let your Chief of Staff use ChatOS
+# Let your Chief of Staff use ChatGrep
 
-The Chief of Staff is your chosen AI assistant, using ChatOS to retrieve context and carry authorized work forward. The app does not include an AI agent. You can use the browser and CLI without this role or a skill.
+The Chief of Staff is your chosen AI assistant, using ChatGrep to retrieve context and carry authorized work forward. The app does not include an AI agent. You can use the browser and CLI without this role or a skill.
 
-ChatOS now bundles a reusable `chatos` skill. It teaches the assistant how to choose the right workspace, inspect capture gaps, retrieve and cite messages, resume projects, preserve outcomes, maintain the archive and prepare selected handoffs. It needs local file and terminal access. Installing instructions does not connect accounts, activate provider memory or grant new tool permissions.
+ChatGrep now bundles a reusable `chatos` skill. It teaches the assistant how to choose the right workspace, inspect capture gaps, retrieve and cite messages, resume projects, preserve outcomes, maintain the archive and prepare selected handoffs. It needs local file and terminal access. Installing instructions does not connect accounts, activate provider memory or grant new tool permissions.
 
 ## 1. Prepare a copy for your workspace
 
@@ -32,7 +32,7 @@ You have two ways to use the same instructions.
 
 **Read the skill explicitly:** give an assistant with local tools the full path returned above:
 
-> Read the ChatOS SKILL.md at /absolute/path/to/my/workspace/shared_context/skills/chatos/SKILL.md and use it for this task. Confirm the workspace you can access, check capture gaps, then find our earlier discussion about my current project and cite the messages.
+> Read the ChatGrep SKILL.md at /absolute/path/to/my/workspace/shared_context/skills/chatos/SKILL.md and use it for this task. Confirm the workspace you can access, check capture gaps, then find our earlier discussion about my current project and cite the messages.
 
 This route works without automatic skill discovery. A chat that cannot access your local filesystem needs a deliberately supplied portable bundle instead; it cannot run the local tool merely by reading these instructions.
 

@@ -139,6 +139,7 @@ class Handler(BaseHTTPRequestHandler):
                 "/app.js": ("app.js", "text/javascript"),
                 "/styles.css": ("styles.css", "text/css"),
                 "/workspace.css": ("workspace.css", "text/css"),
+                "/chatgrep-icon.png": ("chatgrep-icon.png", "image/png"),
             }
             if method != "GET" or parsed.path not in assets:
                 if method == "GET" and re.fullmatch(
@@ -311,10 +312,12 @@ class Handler(BaseHTTPRequestHandler):
 
             return retrieve(store, query.get("q", ""), query.get("project") or None)
         if path == "/api/chats" and method == "GET":
+            limit = max(1, min(int(query.get("limit", 50)), 100))
+            offset = max(0, int(query.get("offset", 0)))
             if query.get("review"):
                 from .search_review import results
 
-                return results(
+                reviewed = results(
                     store,
                     query["review"],
                     query.get("q", ""),
@@ -322,14 +325,19 @@ class Handler(BaseHTTPRequestHandler):
                     query.get("project", ""),
                     query.get("archived") == "true",
                 )
-            limit = max(1, min(int(query.get("limit", 50)), 100))
+                return {
+                    **reviewed,
+                    "items": reviewed["items"][offset : offset + limit],
+                    "offset": offset,
+                    "limit": limit,
+                }
             return library.list_chats(
                 store,
                 query.get("q", ""),
                 query.get("source", ""),
                 query.get("project", ""),
                 query.get("archived") == "true",
-                max(0, int(query.get("offset", 0))),
+                offset,
                 limit,
                 query.get("mode", "keyword"),
             )
@@ -487,7 +495,7 @@ def serve(
         print(
             json.dumps({"url": url, "workspace": str(server.root)})
             if as_json
-            else "chat-OS local interface\n"
+            else "ChatGrep local interface\n"
             + url
             + "\nWorkspace: "
             + str(server.root)

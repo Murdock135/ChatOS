@@ -184,6 +184,9 @@ def list_chats(
             continue
         if matches is not None and key not in matches:
             continue
+        captured_models = [record.get("model")] + [
+            message.get("model") for message in record.get("messages", [])
+        ]
         result.append(
             {
                 "source": record["source"],
@@ -193,6 +196,15 @@ def list_chats(
                 "updated_at": record.get("updated_at"),
                 "projects": record.get("projects", []),
                 "capture": record.get("capture"),
+                "models": sorted(
+                    {
+                        value.strip()
+                        for value in captured_models
+                        if isinstance(value, str)
+                        and value.strip()
+                        and value.strip().lower() not in {"unknown", "model unknown"}
+                    }
+                ),
                 "messages": len(record["messages"]),
                 "has_note": bool(local.get("note")),
                 "archived": bool(local.get("archived")),

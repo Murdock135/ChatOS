@@ -12,7 +12,7 @@ For the [fictional walkthrough](getting-started.md), use `./scripts/chatos --roo
 
 ## Import an export
 
-Select **Import chats** and choose a supported ChatGPT JSON or ZIP export, up to 128 MiB. The app validates it before saving an inbox copy; ZIP attachments are not extracted. Select **Sync workspace** to ingest the received records. Imports stay on your machine and do not connect your ChatGPT account. The source export can contain private material and is kept in the local inbox.
+Open **Settings → Import chats → Choose export…** and choose a supported ChatGPT JSON or ZIP export, up to 128 MiB. The app validates it before saving an inbox copy; ZIP attachments are not extracted. Select **Sync now** in Settings or **Sync** in the header to ingest the received records. Imports stay on your machine and do not connect your ChatGPT account. The source export can contain private material and is kept in the local inbox.
 
 Source IDs prevent duplicate chats. Older exports with known earlier conversation update times cannot replace a newer exported snapshot. Missing or equal timestamps cannot establish recency; stored revisions remain available, and import order can determine the current snapshot in that case.
 
@@ -57,3 +57,19 @@ Unexpected interface failures return a reference to `workspace/app_data/logs/int
 A new empty library opens Setup & handoff. This page lets you choose local Codex capture before scanning, inspect setup readiness, create an optional assistant-access guide, import a context artifact and inspect its sources/uncertainty before accepting it. Accepted context becomes searchable immediately. Retiring it with a reason removes it from retrieval and future bundles while preserving the source artifact, published note and review history. Already exported bundles remain historical copies.
 
 Choose one conversation, a registered project or explicitly all captured records to create a portable bundle. Context is opt-in. The result shows a verified local folder containing START_HERE.md, readable records, separate annotations and integrity hashes. Open that folder yourself and review files before supplying them to a different application. This does not transmit anything or install destination memory. See [Onboarding](onboarding.md), [Context artifacts](context-artifacts.md) and [Portable bundles](portable-bundles.md).
+
+## Sync status
+
+The header's **Sync** control uses a green dot, matching the local-workspace indicator. During a run it reads **Syncing…**; the control is disabled until the request finishes. A compact status line shows the completed new/updated chat counts. Partial runs and failed requests show a red dot and an explanatory message instead of terminal output. Partial capture warnings still require attention even when some chats were updated. Text labels accompany color, and reduced-motion preferences disable the running pulse.
+
+## Conversation list
+
+The white library panel aligns conversation titles, last-updated dates/times and captured models. Dates use your browser's local timezone. Blue model tags indicate captured information; red Unknown tags mean the model was not captured. If a chat has multiple captured models, the row shows an additional-model count and the tag tooltip lists their names. Open the row to inspect message-level model evidence. Narrow layouts place metadata beneath the title.
+
+## Pages and page size
+
+Use the controls above the conversation list to show **10**, **50** (default) or **100** conversations per page. Previous/Next navigation shows the current page and visible range. Search, source/project/archive filters and page-size changes return to page 1. Pagination applies to keyword, bounded smart-search and assistant-reviewed results; page size does not expand the underlying smart-search candidate limit. Controls disable while loading and at the first/last boundaries. If records change and the current page disappears, the list returns to the last available page.
+
+## User settings
+
+Open **Settings** from the sidebar to see the local workspace path, import a ChatGPT JSON/ZIP export, sync configured sources, inspect the last completed sync and manage local search models. Import and workspace-path details live here rather than in the header/sidebar. **Sync** remains available in both Settings and the header; both controls share running/error states and disable together during a run. Source opt-in, assistant/context setup and portable handoff remain under Setup & handoff.

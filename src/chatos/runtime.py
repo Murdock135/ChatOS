@@ -96,7 +96,7 @@ def build_views(store, status):
     atomic(workspace_path(store.root, 'Projects/Index.md'), '\n'.join(plines) + '\n')
     topics = {}
     rules = {'AI research': ['llm','language model','research','sparq','dempster','abduction'],
-             'Personal organization': ['obsidian','chief of staff','organize','workflow','memory','chat-os'],
+             'Personal organization': ['obsidian','chief of staff','organize','workflow','memory','chat-os','chatgrep'],
              'Jobs and career': ['job','career','resume','interview','fellowship'],
              'Learning and study': ['learn','study','analysis','proof','textbook'],
              'Practical tasks': ['phone','insurance','email','registration','shopping','wallpaper']}

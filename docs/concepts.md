@@ -10,7 +10,7 @@ Source applications and live installed skills can remain outside this folder. Th
 
 ## Source and capture
 
-A **source** is the original conversation or file supplied by an application. A **capture** is the portion chat-OS obtained from it.
+A **source** is the original conversation or file supplied by an application. A **capture** is the portion ChatGrep obtained from it.
 
 A conversation ID is stored together with the source app, so two applications using the same ID do not become the same chat. Available timestamps, message IDs, model information, and attachment references are retained where supplied. Missing values remain unknown.
 

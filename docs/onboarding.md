@@ -48,7 +48,7 @@ Do not inherit another user's profile, project registry, accepted summaries or h
 
 ## 4. Choose how your assistant participates
 
-The Chief of Staff role is optional. To let that assistant use ChatOS, load the bundled `chatos` skill: new workspaces include a bound copy in `shared_context/skills/chatos/`; existing users can choose **Prepare Chief of Staff skill** on Setup & handoff. Follow [skill setup and prompt examples](chief-of-staff-skill.md) to load it explicitly or install it for host discovery, then verify a cited retrieval. Skill preparation does not establish activation.
+The Chief of Staff role is optional. To let that assistant use ChatGrep, load the bundled `chatos` skill: new workspaces include a bound copy in `shared_context/skills/chatos/`; existing users can choose **Prepare Chief of Staff skill** on Setup & handoff. Follow [skill setup and prompt examples](chief-of-staff-skill.md) to load it explicitly or install it for host discovery, then verify a cited retrieval. Skill preparation does not establish activation.
 
 Each new workspace contains `ASSISTANT.md` with paths and commands for that workspace. For an older initialized workspace, use Create or refresh assistant guide on Setup & handoff, or generate it:
 
@@ -60,7 +60,7 @@ The command preserves a user-authored ASSISTANT.md rather than overwriting it. A
 
 Ask an assistant with local file/terminal access:
 
-> Read the ASSISTANT.md file in my ChatOS workspace. Explain what you can access and what remains unavailable. Then help with my current task using cited source messages and reviewed context.
+> Read the ASSISTANT.md file in my ChatGrep workspace. Explain what you can access and what remains unavailable. Then help with my current task using cited source messages and reviewed context.
 
 The [assistant workflow guide](assistant-workflow.md) explains retrieval, project briefing and filing without relying on private maintainer skills.
 

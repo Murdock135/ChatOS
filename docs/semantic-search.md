@@ -10,7 +10,7 @@ uv pip install --python .venv-semantic/bin/python --require-hashes -r requiremen
 PYTHONPATH=src .venv-semantic/bin/python -m chatos --root workspace serve --open
 ```
 
-In **Setup & handoff → Local search models**, enter model IDs and save. The compact examples are `sentence-transformers/all-MiniLM-L6-v2` and `cross-encoder/ms-marco-MiniLM-L-6-v2`; these are editable choices, not an allowlist. Models must work with the installed libraries, use safetensors weights and require no custom executable model code. Consult each model's documentation for its license, languages and prompts. Incompatible architectures report an error.
+In **Settings → Search models → Local search models**, enter model IDs and save. The compact examples are `sentence-transformers/all-MiniLM-L6-v2` and `cross-encoder/ms-marco-MiniLM-L-6-v2`; these are editable choices, not an allowlist. Models must work with the installed libraries, use safetensors weights and require no custom executable model code. Consult each model's documentation for its license, languages and prompts. Incompatible architectures report an error.
 
 Download each saved model using its button. Downloads record the resolved commit and file hashes. Inference loads these files locally; ordinary search and sync do not download models. Advanced settings expose revisions, query/document prefixes, token limits, candidate count and an optional minimum relevance score. Scores are model-specific, not calibrated probabilities.
 

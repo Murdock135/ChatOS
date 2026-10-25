@@ -95,6 +95,103 @@ class WebTests(unittest.TestCase):
         connection.close()
         return status, result
 
+    def test_conversation_list_reports_observed_models_without_guessing(self):
+        store = Store(self.root)
+        try:
+            record = dict(self.record)
+            record["model"] = "captured-model-a"
+            record["messages"] = [
+                {"id": "u1", "role": "user", "text": "Plan a garden", "model": None},
+                {
+                    "id": "a1",
+                    "role": "assistant",
+                    "text": "A planting plan",
+                    "model": "captured-model-b",
+                },
+                {
+                    "id": "a2",
+                    "role": "assistant",
+                    "text": "A revision",
+                    "model": "unknown",
+                },
+            ]
+            store.put(record)
+        finally:
+            store.close()
+        status, result = self.request("/api/chats")
+        self.assertEqual(status, 200)
+        self.assertEqual(
+            result["items"][0]["models"], ["captured-model-a", "captured-model-b"]
+        )
+        self.assertEqual(result["items"][0]["messages"], 3)
+
+    def test_chat_pages_apply_limits_offsets_and_filters(self):
+        store = Store(self.root)
+        try:
+            for index in range(23):
+                store.put(
+                    {
+                        "source": "codex",
+                        "id": str(index),
+                        "title": "Pagination example",
+                        "messages": [
+                            {"id": "m1", "role": "user", "text": "Pagination example"}
+                        ],
+                    }
+                )
+        finally:
+            store.close()
+        status, result = self.request("/api/chats?q=Pagination&limit=10&offset=20")
+        self.assertEqual(status, 200)
+        self.assertEqual(result["total"], 23)
+        self.assertEqual(len(result["items"]), 3)
+        self.assertEqual(result["offset"], 20)
+        self.assertEqual(result["limit"], 10)
+        _, scoped = self.request("/api/chats?source=chatgpt&limit=10")
+        self.assertEqual(scoped["total"], 1)
+        self.assertEqual(scoped["items"][0]["id"], "one")
+
+    def test_reviewed_search_results_are_paginated_in_review_order(self):
+        from chatos.search_review import path, prepare
+
+        store = Store(self.root)
+        try:
+            hits = []
+            for index in range(3):
+                store.put(
+                    {
+                        "source": "codex",
+                        "id": str(index),
+                        "title": "Garden",
+                        "messages": [
+                            {"id": "m1", "role": "user", "text": "Garden plan"}
+                        ],
+                    }
+                )
+                hits.append(
+                    {
+                        "source": "codex",
+                        "id": str(index),
+                        "message_id": "m1",
+                        "excerpt": "Garden plan",
+                        "reason": "Relevant garden plan",
+                    }
+                )
+            review = prepare(store, "garden")
+            path(store, review["id"]).with_suffix(".results.json").write_text(
+                json.dumps(hits)
+            )
+        finally:
+            store.close()
+        status, result = self.request(
+            "/api/chats?q=garden&review=" + review["id"] + "&limit=1&offset=1"
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(result["total"], 3)
+        self.assertEqual([item["id"] for item in result["items"]], ["1"])
+        self.assertEqual(result["offset"], 1)
+        self.assertEqual(result["limit"], 1)
+
     def test_api_requires_token_and_rejects_cross_origin_and_host(self):
         self.assertEqual(self.request("/api/chats", authenticated=False)[0], 401)
         self.assertEqual(

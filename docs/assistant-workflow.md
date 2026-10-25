@@ -1,10 +1,10 @@
-# Use ChatOS with your own assistant
+# Use ChatGrep with your own assistant
 
-ChatOS is the local archive and retrieval tool. Your chosen assistant supplies interpretation and carries out the work you authorize. An assistant needs local file/terminal access, or an explicitly supplied [portable bundle](portable-bundles.md). It does not gain access merely because ChatOS is running.
+ChatGrep is the local archive and retrieval tool. Your chosen assistant supplies interpretation and carries out the work you authorize. An assistant needs local file/terminal access, or an explicitly supplied [portable bundle](portable-bundles.md). It does not gain access merely because ChatGrep is running.
 
 ## Give access deliberately
 
-Use the [bundled ChatOS skill](chief-of-staff-skill.md) for reusable Chief of Staff tool instructions. New workspaces include a workspace-bound copy; existing users can prepare one through the app or `assistant-skill`. You can load SKILL.md explicitly or install the whole folder for discovery in a supported host. Verify discovery and an actual cited retrieval separately. The manual ASSISTANT.md route below remains available.
+Use the [bundled ChatGrep skill](chief-of-staff-skill.md) for reusable Chief of Staff tool instructions. New workspaces include a workspace-bound copy; existing users can prepare one through the app or `assistant-skill`. You can load SKILL.md explicitly or install the whole folder for discovery in a supported host. Verify discovery and an actual cited retrieval separately. The manual ASSISTANT.md route below remains available.
 
 Create your own workspace with [guided setup](onboarding.md). Give its ASSISTANT.md file to an assistant with local tools and state the current task. The guide contains commands with that workspace's paths. It does not install a skill, connect an account, grant permissions or activate provider memory.
 

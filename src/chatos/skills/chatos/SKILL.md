@@ -1,11 +1,11 @@
 ---
 name: chatos
-description: Use a local ChatOS workspace as a Chief of Staff to retrieve cited conversation context, resume projects, preserve outcomes and maintain the archive. Use for tasks involving an explicitly selected ChatOS archive, not unrelated files or unprovided provider history.
+description: Use a local ChatGrep workspace as a Chief of Staff to retrieve cited conversation context, resume projects, preserve outcomes and maintain the archive. Use for tasks involving an explicitly selected ChatGrep archive, not unrelated files or unprovided provider history.
 ---
 
-# ChatOS for the Chief of Staff
+# ChatGrep for the Chief of Staff
 
-ChatOS is the archive and deterministic tool; you supply interpretation and authorized follow-through. It does not include an always-running AI or grant access to other applications.
+ChatGrep is the archive and deterministic tool; you supply interpretation and authorized follow-through. It does not include an always-running AI or grant access to other applications.
 
 ## Connect to the right workspace
 

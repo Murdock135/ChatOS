@@ -1,0 +1,31 @@
+<section id="view-settings" hidden>
+  <div class="user-settings">
+    <section class="settings-section">
+      <div><h2>Local workspace</h2><p>Your conversations and settings are stored here on this Mac.</p></div>
+      <code id="workspace-path" class="settings-path"></code>
+    </section>
+    <section class="settings-section">
+      <div><h2>Import chats</h2><p>Choose a ChatGPT JSON or ZIP export. After it is received, sync to add it to your library.</p></div>
+      <button id="import" class="settings-action" type="button">Choose export…</button>
+      <input id="import-file" type="file" accept=".json,.zip" hidden />
+    </section>
+    <section class="settings-section">
+      <div><h2>Sync</h2><p>Refresh your library from configured sources. You can also sync from the header.</p><p id="settings-last-sync" class="settings-detail"></p></div>
+      <button id="settings-sync" class="sync-control" type="button"><span class="sync-dot" aria-hidden="true"></span><span id="settings-sync-label">Sync now</span></button>
+    </section>
+    <section class="settings-section settings-models">
+      <div><h2>Search models</h2><p>Manage the local models used by Smart search.</p></div>
+          <details id="model-settings"><summary>Local search models</summary>
+            <p>Choose compatible public Hugging Face models: a Sentence Transformer embedding model and a scalar CrossEncoder reranker. Downloads stay on this device. Models requiring custom Python code are unsupported.</p>
+            <p id="model-status" role="status"></p>
+            <label>Embedding model<input id="embedding-model" /></label>
+            <label>Reranker model<input id="reranker-model" /></label>
+            <button id="save-models">Save model choices</button>
+            <button id="download-embedding">Download embedding model</button>
+            <button id="download-reranker">Download reranker</button>
+            <button id="build-embeddings">Index next 64 passages</button>
+            <details><summary>Advanced settings</summary><label>Model revisions, prompts, token limits, candidate limit and optional relevance cutoff<textarea id="model-json" rows="16"></textarea></label><button id="save-model-json">Save advanced settings</button></details>
+          </details>
+    </section>
+  </div>
+</section>

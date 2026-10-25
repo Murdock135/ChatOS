@@ -1,25 +1,11 @@
       <aside class="sidebar">
-        <a class="brand" href="/" aria-label="chatOS"
-          ><span class="brand-mark"
-            ><svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path
-                d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 3v-6.5A7.5 7.5 0 0 1 11.5 4h1A7.5 7.5 0 0 1 20 11.5Z"
-              />
-              <path d="M8 10h8M8 14h5" /></svg></span
+        <a class="brand" href="/" aria-label="ChatGrep"
+          ><span class="brand-mark" aria-hidden="true"><img src="/chatgrep-icon.png" alt="" class="brand-icon" /></span
           ><span class="brand-name"
-            >chatOS<small>Your conversation workspace</small></span
+            >ChatGrep</span
           ></a
         >
         <button id="nav-toggle" class="nav-toggle" aria-label="Expand navigation" title="Expand navigation" aria-expanded="false" aria-controls="workspace-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16m4-11 3 3-3 3"/></svg></button>
-        <p class="eyebrow">Library</p>
         <nav aria-label="Workspace" id="workspace-nav">
           <button data-view="chats" class="active">
             <svg
@@ -77,10 +63,10 @@
             >Health &amp; sync
           </button>
           <button data-view="setup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor"/><circle cx="15" cy="17" r="3" fill="currentColor"/></svg>Setup &amp; handoff</button>
+          <button data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-1 3-3 1-2 4 2 2 1 4 3 1 2 3 4-1 1-3 3-1 2-4-2-2-1-4-3-1-2-3Z"/><circle cx="12" cy="12" r="3"/></svg>Settings</button>
         </nav>
         <div class="sidebar-foot">
           <span class="local-dot"></span>Local workspace
-          <p id="workspace-path"></p>
           <p>Source records stay intact.<br />Your annotations stay yours.</p>
         </div>
       </aside>
