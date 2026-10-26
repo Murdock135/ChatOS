@@ -22,6 +22,8 @@ Conversations opens your active library. Search matches captured transcript text
 
 Search returns one list of conversations ranked by their best matching passage, with an excerpt explaining each match. All meaningful query words must match the passage or its conversation title. Source, Project and Archived filters apply to the same results. Select a result to jump to its matching message; local-note matches open the conversation and are labeled separately. Clear the search to return to newest-first browsing. Search is lexical: incidental mentions can still match, and paraphrases may be missed. Check surrounding context and later changes before interpreting a passage. The terminal `retrieve` command remains available for cited evidence across chats and workspace notes.
 
+The compact search panel is centered below “What would you like to revisit?”. Choose **Keyword** for literal terms or **Smart search** for related ideas using configured local models. Source and project selectors sit below the search modes. Open **Filters** for **Archived only**, **Matching passages**, and **Reset**; Reset clears source/project/archive filters and turns matching passages off. Press **⌘ K** (or **Ctrl K**) to focus search. The Filters button works with Enter/Space; Escape closes its menu and returns focus to the button. The visible result range appears in the panel footer, alongside the Chief of Staff handoff action; page-size and Previous/Next controls remain above the list.
+
 ## Add your own context
 
 Expand **Local title, notes & project** in a conversation:

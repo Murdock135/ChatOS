@@ -1,0 +1,269 @@
+/* Search composition follows the reference; colors inherit the existing theme. */
+.conversation-search-panel {
+  width: min(100%, 820px);
+  margin: 16px auto 20px;
+  padding: 16px;
+  border: 1px solid #e3e3e3;
+  border-radius: 18px;
+  background: #fff;
+}
+.conversation-search-heading,
+.conversation-search-actions,
+.conversation-search-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.conversation-search-heading {
+  margin-bottom: 10px;
+  justify-content: flex-end;
+}
+.conversation-search-intro {
+  width: min(100%, 820px);
+  margin: 16px auto 10px;
+  font-size: 22px;
+  font-weight: 450;
+  letter-spacing: -0.5px;
+}
+.conversation-search-intro + .conversation-search-panel {
+  margin-top: 0;
+}
+.conversation-search-panel #result-count {
+  margin: 0;
+  padding: 3px 8px;
+  max-width: 50%;
+  border-radius: 20px;
+  background: #f4f4f4;
+  font-size: 12px;
+  text-align: right;
+}
+.conversation-search-panel .search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
+}
+.conversation-search-panel .search-bar:focus-within {
+  border-color: #b9471c;
+  box-shadow: 0 0 0 2px #b9471c18;
+}
+.conversation-search-panel .search-input-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: #737373;
+}
+.conversation-search-panel .search-bar > label {
+  flex: 1;
+  min-width: 0;
+}
+.conversation-search-panel .search-bar input[type="search"] {
+  min-height: 46px;
+  padding: 10px 40px 10px 0;
+  font-size: 16px;
+}
+.conversation-search-panel .search-shortcut {
+  top: 50%;
+  transform: translateY(-50%);
+  right: 18px;
+}
+.conversation-search-actions {
+  margin-top: 10px;
+}
+.conversation-search-panel .mode-segments {
+  gap: 4px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.conversation-search-panel .mode-segments button {
+  display: inline-flex;
+  width: auto;
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: 24px;
+  font-size: 14px;
+}
+.conversation-search-panel .mode-segments button svg {
+  display: none;
+}
+.conversation-search-panel .mode-segments button[aria-pressed="true"] {
+  background: #f4f4f4;
+  color: #b9471c;
+  box-shadow: inset 0 0 0 1px #e3e3e3;
+}
+.conversation-search-panel .mode-chooser {
+  display: none;
+}
+.conversation-search-panel .search-tools {
+  position: relative;
+  margin: 0;
+  max-width: none;
+}
+.conversation-search-panel .search-tools > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 5px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 24px;
+  list-style: none;
+  font-size: 14px;
+}
+.conversation-search-panel .search-tools > summary::marker,
+.conversation-search-panel .search-tools > summary::-webkit-details-marker {
+  display: none;
+  content: "";
+}
+.conversation-search-panel .search-tools > summary svg {
+  width: 18px;
+  height: 18px;
+}
+.conversation-search-panel .filter-menu {
+  left: auto;
+  right: 0;
+  max-width: min(290px, 75vw);
+}
+.conversation-search-scope {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+.conversation-search-scope select {
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  min-height: 32px;
+  padding: 4px 24px 4px 10px;
+  border-color: transparent;
+  font-size: 13px;
+}
+.conversation-search-footer {
+  border-top: 1px solid #ececec;
+  padding-top: 10px;
+  color: #737373;
+  font-size: 12px;
+}
+.conversation-search-footer .assistant-action {
+  font-size: 12px;
+  padding: 4px 0;
+}
+@media (max-width: 600px) {
+  .conversation-search-panel {
+    padding: 12px;
+  }
+  .conversation-search-heading {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .conversation-search-panel #result-count {
+    max-width: 100%;
+    text-align: left;
+  }
+  .conversation-search-actions {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .conversation-search-panel .mode-segments button {
+    padding: 6px 10px;
+  }
+  .conversation-search-panel .search-bar input[type="search"] {
+    font-size: 15px;
+  }
+  .conversation-search-footer {
+    flex-wrap: wrap;
+  }
+}
+
+/* Keep filter rows aligned independently of the input's layout. */
+.conversation-search-panel .filter-menu {
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px #24242412;
+}
+.conversation-search-panel .filter-menu-heading {
+  padding: 0 4px 12px;
+  color: #484848;
+  font-size: 12px;
+}
+.conversation-search-panel .filter-menu-heading button {
+  color: #b9471c;
+  padding: 4px 6px;
+}
+.conversation-search-panel .filter-switches {
+  margin: 0;
+  padding-top: 8px;
+  border-top: 1px solid #ececec;
+}
+.conversation-search-panel .filter-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 42px;
+  margin: 0;
+  padding: 8px 4px;
+  color: #484848;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.conversation-search-panel .filter-switch input {
+  box-sizing: border-box;
+  width: 34px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 2px;
+  border-color: #b8b8b8;
+  background: #ececec;
+}
+.conversation-search-panel .filter-switch input::before {
+  width: 14px;
+  height: 14px;
+  background: #737373;
+}
+.conversation-search-panel .filter-switch input:checked {
+  background: #b9471c;
+  border-color: #b9471c;
+}
+.conversation-search-panel .filter-switch input:checked::before {
+  transform: translateX(14px);
+  background: #fff;
+}
+.conversation-search-panel .filter-switch input:focus-visible {
+  outline: 2px solid #b9471c;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .conversation-search-actions {
+    position: relative;
+  }
+  .conversation-search-panel .search-tools {
+    position: static;
+  }
+  .conversation-search-panel .filter-menu {
+    top: calc(100% + 8px);
+    right: 0;
+    left: auto;
+    width: 290px;
+    max-width: 100%;
+  }
+  .conversation-search-panel .search-bar input[type="search"] {
+    padding-right: 0;
+  }
+  .conversation-search-panel .search-shortcut {
+    display: none;
+  }
+}

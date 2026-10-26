@@ -2,17 +2,27 @@
 import SearchModePicker from "./SearchModePicker.astro";
 import SearchFilters from "./SearchFilters.astro";
 ---
-          <h2 class="search-heading text-center text-2xl font-normal tracking-tight">What would you like to revisit?</h2>
-          <div class="toolbar search-bar">
-            <label class="search"
-              >Search transcripts and local notes<input
-                id="search"
-                type="search"
-                placeholder="Search conversations…" /></label>
-            <span class="search-shortcut" aria-hidden="true">⌘ K</span>
-          <div class="composer-actions">
-          <SearchModePicker />
-          <SearchFilters />
-          <button id="chief-search" class="assistant-action" title="Prepare a search handoff for your assistant">Chief of Staff <span aria-hidden="true">↗</span></button>
-          </div>
-          </div>
+<h2 class="conversation-search-intro">What would you like to revisit?</h2>
+<section class="conversation-search-panel" aria-label="Search conversations">
+  <div class="conversation-search-heading">
+    <p id="result-count" class="muted" aria-live="polite"></p>
+  </div>
+  <div class="search-bar">
+    <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg>
+    <label class="search">Search transcripts and local notes<input id="search" type="search" placeholder="Search your conversations…" /></label>
+    <span class="search-shortcut" aria-hidden="true">⌘ K</span>
+  </div>
+  <div class="conversation-search-actions">
+    <SearchModePicker />
+    <SearchFilters />
+  </div>
+  <div class="conversation-search-scope">
+    <select id="source" data-native="true" aria-label="Source"><option value="">All sources</option><option value="codex">Codex</option><option value="chatgpt">ChatGPT</option><option value="muse">Muse</option></select>
+    <select id="project" data-native="true" aria-label="Project"><option value="">All projects</option></select>
+    <span id="selected-filter-project" hidden>All projects</span>
+  </div>
+  <div class="conversation-search-footer">
+    <span id="page-range" class="page-range"></span>
+    <button id="chief-search" class="assistant-action" title="Prepare a search handoff for your assistant">Chief of Staff <span aria-hidden="true">↗</span></button>
+  </div>
+</section>

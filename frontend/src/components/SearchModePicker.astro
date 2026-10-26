@@ -9,8 +9,8 @@ const modes = [
 </select>
 <div class="mode-picker">
   <div class="mode-segments" role="group" aria-label="Search method">
-    {modes.map(mode => <button type="button" data-search-mode={mode.value} aria-label={mode.title} aria-pressed={mode.value === 'keyword' ? 'true' : 'false'} title={mode.title}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d={mode.icon}/></svg>
+    {modes.map(mode => <button type="button" data-search-mode={mode.value} aria-label={mode.title} aria-pressed={mode.value === 'keyword' ? 'true' : 'false'} title={mode.description}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d={mode.icon}/></svg><span>{mode.title}</span>
     </button>)}
   </div>
   <details id="mode-chooser" class="mode-chooser">

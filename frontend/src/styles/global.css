@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./base.css" layer(components);
 @import "./workspace.css" layer(components);
+@import "./search-panel.css" layer(components);
 
 @theme {
   --color-canvas: #f7f7f7;

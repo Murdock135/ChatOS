@@ -13,12 +13,10 @@ import SearchPanel from "./SearchPanel.astro";
             <button id="search-error-dismiss" class="search-error-dismiss" type="button" aria-label="Dismiss search error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
           </div>
           <textarea id="chief-prompt" hidden readonly aria-label="Chief of Staff search request"></textarea>
-          <p id="result-count" class="muted"></p>
           <div class="library-layout">
             <div class="conversation-table">
               <nav class="pagination" aria-label="Conversation pages">
                 <label class="page-size-control">Show <select id="page-size" data-native="true" aria-label="Conversations per page"><option value="10">10</option><option value="50" selected>50</option><option value="100">100</option></select> per page</label>
-                <span id="page-range" class="page-range"></span>
                 <div class="page-navigation"><button id="previous-page" type="button" disabled>← Previous</button><span id="page-label" aria-live="polite">Page 1 of 1</span><button id="next-page" type="button" disabled>Next →</button></div>
               </nav>
               <div class="conversation-columns" aria-hidden="true"><span>Conversation</span><span>Last updated</span><span>Model</span><span></span></div>
