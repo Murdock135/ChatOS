@@ -20,6 +20,14 @@ def _main():
     cmd=commands.add_parser('context-accept');cmd.add_argument('identity');cmd.add_argument('--review-note',required=True)
     cmd=commands.add_parser('context-retire');cmd.add_argument('identity');cmd.add_argument('--review-note',required=True)
     cmd=commands.add_parser('sync');cmd.add_argument('--force',action='store_true');cmd.add_argument('--codex-home',type=Path)
+    cmd=commands.add_parser('capture-codex',help='Stage visible history through the official Codex API')
+    cmd.add_argument('--codex-home',type=Path);cmd.add_argument('--executable',default='codex')
+    cmd.add_argument('--thread',action='append',dest='thread_ids');cmd.add_argument('--force',action='store_true')
+    cmd=commands.add_parser('capture-chatgpt',help='Run a local chatgpt-history exporter with explicit authentication')
+    cmd.add_argument('--exporter',type=Path,required=True);cmd.add_argument('--config',type=Path,required=True)
+    cmd.add_argument('--python',type=Path)
+    cmd=commands.add_parser('import-chatgpt-history',help='Stage an existing chatgpt-history export directory')
+    cmd.add_argument('directory',type=Path)
     commands.add_parser('status')
     commands.add_parser('coverage',help='Report captured records and known source gaps')
     cmd=commands.add_parser('evaluate',help='Evaluate labeled evidence retrieval');cmd.add_argument('cases',type=Path);cmd.add_argument('--limit',type=int,default=8);cmd.add_argument('--hybrid',action='store_true');cmd.add_argument('--output',type=Path)
@@ -57,6 +65,24 @@ def _main():
 
     def emit(data):
         print_report(data, args.command, args.json)
+    if args.command in ['capture-codex','capture-chatgpt','import-chatgpt-history']:
+        from .core import locked
+        with locked(workspace_path(args.root,'System/State/sync.lock'),blocking=False):
+            if args.command=='capture-codex':
+                from .codex_api import capture
+                from .workspace import Workspace
+                paths=Workspace(args.root)
+                if not paths.enabled('codex') and args.codex_home is None:
+                    raise ValueError('Enable Codex capture or explicitly pass --codex-home')
+                result=capture(args.root,paths.codex_home(args.codex_home),args.executable,args.thread_ids,args.force)
+            elif args.command=='capture-chatgpt':
+                from .chatgpt_history import capture
+                result=capture(args.root,args.exporter,args.config,args.python)
+            else:
+                from .chatgpt_history import stage
+                result=stage(args.root,args.directory)
+        emit(result)
+        return 0 if result['status']=='ok' else 1
     if args.command=='init':
         from .setup import initialize
         emit(initialize(args.destination,args.codex_home))

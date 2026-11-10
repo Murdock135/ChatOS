@@ -30,6 +30,14 @@ def report(store: Store) -> dict:
         }
         if source == "codex":
             sources[source].update(
+                api_capture_records=sum(
+                    bool(record.get("evidence", {}).get("api_capture"))
+                    for record in captured
+                ),
+                records_with_uncertain_source_order=sum(
+                    bool(record.get("evidence", {}).get("ordering_uncertain"))
+                    for record in captured
+                ),
                 fork_records=sum(
                     bool(record.get("evidence", {}).get("forked_from_id"))
                     for record in captured
@@ -45,6 +53,16 @@ def report(store: Store) -> dict:
                     for item in status.get("unrecovered_history", [])
                     if item["id"] not in captured_ids
                 ],
+            )
+        receipt_name = (
+            "codex-api-capture.json"
+            if source == "codex"
+            else "chatgpt-history-capture.json"
+        )
+        receipt = store.state / receipt_name
+        if source in {"codex", "chatgpt"} and receipt.is_file():
+            sources[source]["history_capture_last_run"] = json.loads(
+                receipt.read_text()
             )
         if source == "chatgpt":
             sources[source]["unavailable_message_references"] = sum(

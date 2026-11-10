@@ -96,7 +96,7 @@ def build_views(store, status):
     atomic(workspace_path(store.root, 'Projects/Index.md'), '\n'.join(plines) + '\n')
     topics = {}
     rules = {'AI research': ['llm','language model','research','sparq','dempster','abduction'],
-             'Personal organization': ['obsidian','chief of staff','organize','workflow','memory','chat-os','chatgrep'],
+             'Personal organization': ['obsidian','chief of staff','organize','workflow','memory','chat-os','chatgrep','smriti'],
              'Jobs and career': ['job','career','resume','interview','fellowship'],
              'Learning and study': ['learn','study','analysis','proof','textbook'],
              'Practical tasks': ['phone','insurance','email','registration','shopping','wallpaper']}
@@ -215,12 +215,20 @@ def sync(root=ROOT, codex_home=None, force=False):
         try:
             if not codex_home.is_dir():
                 raise FileNotFoundError('Codex source root unavailable: ' + str(codex_home))
+            api_settings = paths.config.get('sources', {}).get('codex', {})
+            if paths.enabled('codex') and api_settings.get('api_enabled') is True:
+                try:
+                    from .codex_api import capture
+                    status['codex_api'] = capture(root, codex_home)
+                    status['errors'].extend({'source':'codex-api', **error} for error in status['codex_api']['errors'])
+                except (ValueError, OSError) as exc:
+                    status['errors'].append({'source':'codex-api','error':str(exc)})
             sources = codex_sources(codex_home)
             unavailable = []
             recovered_history=[]
             unrecovered_history=[]
             warnings = []
-            parser_fingerprint=digest([Path(__file__).with_name(name).read_text() for name in ['importers.py','visibility.py','codex_lineage.py']])
+            parser_fingerprint=digest([Path(__file__).with_name(name).read_text() for name in ['importers.py','visibility.py','codex_lineage.py','codex_api.py','capture_merge.py']])
             routing_files=[workspace_path(root, 'System/Projects/registry.json'),workspace_path(root, 'System/Projects/overrides.json'),Path(__file__).with_name('core.py')]
             routing_fingerprint=digest([p.read_text() if p.exists() else None for p in routing_files])
             for name, info in sources:
@@ -278,9 +286,9 @@ def sync(root=ROOT, codex_home=None, force=False):
             status['source_warnings'] = warnings
             status['sources']['codex'] = {
                 'status': 'partial' if status['errors'] or warnings else ('partial_history' if unavailable else 'ok'),
-                'detail': f'{len(sources)-len(unavailable)} files checked; {len(unavailable)} rollout files unavailable, with {len(recovered_history)} partial cache recoveries and {len(unrecovered_history)} uncaptured; {len(warnings)} parse warnings.'}
-            # Exports are user-provided files; nothing is requested from remote services.
-            for source in ['chatgpt','muse']:
+                'detail': f'{len(sources)-len(unavailable)} files checked; {len(unavailable)} rollout files unavailable, with {len(recovered_history)} partial cache recoveries and {len(unrecovered_history)} without a usable local projection; {len(warnings)} parse warnings.'}
+            # Read staged exports; authenticated ChatGPT capture is a separate explicit command.
+            for source in ['codex','chatgpt','muse']:
                 if not paths.enabled(source):
                     status['sources'][source] = {'status':'disabled','detail':'Source is not enabled in this workspace.'}
                     continue
@@ -332,7 +340,12 @@ def sync(root=ROOT, codex_home=None, force=False):
                         status['errors'].append({'source':source,'path':str(file),
                                                  'error':type(exc).__name__ + ': ' + str(exc)})
                 count = store.db.execute('SELECT count(*) FROM conversations WHERE source=?',(source,)).fetchone()[0]
-                if count:
+                if source == 'codex':
+                    api_count = store.db.execute("SELECT count(*) FROM conversations WHERE source='codex' AND json_extract(record_json,'$.evidence.api_capture') IS NOT NULL").fetchone()[0]
+                    status['sources'][source]['api_snapshots'] = api_count
+                    remaining = [item['id'] for item in unrecovered_history if not store.db.execute("SELECT 1 FROM conversations WHERE source='codex' AND id=?", (item['id'],)).fetchone()]
+                    status['sources'][source]['detail'] += f' {api_count} records include persisted API captures; {len(remaining)} known IDs remain uncaptured.'
+                if count and source != 'codex':
                     status['sources'][source] = {'status':'export_snapshot','detail':f'{count} captured; updates need source exports.'}
                     partial=store.db.execute("SELECT count(*) FROM conversations WHERE source=? AND json_extract(record_json,'$.capture')='partial_desktop_tool_capture'",(source,)).fetchone()[0]
                     if partial:

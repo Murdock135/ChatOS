@@ -183,6 +183,14 @@ class Store:
         clean_hash = digest(record)
         current = self.db.execute('SELECT * FROM conversations WHERE source=? AND id=?',
                                   (record['source'], record['id'])).fetchone()
+        if current and record['source'] == 'codex':
+            previous = json.loads(current['record_json'])
+            if (record.get('evidence', {}).get('api_capture') or
+                    previous.get('evidence', {}).get('api_capture')):
+                from .capture_merge import merge_codex
+                record = merge_codex(previous, record)
+                record['projects'], record['project_evidence'] = self.project_ids(record)
+                clean_hash = digest(record)
         year = (record.get('created_at') or 'undated')[:4]
         if not year.isdigit():
             year = 'undated'
@@ -224,6 +232,8 @@ class Store:
             'Original sources are read-only. Edits to this generated file may be replaced on sync.', '',
             'Metadata and model history: [' + Path(record['file_path']).with_suffix('.json').name +
             '](' + Path(record['file_path']).with_suffix('.json').name + ')', '']
+        if record.get('evidence', {}).get('ordering_uncertain'):
+            lines += ['Source note: unmatched API/local intervals are retained below. Their relative order and whether they are source variants are uncertain.', '']
         for message in record['messages']:
             label = message['role'].capitalize()
             if message.get('phase'):

@@ -1,4 +1,4 @@
-"""Read-only source adapters. No browser sessions, credentials, or private APIs."""
+"""Normalize read-only local source files and staged history snapshots."""
 from pathlib import Path
 import json
 import re
@@ -30,6 +30,8 @@ def read_export_file(path, source):
         if path.stat().st_size>maximum:raise ValueError('Export JSON exceeds the 128 MiB import bound')
         raw=path.read_bytes()
     data=json.loads(raw)
+    if source=='chatgpt' and isinstance(data,dict) and 'mapping' in data:
+        return read_chatgpt_export([data])
     if source=='chatgpt' and isinstance(data,list) and (not data or isinstance(data[0],dict) and 'mapping' in data[0]):
         return read_chatgpt_export(data)
     records=data if isinstance(data,list) else [data]
@@ -135,6 +137,29 @@ def codex_sources(home):
     return sorted((p, i) for _, p, i in grouped.values())
 
 
+def chatgpt_content(message: dict) -> tuple:
+    """Keep visible text, media references and named attachments without downloading media."""
+    content = message.get('content') or {}
+    parts = content.get('parts') or []
+    text = '\n'.join(part for part in parts if isinstance(part, str))
+    if not text and isinstance(content.get('text'), str):
+        text = content['text']
+    attachments = []
+    for part in parts:
+        if not isinstance(part, dict):
+            continue
+        kind = part.get('content_type')
+        reference = part.get('asset_pointer') or part.get('audio_asset_pointer') or part.get('video_container_asset_pointer')
+        if reference:
+            attachments.append({'type': kind, 'reference': reference})
+        if kind in ['audio_transcription', 'text'] and isinstance(part.get('text'), str):
+            text += ('\n' if text else '') + part['text']
+    for item in (message.get('metadata') or {}).get('attachments') or []:
+        if isinstance(item, dict):
+            attachments.append({key: item[key] for key in ['id', 'name', 'mime_type', 'size'] if key in item})
+    return text, attachments
+
+
 def read_chatgpt_export(data):
     """Accept the user's downloaded conversations.json; preserve every visible branch node."""
     if not isinstance(data, list):
@@ -166,14 +191,13 @@ def read_chatgpt_export(data):
             channel = message.get('channel')
             if role not in ['user','assistant'] or channel in ['analysis','reasoning','summary'] or message.get('recipient') not in [None,'all']:
                 continue
-            parts=message.get('content',{}).get('parts',[])
-            text = '\n'.join(p for p in parts if isinstance(p,str))
-            attachments=[{'type':p['content_type'],'reference':p.get('asset_pointer')}
-                         for p in parts if isinstance(p,dict) and p.get('content_type')=='image_asset_pointer']
+            if (message.get('metadata') or {}).get('is_visually_hidden_from_conversation') is True:
+                continue
+            text, attachments = chatgpt_content(message)
             if not text and not attachments:
                 continue
             metadata = message.get('metadata') or {}
-            messages.append({'id': message.get('id') or node_id, 'export_node_id':node_id,'parent_id': node.get('parent'),
+            messages.append({'id': message.get('id') or node_id, 'export_node_id':node_id,'parent_id': node.get('parent'), 'children_ids': node.get('children', []),
                              'role': role, 'phase': channel, 'text': text,
                              'timestamp': timestamp(message.get('create_time')),
                              'model': metadata.get('model_slug') if role=='assistant' else None,
@@ -187,6 +211,9 @@ def read_chatgpt_export(data):
             identity=message.get('id') or current
             if identity in by_id:branch.append(by_id[identity])
             current=node.get('parent')
+        active_ids = {m['id'] for m in branch}
+        for message in messages:
+            message['on_active_branch'] = message['id'] in active_ids
         selected=next((m for m in branch if m.get('model')),None)
         if not selected:
             selected=max((m for m in messages if m.get('model')),key=lambda m:m.get('timestamp') or '',default=None)
@@ -195,10 +222,11 @@ def read_chatgpt_export(data):
                        'updated_at': timestamp(conversation.get('update_time')), 'workspace': None,
                        'model':selected['model'] if selected else None,
                        'provider': 'openai', 'messages': messages, 'capture': 'exported_visible_branches',
-                       'evidence': {'parser': 'chatgpt-export-v2','current_node':conversation.get('current_node'),
+                       'evidence': {'parser': 'chatgpt-export-v3','current_node':conversation.get('current_node'),
                                     'model_basis':'active_branch' if any(m is selected for m in branch) else 'latest_timestamped_exported_assistant'},
                        'limits': ['Export snapshot, not live account synchronization.',
-                                  'Branch parent IDs retained; parent-first rendering includes multiple branches.']})
+                                  'Branch parent/children IDs and active-branch membership retained; rendering includes multiple branches.',
+                                  'Attachment names and references are retained; media bytes are not downloaded.']})
     return result
 
 
