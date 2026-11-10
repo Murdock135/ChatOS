@@ -92,6 +92,8 @@ Preserve roles and emphasize user intent so verbose assistant explanations or hy
 
 ## Representation experiments and map integration
 
+**November 9 user clarification — implementation deferred:** Keep the complete proposed structured output, but instruct the model reading the raw conversation to generate compact semantic labels. Use `main_subject` notation such as `Git divergence | Concerted Abduction`; omit incidental specifics such as branch names, commit hashes and paths unless they are essential to the topic. Keep chronological subtopics, evidence ranges, summaries, project candidates, flags and caveats. Give subtopics similarly concise topic labels. Embed the compact main subject and subtopic labels, rather than the long `primary_objective` plus `semantic_summary` string used in the first 100-chat pilot. Preserve the main/subtopic relationship; exact vector aggregation or weighting remains undecided. The user then said “do it later. keep this in mind”: record this direction without changing prompts, running new model calls, rebuilding embeddings or changing the production map now. Retain the original pilot as historical evidence of its original representation.
+
 Start with a small controlled comparison on the same frozen conversations and clustering settings:
 
 1. Existing raw sample representation as the baseline.
