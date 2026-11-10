@@ -1,0 +1,1 @@
+"""Search responsibilities for smriti."""

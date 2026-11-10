@@ -138,7 +138,7 @@ function acceptLaunchToken() {
 acceptLaunchToken();
 let overview,
   current,
-  currentView = "home",
+  currentView = "explore",
   chatPage = 1,
   chatPages = 1,
   requestId = 0,
@@ -231,6 +231,8 @@ async function refreshOverview() {
   $("home-chat-count").textContent = `${chatCount.toLocaleString()} captured ${chatCount === 1 ? "conversation" : "conversations"}`;
 }
 async function showView(view) {
+  const requestedView = view;
+  if (view === "chats" || view === "map") view = "explore";
   if (
     dirty &&
     view !== currentView &&
@@ -239,8 +241,12 @@ async function showView(view) {
     return;
   if (view !== currentView) dirty = false;
   currentView = view;
-  for (const section of ["home", "chats", "map", "context", "health", "setup", "settings"])
+  for (const section of ["home", "explore", "context", "health", "setup", "settings"])
     $("view-" + section).hidden = section !== view;
+  $("view-chats").hidden = view !== "explore";
+  $("view-map").hidden = view !== "explore";
+  if (requestedView === "map") setExploreMode("map");
+  if (requestedView === "chats") setExploreMode("search");
   for (const button of document.querySelectorAll("nav [data-view]")) {
     const selected = button.dataset.view === view;
     button.classList.toggle("active", selected);
@@ -248,6 +254,7 @@ async function showView(view) {
   }
   const titles = {
     home: ["Home", ""],
+    explore: ["Your conversations", ""],
     chats: ["Conversations", ""],
     map: [
       "Conversation map",
@@ -266,10 +273,12 @@ async function showView(view) {
   };
   $("workspace-section").textContent = titles[view][0];
   $("page-title").textContent = titles[view][0];
-  $("page-title").hidden = view === "chats" || view === "home";
+  $("page-title").hidden = view === "explore" || view === "home";
   $("subtitle").textContent = titles[view][1];
-  $("subtitle").hidden = view === "chats" || view === "map" || view === "home";
-  if (view === "chats") await loadChats();
+  $("subtitle").hidden = view === "explore" || view === "home";
+  if (view === "explore") {
+    await Promise.allSettled([loadChats(), loadMap().catch(() => {})]);
+  }
   if (view === "context") await loadContext();
   if (view === "health") renderHealth();
   if (view === "map") await loadMap();
@@ -384,7 +393,7 @@ async function openChat(source, id, messageId) {
   if (dirty && !confirm("Discard unsaved annotation changes?")) return;
   dirty = false;
   current = await api("chat?" + new URLSearchParams({ source, id }));
-  if (currentView !== "chats") {
+  if (currentView !== "explore") {
     $("archived").checked = current.annotation.archived;
     await showView("chats");
   }
@@ -703,6 +712,12 @@ let mapData,
   mapLabelPositions = [],
   selectedMapKeys = new Set(),
   mapGroup = "",
+  mapSubgroup = "",
+  mapLevel = 0,
+  mapAnimation = 0,
+  mapSubtopics = new Map(),
+  mapWorldBounds = null,
+  mapLevelZoom = 1,
   mapExpanded = false,
   mapShowAllGroups = false,
   mapListLimit = 40,
@@ -784,11 +799,13 @@ async function loadMap() {
       // Do not leave results from the previous query masquerading as this search.
       mapData = null;
       visibleMapDocuments = [];
-      $("map-list").replaceChildren();
+      renderMapResults();
       $("map-legend").replaceChildren();
       $("map-summary").textContent =
         "Map search failed. Choose text search or configure local models in Setup & handoff.";
       selectedMapKeys.clear();
+      mapPositions = [];
+      mapLabelPositions = [];
       updateMapSelection();
       drawMap();
     }
@@ -799,6 +816,10 @@ async function loadMap() {
   for (const project of overview.projects)
     $("map-project").append(option(project.id, project.name));
   $("map-project").value = selected;
+  if (!filters.query || !mapSubtopics.size) {
+    buildMapSubtopics();
+    mapWorldBounds = mapBounds(mapData.documents || []);
+  }
   filterMap();
 }
 function filterMap() {
@@ -815,10 +836,13 @@ function filterMap() {
       (!filters.before || (item.date && item.date <= filters.before)) &&
       ($("map-noise").checked || item.group !== "unclustered"),
   );
-  if (mapGroup && !mapBaseDocuments.some((item) => item.group === mapGroup))
-    mapGroup = "";
+  if (mapGroup && !mapBaseDocuments.some((item) => item.group === mapGroup)) {
+    mapGroup = ""; mapSubgroup = ""; mapLevel = 0;
+  }
+  if (mapSubgroup && !mapSubtopics.has(mapSubgroup)) { mapSubgroup = ""; mapLevel = mapGroup ? 1 : 0; }
   visibleMapDocuments = mapBaseDocuments.filter(
-    (item) => !mapGroup || item.group === mapGroup,
+    (item) => (!mapGroup || item.group === mapGroup) &&
+      (!mapSubgroup || mapSubtopics.get(mapSubgroup)?.keys.has(mapKey(item))),
   );
   visibleMapDocuments.sort((a, b) => {
     if (filters.sort === "title") return a.title.localeCompare(b.title);
@@ -851,6 +875,7 @@ function filterMap() {
   )
     ? " Membership strength is unavailable for some points; rebuild the semantic map to enable strength-based fading."
     : " Dot opacity shows cluster membership strength: faded is weaker, solid is stronger. This is not calibrated topic confidence.";
+  renderMapBreadcrumbs();
   renderMapLegend();
   renderMapResults();
   updateMapSelection();
@@ -866,10 +891,7 @@ function renderMapLegend() {
   );
   all.setAttribute("aria-pressed", String(!mapGroup));
   all.onclick = () => {
-    mapGroup = "";
-    mapZoom = 1;
-    panX = panY = 0;
-    filterMap();
+    enterMapLevel("", "");
   };
   legend.append(all);
   const counts = new Map();
@@ -890,12 +912,17 @@ function renderMapLegend() {
     );
     button.setAttribute("aria-pressed", String(mapGroup === group));
     button.onclick = () => {
-      mapGroup = mapGroup === group ? "" : group;
-      mapZoom = 1;
-      panX = panY = 0;
-      filterMap();
+      enterMapLevel(mapGroup === group ? "" : group, "");
     };
     legend.append(button);
+  }
+  if (mapLevel === 1) {
+    for (const [id, subgroup] of mapSubtopics) {
+      if (subgroup.group !== mapGroup) continue;
+      const button = node("button", subgroup.label + " · " + subgroup.keys.size, "topic-chip subtopic-chip");
+      button.onclick = () => enterMapLevel(mapGroup, id);
+      legend.append(button);
+    }
   }
   if (groups.length > 6) {
     const more = node(
@@ -921,6 +948,11 @@ function renderMapResults() {
         "muted",
       ),
     );
+  if (!mapData?.documents?.length) {
+    const setup = node("button", "Set up the conversation map", "map-empty-action");
+    setup.onclick = safely(() => showView("setup"));
+    list.append(node("p", "Search your library while the map is unavailable. Build local embeddings in Setup & handoff to explore topics.", "muted"), setup);
+  }
   for (const item of visibleMapDocuments.slice(0, mapListLimit)) {
     const card = node("article", "", "map-result");
     card.dataset.mapKey = mapKey(item);
@@ -980,13 +1012,13 @@ function updateMapSelection() {
     card.classList.toggle("selected", selectedMapKeys.has(card.dataset.mapKey));
 }
 function drawMap() {
-  if (currentView !== "map") return;
+  if (currentView !== "explore" || typeof $("map-canvas").getBoundingClientRect !== "function") return;
   const canvas = $("map-canvas"),
     context = canvas.getContext("2d"),
     docs = visibleMapDocuments,
     { width, height } = canvas.getBoundingClientRect(),
     ratio = Math.max(2, window.devicePixelRatio || 1);
-  if (!width || !height) return;
+  if (!context || !width || !height) return;
   // Match the fractional CSS size exactly, including at browser zoom levels.
   canvas.width = Math.round(width * ratio);
   canvas.height = Math.round(height * ratio);
@@ -1009,28 +1041,21 @@ function drawMap() {
   if (!mapData || !docs.length) {
     context.fillStyle = mapText;
     context.font = '400 13px "Modern Dark Grotesk", sans-serif';
-    context.fillText("No mapped conversations in this view", 24, 42);
+    context.fillText("No mapped conversations in this view", 24, 86);
     return;
   }
-  const xs = docs.map((item) => item.x),
-    ys = docs.map((item) => item.y),
-    minX = Math.min(...xs),
-    maxX = Math.max(...xs),
-    minY = Math.min(...ys),
-    maxY = Math.max(...ys),
-    scale =
-      Math.min(
-        (width - 120) / (maxX - minX || 1),
-        (height - 110) / (maxY - minY || 1),
-      ) * mapZoom;
+  const bounds = mapWorldBounds || mapBounds(mapData.documents || docs);
+  const viewport = mapViewport(width, height);
+  const scale = Math.min((viewport.width - 120) / bounds.width, (viewport.height - 110) / bounds.height) * mapZoom;
+  const centerX = bounds.x, centerY = bounds.y;
   const radii = { compact: 3, balanced: 5, comfortable: 8 },
     radius = radii[$("map-density").value] || 5;
   const centers = new Map();
   for (const item of docs) {
     const selected = selectedMapKeys.has(mapKey(item));
-    const x = width / 2 + (item.x - (minX + maxX) / 2) * scale + panX,
-      y = height / 2 - (item.y - (minY + maxY) / 2) * scale + panY;
-    context.globalAlpha = mapPointOpacity(item);
+    const x = viewport.x + (item.x - centerX) * scale + panX,
+      y = viewport.y - (item.y - centerY) * scale + panY;
+    context.globalAlpha = mapLevel === 2 ? mapPointOpacity(item) : 0.07;
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
     context.fillStyle = mapColor(item.group);
@@ -1040,12 +1065,13 @@ function drawMap() {
       context.lineWidth = 2;
       context.stroke();
     }
-    mapPositions.push({ x, y, item });
-    const center = centers.get(item.group) || { x: 0, y: 0, count: 0 };
+    if (mapLevel === 2) mapPositions.push({ x, y, item });
+    const centerKey = mapLevel === 1 ? subgroupFor(item) : item.group;
+    const center = centers.get(centerKey) || { x: 0, y: 0, count: 0 };
     center.x += x;
     center.y += y;
     center.count++;
-    centers.set(item.group, center);
+    centers.set(centerKey, center);
   }
   context.globalAlpha = 1;
   if ($("map-labels").checked) {
@@ -1056,15 +1082,16 @@ function drawMap() {
       (a, b) => b[1].count - a[1].count,
     )) {
       if (group === "unclustered") continue;
-      const raw = mapData.groups[group] || "Mixed topics";
-      let text = raw.length > 40 ? raw.slice(0, 39) + "…" : raw;
+      if (mapLevel === 2) continue;
+      const raw = mapLevel === 1 ? mapSubtopics.get(group)?.label || "Nearby conversations" : mapData.groups[group] || "Mixed topics";
+      let text = (raw.length > 36 ? raw.slice(0, 35) + "…" : raw) + "  ·  " + center.count;
       // Truncate narrow labels instead of horizontally compressing the font.
       while (text.length > 1 && context.measureText(text).width > width - 32)
         text = text.replace(/…$/, "").slice(0, -1) + "…";
-      const w = Math.ceil(context.measureText(text).width) + 16,
-        h = 28;
+      const w = Math.ceil(context.measureText(text).width) + 28,
+        h = 34;
       const x = Math.round(
-        Math.max(8, Math.min(width - w - 8, center.x / center.count - w / 2)),
+        Math.max(viewport.left + 8, Math.min(width - w - 8, center.x / center.count - w / 2)),
       );
       let y = Math.round(center.y / center.count - 34);
       for (
@@ -1084,19 +1111,159 @@ function drawMap() {
         )
       )
         continue;
+      const color = mapColor(mapLevel === 1 ? mapGroup : group);
+      const haloX = center.x / center.count, haloY = center.y / center.count;
+      const haloRadius = Math.min(110, 46 + Math.sqrt(center.count) * 7);
+      const glow = context.createRadialGradient(haloX, haloY, 0, haloX, haloY, haloRadius);
+      glow.addColorStop(0, color);
+      glow.addColorStop(0.2, color);
+      glow.addColorStop(1, "transparent");
+      context.globalAlpha = 0.16;
+      context.fillStyle = glow;
+      context.beginPath();
+      context.arc(haloX, haloY, haloRadius, 0, Math.PI * 2);
+      context.fill();
+      context.globalAlpha = 1;
       context.fillStyle = mapLabel;
-      context.fillRect(x, y, w, h);
+      context.beginPath();
+      context.roundRect(x, y, w, h, 12);
+      context.fill();
+      context.strokeStyle = color;
+      context.lineWidth = 1;
+      context.stroke();
       context.fillStyle = mapText;
-      context.fillText(text, x + 8, y + h / 2);
-      mapLabelPositions.push({ x, y, w, h, group });
+      context.fillText(text, x + 14, y + h / 2);
+      mapLabelPositions.push({ x, y, w, h, group, level: mapLevel });
       placed.push({ x, y, w, h });
     }
   }
 }
-function zoom(factor) {
-  mapZoom = Math.max(0.25, Math.min(20, mapZoom * factor));
-  drawMap();
+function setExploreMode(mode) {
+  $("view-explore").dataset.mode = mode;
+  $("explore-toggle").textContent = mode === "map" ? "Back to search" : "Explore map";
+  $("explore-toggle").setAttribute("aria-pressed", String(mode === "map"));
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => { fitMapCamera(); drawMap(); });
 }
+function mapViewport(width, height) {
+  // Leave room for the search dock without changing the source projection.
+  const dock = $("view-chats");
+  const dockWidth = typeof dock.getBoundingClientRect === "function" ? dock.getBoundingClientRect().width : 0;
+  const left = $("view-explore").dataset.mode === "map" && width > 800 ? Math.min(dockWidth + 48, width * 0.4) : 0;
+  return { left, x: left + (width - left) / 2, y: height / 2, width: width - left, height };
+}
+function mapBounds(documents) {
+  const points = documents.filter(item => Number.isFinite(item.x) && Number.isFinite(item.y));
+  if (!points.length) return { x: 0, y: 0, width: 1, height: 1 };
+  const xs = points.map(item => item.x), ys = points.map(item => item.y);
+  const left = Math.min(...xs), right = Math.max(...xs), bottom = Math.min(...ys), top = Math.max(...ys);
+  return { x: (left + right) / 2, y: (bottom + top) / 2, width: right - left || 1, height: top - bottom || 1 };
+}
+function buildMapSubtopics() {
+  mapSubtopics = new Map();
+  const groups = new Map();
+  for (const item of mapData?.documents || []) {
+    const items = groups.get(item.group) || [];
+    items.push(item);
+    groups.set(item.group, items);
+  }
+  for (const [group, items] of groups) {
+    const bounds = mapBounds(items);
+    const axis = bounds.width >= bounds.height ? "x" : "y";
+    const ordered = [...items].sort((a, b) => a[axis] - b[axis] || mapKey(a).localeCompare(mapKey(b)));
+    const count = Math.min(3, Math.max(1, Math.ceil(items.length / 5)));
+    for (let i = 0; i < count; i++) {
+      const members = ordered.slice(Math.floor(i * ordered.length / count), Math.floor((i + 1) * ordered.length / count));
+      const frequencies = new Map();
+      const ignored = new Set("about after again also chat conversation could from have help into just more need please project some that their them then there these they this using want what when where which with would your".split(" "));
+      for (const item of members) {
+        const words = new Set((item.title || "").toLowerCase().match(/[a-z][a-z0-9-]{3,}/g) || []);
+        for (const word of words) if (!ignored.has(word)) frequencies.set(word, (frequencies.get(word) || 0) + 1);
+      }
+      const terms = [...frequencies].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 2).map(([word]) => word);
+      const phrase = terms.join(" · ");
+      const label = phrase ? phrase[0].toUpperCase() + phrase.slice(1) : "Nearby conversations";
+      mapSubtopics.set(group + ":" + i, { group, label, keys: new Set(members.map(mapKey)), documents: members });
+    }
+  }
+}
+function subgroupFor(item) {
+  for (const [id, group] of mapSubtopics) if (group.keys.has(mapKey(item))) return id;
+  return "";
+}
+function renderMapBreadcrumbs() {
+  const breadcrumbs = $("map-breadcrumbs");
+  breadcrumbs.replaceChildren();
+  const all = node("button", "All topics");
+  all.onclick = () => enterMapLevel("", "");
+  breadcrumbs.append(all);
+  if (mapGroup) {
+    const topic = node("button", mapData.groups[mapGroup] || "Mixed topics");
+    topic.onclick = () => enterMapLevel(mapGroup, "");
+    breadcrumbs.append(node("span", "›"), topic);
+  }
+  if (mapSubgroup) breadcrumbs.append(node("span", "›"), node("span", mapSubtopics.get(mapSubgroup)?.label || "Conversations"));
+  $("map-back").disabled = !mapGroup;
+  $("map-level").textContent = mapLevel === 0 ? "Topics" : mapLevel === 1 ? "Subtopics" : "Conversations";
+  $("map-method").textContent += " Subtopics are deterministic spatial subdivisions of each projected group, named from captured conversation titles; they are browsing aids, not a validated semantic hierarchy.";
+}
+function animateMapCamera(target) {
+  if (typeof cancelAnimationFrame === "function") cancelAnimationFrame(mapAnimation);
+  const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || typeof requestAnimationFrame !== "function") {
+    mapZoom = target.zoom; panX = target.x; panY = target.y; drawMap(); return;
+  }
+  const initial = { zoom: mapZoom, x: panX, y: panY };
+  let start;
+  const frame = time => {
+    start ??= time;
+    const progress = Math.min(1, (time - start) / 1000);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    mapZoom = initial.zoom + (target.zoom - initial.zoom) * eased;
+    panX = initial.x + (target.x - initial.x) * eased;
+    panY = initial.y + (target.y - initial.y) * eased;
+    drawMap();
+    if (progress < 1) mapAnimation = requestAnimationFrame(frame);
+  };
+  mapAnimation = requestAnimationFrame(frame);
+}
+function fitMapCamera() {
+  const world = mapWorldBounds || mapBounds(mapData?.documents || []), focus = mapBounds(visibleMapDocuments);
+  const box = $("map-canvas").getBoundingClientRect();
+  if (!box.width || !box.height) return;
+  const viewport = mapViewport(box.width, box.height);
+  const baseScale = Math.max(0.001, Math.min((viewport.width - 120) / world.width, (viewport.height - 110) / world.height));
+  const targetZoom = mapGroup ? Math.min(12, Math.max(1, Math.min((viewport.width - 180) / focus.width, (viewport.height - 160) / focus.height) / baseScale)) : 1;
+  mapLevelZoom = targetZoom;
+  animateMapCamera({ zoom: targetZoom, x: (world.x - focus.x) * baseScale * targetZoom, y: (focus.y - world.y) * baseScale * targetZoom });
+}
+function enterMapLevel(group, subgroup) {
+  mapGroup = group; mapSubgroup = subgroup;
+  mapLevel = subgroup ? 2 : group ? 1 : 0;
+  filterMap();
+  fitMapCamera();
+}
+function zoom(factor, pointer = null) {
+  if (typeof cancelAnimationFrame === "function") cancelAnimationFrame(mapAnimation);
+  const target = Math.max(0.25, Math.min(20, mapZoom * factor));
+  const box = $("map-canvas").getBoundingClientRect();
+  const viewport = mapViewport(box.width, box.height);
+  if (factor > 1 && target > mapLevelZoom * 1.55 && mapLevel < 2 && visibleMapDocuments.length) {
+    const anchor = pointer || { x: viewport.x, y: viewport.y };
+    const nearest = [...mapLabelPositions].sort((a, b) => Math.hypot(a.x + a.w / 2 - anchor.x, a.y + a.h / 2 - anchor.y) - Math.hypot(b.x + b.w / 2 - anchor.x, b.y + b.h / 2 - anchor.y))[0];
+    if (nearest) { enterMapLevel(mapLevel === 0 ? nearest.group : mapGroup, mapLevel === 1 ? nearest.group : ""); return; }
+  }
+  if (factor < 1 && target < mapLevelZoom * 0.78 && mapLevel > 0) { enterMapLevel(mapLevel === 2 ? mapGroup : "", ""); return; }
+  const ratio = target / mapZoom;
+  const anchor = pointer || { x: viewport.x, y: viewport.y };
+  const targetX = (anchor.x - viewport.x) * (1 - ratio) + panX * ratio;
+  const targetY = (anchor.y - viewport.y) * (1 - ratio) + panY * ratio;
+  if (pointer) {
+    // Wheel deltas apply immediately so rapid trackpad input accumulates.
+    mapZoom = target; panX = targetX; panY = targetY; drawMap();
+  } else animateMapCamera({ zoom: target, x: targetX, y: targetY });
+}
+$("explore-toggle").onclick = () => setExploreMode($("view-explore").dataset.mode === "map" ? "search" : "map");
+$("map-back").onclick = () => enterMapLevel(mapLevel === 2 ? mapGroup : "", "");
 function downloadMapFile(blob, filename) {
   const url = URL.createObjectURL(blob),
     link = node("a");
@@ -1147,6 +1314,7 @@ function mapLabelAt(x, y) {
 }
 const canvas = $("map-canvas");
 canvas.onpointerdown = (event) => {
+  if (typeof cancelAnimationFrame === "function") cancelAnimationFrame(mapAnimation);
   dragging = { x: event.clientX, y: event.clientY, panX, panY };
   moved = false;
   canvas.setPointerCapture(event.pointerId);
@@ -1161,7 +1329,7 @@ canvas.onpointermove = (event) => {
     );
     const label = mapLabelAt(x, y);
     canvas.style.cursor = point || label ? "pointer" : "grab";
-    $("map-hover").textContent = label ? `Explore ${mapData.groups[label.group] || "Mixed topics"}` : point
+    $("map-hover").textContent = label ? `Explore ${label.level === 1 ? mapSubtopics.get(label.group)?.label || "Nearby conversations" : mapData.groups[label.group] || "Mixed topics"}` : point
       ? point.item.title +
         " · " +
         (mapData.groups[point.item.group] || "Mixed topics") +
@@ -1183,11 +1351,8 @@ canvas.onpointerup = () => {
     const box = canvas.getBoundingClientRect();
     const label = mapLabelAt(dragging.x - box.left, dragging.y - box.top);
     if (label) {
-      mapGroup = mapGroup === label.group ? "" : label.group;
-      mapZoom = 1;
-      panX = panY = 0;
       dragging = null;
-      filterMap();
+      enterMapLevel(label.level === 0 ? label.group : mapGroup, label.level === 1 ? label.group : "");
       return;
     }
     const point = mapPositions.find(
@@ -1210,11 +1375,19 @@ canvas.onpointerup = () => {
       const card = [...document.querySelectorAll(".map-result")].find(
         (card) => card.dataset.mapKey === key,
       );
-      card?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      const panel = document.querySelector(".map-result-panel");
+      if (panel) panel.open = true;
+      const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      card?.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" });
     }
   }
   dragging = null;
 };
+canvas.ondblclick = safely(async event => {
+  const box = canvas.getBoundingClientRect();
+  const point = mapPositions.find(point => Math.hypot(point.x - event.clientX + box.left, point.y - event.clientY + box.top) < 12);
+  if (point) await openChat(point.item.source, point.item.id, point.item.match?.message_id);
+});
 canvas.onpointercancel = () => {
   dragging = null;
 };
@@ -1222,17 +1395,14 @@ canvas.addEventListener(
   "wheel",
   (event) => {
     event.preventDefault();
-    zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12);
+    const box = canvas.getBoundingClientRect();
+    zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12, { x: event.clientX - box.left, y: event.clientY - box.top });
   },
   { passive: false },
 );
 $("map-in").onclick = () => zoom(1.25);
 $("map-out").onclick = () => zoom(0.8);
-$("map-reset").onclick = () => {
-  mapZoom = 1;
-  panX = panY = 0;
-  drawMap();
-};
+$("map-reset").onclick = fitMapCamera;
 $("map-expand").onclick = () => {
   mapExpanded = !mapExpanded;
   $("map-surface").classList.toggle("expanded", mapExpanded);
@@ -1282,6 +1452,8 @@ $("map-clear").onclick = safely(async () => {
     $(id).value = "";
   $("map-search-mode").value = "keyword";
   mapGroup = "";
+  mapSubgroup = "";
+  mapLevel = 0;
   $("map-noise").checked = true;
   for (const id of ["map-source", "map-project", "map-search-mode"])
     $(id).dispatchEvent(new Event("choices-refresh"));
@@ -1338,6 +1510,7 @@ $("map-download-handoff").onclick = () => {
     );
 };
 window.addEventListener("resize", drawMap);
+window.addEventListener("smriti-theme-change", drawMap);
 window.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && mapExpanded) $("map-expand").click();
 });
@@ -1348,7 +1521,7 @@ for (const button of document.querySelectorAll("[data-view]"))
     await showView(button.dataset.view);
   });
 let timer;
-const navigationLabels = {home: "Home", chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff", settings: "Settings"};
+const navigationLabels = {explore: "Your conversations", home: "Home", chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff", settings: "Settings"};
 for (const button of document.querySelectorAll("nav [data-view]")) {
   button.setAttribute("aria-label", navigationLabels[button.dataset.view]);
   button.title = navigationLabels[button.dataset.view];
@@ -1556,7 +1729,7 @@ $("settings-sync").onclick = syncWorkspace;
 // Queue navigation until the initial overview and default view are ready.
 const startup = (async () => {
   await refreshOverview();
-  await showView("home");
+  await showView("explore");
 })();
 startup.catch((error) => notice(error.message, true));
 

@@ -3,8 +3,8 @@ import json
 import tempfile
 import unittest
 import zipfile
-from chatos.importers import read_export_file
-from chatos.runtime import sync
+from chatos.capture.importers import read_export_file
+from chatos.automation.runtime import sync
 
 
 class ExportTests(unittest.TestCase):
@@ -30,7 +30,7 @@ class ExportTests(unittest.TestCase):
             with self.assertRaises(ValueError):read_export_file(archive,'muse')
 
     def test_active_branch_model_and_tool_recipient_exclusion(self):
-        from chatos.importers import read_chatgpt_export
+        from chatos.capture.importers import read_chatgpt_export
         data=[{'id':'branched','current_node':'chosen','mapping':{
           'u':{'parent':None,'message':{'id':'u','author':{'role':'user'},'content':{'parts':['Question']}}},
           'chosen':{'parent':'u','message':{'id':'chosen','author':{'role':'assistant'},'create_time':1,'content':{'parts':['Chosen answer']},'metadata':{'model_slug':'active-model'}}},

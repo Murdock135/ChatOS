@@ -10,7 +10,7 @@
 
 ## Interface design and archival provenance
 
-- An explicit user-supplied design system takes precedence over earlier visual references. The active v2.3 guide retains the user-liked Modern Dark layout, regular Geist typography and near-black surfaces, with restrained chromatic accents. Preserve sentence case, transparent vectors and the inert ChatGPT visualization.
+- An explicit user-supplied design system takes precedence over earlier visual references. The active v4 guide unifies conversation search and the progressively disclosed embedding map, retaining regular Geist typography, vector branding and restrained cyberpunk accents. The 2026-11-10 user request supersedes the older separate-view and no-motion constraints. Preserve sentence case, transparent vectors and the inert ChatGPT visualization.
 - For new design directions or palette choices, research relevant Behance projects, inspect their actual images, and maintain attributed observations in `docs/design/REFERENCES.md`. Distinguish image inspection, indexed descriptions, and inference; do not claim unavailable gallery access.
 - Before UI changes, read `docs/design/README.md` and the active `docs/design/STYLEGUIDE.md`. Use shared tokens and component rules; preserve existing interaction and source-data contracts.
 - Maintain the guide and `docs/design/CHANGELOG.md` when design decisions change. Preserve prior versions and mark supersession explicitly.

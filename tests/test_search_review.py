@@ -6,8 +6,8 @@ import unittest
 from pathlib import Path
 
 from chatos.core import Store
-from chatos.search_models import DEFAULTS, save, settings
-from chatos.search_review import path, prepare, results
+from chatos.search.search_models import DEFAULTS, save, settings
+from chatos.search.search_review import path, prepare, results
 
 
 class SearchReviewTests(unittest.TestCase):

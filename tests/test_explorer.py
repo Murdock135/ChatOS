@@ -3,8 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from chatos.core import Store
-from chatos.semantic import build
-from chatos.explorer import project,neighbor_retention,refresh
+from chatos.search.semantic import build
+from chatos.mapping.explorer import project,neighbor_retention,refresh
 
 
 class ExplorerTests(unittest.TestCase):

@@ -10,10 +10,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from chatos.assistant_skill import export_skill
-from chatos.onboarding import setup_status
-from chatos.runtime import sync
-from chatos.setup import initialize
+from chatos.assistant.assistant_skill import export_skill
+from chatos.setup.onboarding import setup_status
+from chatos.automation.runtime import sync
+from chatos.setup.initialization import initialize
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -119,7 +119,7 @@ class AssistantSkillTests(unittest.TestCase):
             initialize(root)
             destination = parent / "host skills" / "chatos"
             with patch(
-                "chatos.assistant_skill.Path.write_text",
+                'chatos.assistant.assistant_skill.Path.write_text',
                 side_effect=OSError("Interrupted export"),
             ):
                 with self.assertRaises(OSError):

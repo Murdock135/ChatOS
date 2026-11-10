@@ -1,0 +1,16 @@
+---
+import Conversations from "./Conversations.astro";
+import Map from "./Map.astro";
+---
+<section id="view-explore" class="explorer" data-mode="search">
+  <div class="explorer-heading">
+    <h1>Your conversations</h1>
+    <button id="explore-toggle" type="button" aria-pressed="false" aria-controls="explorer-stage">
+      Explore map <span aria-hidden="true">↗</span>
+    </button>
+  </div>
+  <div id="explorer-stage" class="explorer-stage">
+    <Map />
+    <Conversations />
+  </div>
+</section>

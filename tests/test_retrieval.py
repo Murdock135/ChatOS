@@ -3,8 +3,8 @@ import json
 import tempfile
 import unittest
 from chatos.core import Store
-from chatos.retrieval import retrieve
-from chatos.routing import assign
+from chatos.search.retrieval import retrieve
+from chatos.assistant.routing import assign
 
 
 class RetrievalTests(unittest.TestCase):

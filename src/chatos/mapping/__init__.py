@@ -1,0 +1,1 @@
+"""Mapping responsibilities for smriti."""

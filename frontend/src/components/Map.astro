@@ -1,4 +1,51 @@
-<section id="view-map" hidden>
+<section id="view-map" aria-label="Embedding map">
+  <div class="map-topbar">
+    <nav id="map-breadcrumbs" aria-label="Map location"></nav>
+    <span id="map-level" role="status" aria-live="polite">Topics</span>
+  </div>
+  <div id="map-surface" class="map-surface">
+    <div class="map-controls">
+      <button id="map-back" type="button" title="Return to the previous map level" aria-label="Back to parent topic" disabled>← Back</button>
+      <div class="map-zoom-controls">
+        <button id="map-out" aria-label="Zoom out" title="Zoom out">−</button>
+        <button id="map-in" aria-label="Zoom in" title="Zoom in">＋</button>
+        <button id="map-reset" title="Reset zoom and center the current topics">Fit map</button>
+        <button id="map-expand" aria-pressed="false" hidden>Expand map</button>
+        <details class="map-options"><summary aria-label="Map display options" title="Map display options">•••</summary>
+          <div class="map-options-panel">
+<label>View<select id="map-density" data-native="true"><option value="balanced">Balanced</option><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select></label>
+            <label class="check"><input id="map-labels" type="checkbox" checked />Topic labels</label>
+            <label class="check"><input id="map-noise" type="checkbox" checked />Unclustered</label>
+            <button id="map-export-image">Download map PNG</button>
+          </div>
+        </details>
+      </div>
+    </div>
+    <canvas id="map-canvas" aria-label="Embedding map; use Topics and zoom controls for keyboard access"></canvas>
+  </div>
+  <div class="map-caption"><p id="map-hover" class="muted">Choose a topic, then zoom to discover related conversations.</p></div>
+  <div class="map-dock">
+    <details class="map-discovery"><summary>Topics</summary>
+      <p class="muted">Choose a label to explore.</p>
+      <div id="map-legend" class="map-legend" role="group" aria-label="Explore topics and subtopics"></div>
+    </details>
+    <details class="map-result-panel"><summary>Conversations in this area</summary>
+  <h2 id="map-results-heading">Conversations</h2>
+  <details class="map-selection-tools"><summary>Selection &amp; export</summary><div class="map-selection-bar">
+    <span id="map-selected-count" aria-live="polite">No conversations selected</span>
+    <button id="map-select-visible">Select visible</button><button id="map-clear-selection">Clear selection</button>
+    <button id="map-export-data">Export results JSON</button><button id="map-assistant" class="primary">Explore with my assistant</button>
+  </div>
+  </details>
+  <div id="map-handoff" hidden>
+    <label>Give this request to your existing assistant<textarea id="map-handoff-prompt" readonly rows="5"></textarea></label>
+    <p class="muted">The selection is saved locally with source citations and map freshness. Your assistant needs local file access; you can download the selection for an assistant without it. Nothing is sent automatically.</p>
+    <button id="map-copy-prompt">Copy request</button><button id="map-download-handoff">Download selection JSON</button>
+  </div>
+  <div id="map-list" class="map-list map-results"></div>
+  <button id="map-more" hidden>Show more conversations</button>
+    </details>
+    <details class="map-details"><summary>Map details &amp; filters</summary>
   <div class="map-heading">
     <p id="map-summary" class="muted" aria-live="polite"></p>
     <button id="map-rebuild" type="button" title="Rebuild topic groups from current local embeddings">↻ Rebuild</button>
@@ -24,42 +71,9 @@
     <button id="map-clear" type="button">Clear filters</button>
   </div>
   </details>
-  <div id="map-surface" class="map-surface">
-    <div class="map-controls">
-      <label>View<select id="map-density"><option value="balanced">Balanced</option><option value="compact">Compact</option><option value="comfortable">Comfortable</option></select></label>
-      <div class="map-zoom-controls">
-        <button id="map-out" aria-label="Zoom out" title="Zoom out">−</button>
-        <button id="map-in" aria-label="Zoom in" title="Zoom in">＋</button>
-        <button id="map-reset" title="Reset zoom and center the current topics">Fit map</button>
-        <button id="map-expand" aria-pressed="false">Expand map</button>
-        <details class="map-options"><summary aria-label="Map display options" title="Map display options">•••</summary>
-          <div class="map-options-panel">
-            <label class="check"><input id="map-labels" type="checkbox" checked />Topic labels</label>
-            <label class="check"><input id="map-noise" type="checkbox" checked />Unclustered</label>
-            <button id="map-export-image">Download map PNG</button>
-          </div>
-        </details>
-      </div>
-    </div>
-    <canvas id="map-canvas" aria-label="Conversation topics; use the topic legend and results below for keyboard access"></canvas>
+
+      <p id="map-freshness"></p><p id="map-search-note"></p><p id="map-method"></p>
+      <p class="muted">No map yet? <button type="button" data-view="setup">Set up local embeddings</button></p>
+    </details>
   </div>
-  <div class="map-caption">
-  <p id="map-hover" class="muted">Select a topic label to focus, or a point to select a conversation. Drag to pan; scroll to zoom.</p>
-  <details class="capture-details map-about"><summary>About this map</summary><p id="map-freshness"></p><p id="map-search-note"></p><p id="map-method"></p></details>
-  </div>
-  <div class="map-topics-heading"><h2>Explore topics</h2><span class="muted">Choose a topic to focus the map and conversations.</span></div>
-  <div id="map-legend" class="map-legend" role="group" aria-label="Filter by topic"></div>
-  <h2 id="map-results-heading">Conversations</h2>
-  <div class="map-selection-bar">
-    <span id="map-selected-count" aria-live="polite">No conversations selected</span>
-    <button id="map-select-visible">Select visible</button><button id="map-clear-selection">Clear selection</button>
-    <button id="map-export-data">Export results JSON</button><button id="map-assistant" class="primary">Explore with my assistant</button>
-  </div>
-  <div id="map-handoff" hidden>
-    <label>Give this request to your existing assistant<textarea id="map-handoff-prompt" readonly rows="5"></textarea></label>
-    <p class="muted">The selection is saved locally with source citations and map freshness. Your assistant needs local file access; you can download the selection for an assistant without it. Nothing is sent automatically.</p>
-    <button id="map-copy-prompt">Copy request</button><button id="map-download-handoff">Download selection JSON</button>
-  </div>
-  <div id="map-list" class="map-list map-results"></div>
-  <button id="map-more" hidden>Show more conversations</button>
 </section>

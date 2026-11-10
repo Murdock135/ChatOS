@@ -4,20 +4,20 @@ Run manually with Python 3. Creates a new dated snapshot on every run.
 Never copies authentication, session transcripts, runtime databases, or logs.
 Configuration values are limited to an explicit allowlist.
 """
-from ..workspace import workspace_path
+from chatos.workspace import workspace_path
 from pathlib import Path
 from datetime import datetime, timezone
 from collections import Counter
 import hashlib
 import json
 import re
-from .system_inventory import discover_skills, workspace_files, refresh, walk_files
+from chatos.maintenance.system_inventory import discover_skills, workspace_files, refresh, walk_files
 import os
 import shutil
 import tempfile
 
 
-from ..workspace import default_root, Workspace
+from chatos.workspace import default_root, Workspace
 VAULT = default_root()
 SOURCE = Path.home() / '.codex'
 SKIP = {'.git', 'node_modules', '__pycache__', '.venv', '.DS_Store'}

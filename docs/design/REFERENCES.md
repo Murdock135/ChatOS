@@ -37,3 +37,20 @@ Adapted for smriti: lilac for secondary identity and restrained metadata, and cl
 v1.1 uses graphite canvas/surfaces, mint primary actions, lilac secondary identity, and a calmer multi-topic map palette. Typography, spacing, the supplied smriti branding, existing app structure, and the user's architectural Home reference continue to govern the UI. The central ChatGPT illustration remains inert. References inform visual decisions; they do not authorize new features, provider access, or data changes.
 
 [Active guide](STYLEGUIDE.md) · [Version history](CHANGELOG.md) · [v1.1 validation scope](evidence/v1.1/README.md)
+
+
+## v4 research access — 2026-11-10
+
+The UI subagent searched for new dark dashboard references. [Enterprise Analytics SaaS Dashboard](https://www.behance.net/gallery/232673433/Enterprise-Analytics-SaaS-Dashboard) was identified in indexed metadata, credited there to Shubham Saurabh. Gallery access returned 403; direct image access failed. The parent also attempted the previously recorded ImeSas CDN image; the web reader returned a cache miss. No new reference image was successfully inspected in this redesign. No new visual observation is attributed to those inaccessible images.
+
+The v4 composition, bounded geometry, sentence case and slow motion follow the current user's explicit direction. Violet/cyan tokens and scoped component geometry are implementation choices. Earlier image observations above remain historical evidence from their recorded inspection date, not a claim of refreshed access.
+
+## User-supplied visual references — 2026-11-10
+
+Three screenshots were supplied directly in the source chat and inspected there: Respan (dark, understated dividers and compact controls), a contract interface (warm white background, raised white rounded surfaces and a selective orange spotlight), and Antimetal (paper background, generous space and a charcoal inset product surface). The first two were resized in the chat renderer, so observations are limited to visible composition/color/geometry; no exact typography, interaction or accessibility property is inferred.
+
+Adaptation: preserve a bounded working surface, make the light theme warm and layered, retain the dark theme's quiet contrast, and keep chromatic emphasis selective. Third-party marketing copy, example metrics, certifications and apparent actions are not imported as product requirements. User attachments remain in the source chat; third-party artwork is not bundled in the public archive.
+
+## Aether — 2026-11-10
+
+User-supplied [Aether](https://aether1.ai/) reference. The web reader supplied page text, and a headless Chrome viewport was captured and actually inspected. The sampled frame shows translucent orbital forms, faint blue illumination and a textured near-black backdrop. Only that rendered frame was inspected; complete animation timing and interaction behavior are not established by a still image. Apply the sense of depth selectively through map halos and restrained atmospheric tint. Do not copy the site's labels, all-caps typography, sound controls, artwork or product claims. The temporary reference capture is excluded from the public design archive.

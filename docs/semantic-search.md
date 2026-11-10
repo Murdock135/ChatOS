@@ -47,3 +47,20 @@ The current pretrained representation encodes a title plus up to twelve evenly s
 Sampling and averaging can miss or blur multiple topics. English phrase labels, outliers, ambiguous groups and 2D distortions still require review. The map displays neighbor retention as a projection diagnostic, not semantic accuracy. Similarity does not establish truth, agreement, ownership or accepted decisions. Legacy saved maps remain readable. See [the exploration design decision](adr/0006-semantic-map-exploration.md) and [validation evidence](verification/semantic-map-exploration.md).
 
 Dot opacity represents HDBSCAN membership strength within each assigned cluster: weaker members fade and stronger members are more solid. A minimum opacity keeps zero-strength noise points visible. This persistence-based score is not calibrated confidence in the topic label. Selection adds a ring without changing opacity. Older saved maps and provisional LSA maps lack these scores and use uniform opacity; rebuild the semantic map to compute them. Hover a point to inspect its score, also included in exported results JSON.
+
+## Standalone topic and subtopic experiment
+
+`scripts/build_topic_map.py` builds a separate, unclustered map from an existing structured-summary pilot. It requires `sample.json` and saved `responses/*.json` in the format used by the [summary proposal](proposals/0003-structured-conversation-summaries.md), plus an already downloaded Sentence Transformers model. It does not generate summaries or call an inference API.
+
+```bash
+PYTHONPATH=src .venv-semantic/bin/python scripts/build_topic_map.py \
+  --pilot-dir /path/to/saved-pilot \
+  --model-path /path/to/downloaded-MiniLM-model \
+  --output-dir /path/to/new-experiment
+```
+
+The output directory must be new. Open its `map.html` directly in Firefox or another browser; no server is required. It contains private derived labels and summaries when run on personal records, so keep it with the private workspace. Captured-source links open local Markdown records; ChatGPT points also link to their source conversation.
+
+Main subjects and subtopic subjects become separate points, with explicit parent links and original exchange ranges. There is no vector averaging or HDBSCAN. Each summarizer gets an independent UMAP layout; filters retain positions and nearest-topic suggestions use original embedding distances. Only complete, source-hash-matched, contract-valid responses are included, without raw-text fallbacks. Existing pilot labels are reused verbatim rather than rewritten as compact labels.
+
+`topics.json`, normalized vectors, model/package provenance, exclusions, and a SHA-256 manifest accompany the HTML. Projection proximity and structural validity do not establish semantic accuracy. This experiment does not replace the app's saved conversation map.

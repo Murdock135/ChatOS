@@ -7,9 +7,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from chatos import terminal
-from chatos.__main__ import main
-from chatos.changes import behavior_changes
+from chatos.cli import terminal
+from chatos.cli.main import main
+from chatos.archive.changes import behavior_changes
 
 
 class ReportTests(unittest.TestCase):

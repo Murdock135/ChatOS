@@ -1,7 +1,7 @@
 from pathlib import Path
 import tempfile
 import unittest
-from chatos.desktop_capture import normalize,merge,write_inbox,CAPTURE
+from chatos.capture.desktop_capture import normalize,merge,write_inbox,CAPTURE
 
 
 def capture(identity='one',text='A visible question'):

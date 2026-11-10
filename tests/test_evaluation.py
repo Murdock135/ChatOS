@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from chatos.core import Store, write_json
-from chatos.evaluation import evaluate, map_diagnostics
+from chatos.search.evaluation import evaluate, map_diagnostics
 
 
 class EvaluationTests(unittest.TestCase):

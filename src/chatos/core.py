@@ -1,5 +1,5 @@
 """Canonical records, atomic output, search, and conservative project routing."""
-from .workspace import workspace_path
+from chatos.workspace import workspace_path
 from pathlib import Path
 from datetime import datetime, timezone
 import contextlib
@@ -10,8 +10,8 @@ import os
 import re
 import sqlite3
 import tempfile
-from .visibility import clean_text,origin_hint
-from .workspace import Workspace, default_root
+from chatos.visibility import clean_text,origin_hint
+from chatos.workspace import Workspace, default_root
 
 ROOT = default_root()
 
@@ -187,7 +187,7 @@ class Store:
             previous = json.loads(current['record_json'])
             if (record.get('evidence', {}).get('api_capture') or
                     previous.get('evidence', {}).get('api_capture')):
-                from .capture_merge import merge_codex
+                from chatos.capture.capture_merge import merge_codex
                 record = merge_codex(previous, record)
                 record['projects'], record['project_evidence'] = self.project_ids(record)
                 clean_hash = digest(record)

@@ -26,6 +26,6 @@ chatos = ["static/*", "static/_astro/*", "templates/*", "skills/chatos/SKILL.md"
 target-version = "py39"
 
 [tool.basedpyright]
-include = ["src/chatos/workspace.py", "src/chatos/setup.py", "src/chatos/context.py"]
+include = ["src/chatos/workspace.py", "src/chatos/setup", "src/chatos/archive/context.py"]
 pythonVersion = "3.9"
 typeCheckingMode = "basic"

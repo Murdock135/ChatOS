@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import zipfile
 
-from chatos.uploads import MAXIMUM, receive_export
+from chatos.capture.uploads import MAXIMUM, receive_export
 
 
 class UploadTests(unittest.TestCase):

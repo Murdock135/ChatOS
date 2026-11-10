@@ -9,12 +9,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from chatos import library
+from chatos.archive import library
 from chatos.core import Store, digest
-from chatos.recovery import restore, verify_backup
-from chatos.retrieval import retrieve
-from chatos.runtime import backup
-from chatos.web import LocalServer
+from chatos.archive.recovery import restore, verify_backup
+from chatos.search.retrieval import retrieve
+from chatos.automation.runtime import backup
+from chatos.web.server import LocalServer
 
 
 class WebTests(unittest.TestCase):
@@ -152,7 +152,7 @@ class WebTests(unittest.TestCase):
         self.assertEqual(scoped["items"][0]["id"], "one")
 
     def test_reviewed_search_results_are_paginated_in_review_order(self):
-        from chatos.search_review import path, prepare
+        from chatos.search.search_review import path, prepare
 
         store = Store(self.root)
         try:
@@ -259,7 +259,7 @@ class WebTests(unittest.TestCase):
         )
 
     def test_home_gmail_credentials_are_session_scoped_and_never_returned(self):
-        from chatos import home
+        from chatos.web import home
 
         profile = {
             "email": "fictional@example.test",
@@ -279,7 +279,7 @@ class WebTests(unittest.TestCase):
         self.assertEqual(self.request("/api/home/gmail")[0], 400)
 
     def test_browser_authorization_survives_restart_and_is_workspace_scoped(self):
-        from chatos.web import workspace_token
+        from chatos.web.server import workspace_token
 
         self.assertEqual(workspace_token(self.root), self.server.token)
         other = Path(self.temp.name) / "independent-workspace"
@@ -515,7 +515,7 @@ class WebTests(unittest.TestCase):
         self,
     ):
         with patch(
-            "chatos.web.library.list_chats",
+            'chatos.web.server.library.list_chats',
             side_effect=RuntimeError("PRIVATE TEST TEXT"),
         ):
             code, result = self.request("/api/chats?q=PRIVATE_QUERY_TEXT")
@@ -532,7 +532,7 @@ class WebTests(unittest.TestCase):
         self.assertEqual(
             self.request("/api/map/rebuild", "POST", {}, authenticated=False)[0], 401
         )
-        with patch("chatos.dense_map.build", return_value={"clusters": 3}) as build:
+        with patch('chatos.mapping.dense_map.build', return_value={"clusters": 3}) as build:
             self.assertEqual(
                 self.request("/api/map/rebuild", "POST", {})[1], {"clusters": 3}
             )
@@ -707,7 +707,7 @@ class GuidedWebTests(unittest.TestCase):
     stop = WebTests.stop
 
     def setUp(self):
-        from chatos.setup import initialize
+        from chatos.setup.initialization import initialize
 
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

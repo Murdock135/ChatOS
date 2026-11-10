@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "dataset": "sample.json",
+  "model_path": "downloaded-model",
+  "representation": "raw",
+  "seed": 42,
+  "batch_size": 16,
+  "max_length": 256,
+  "clustering": "hdbscan",
+  "min_cluster_size": 4,
+  "min_samples": 2,
+  "projection": "umap",
+  "n_neighbors": 15,
+  "min_dist": 0.15
+}

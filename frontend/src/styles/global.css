@@ -8,6 +8,8 @@
 @import "./design-system.css" layer(components);
 @import "./modern-dark.css" layer(components);
 @import "./color-accents.css" layer(components);
+@import "./explore.css" layer(components);
+@import "./themes.css" layer(components);
 
 @theme {
   --color-canvas: #f7f7f7;

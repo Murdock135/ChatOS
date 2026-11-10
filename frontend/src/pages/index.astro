@@ -1,8 +1,7 @@
 ---
 import WorkspaceLayout from "../layouts/WorkspaceLayout.astro";
 import Home from "../components/Home.astro";
-import Conversations from "../components/Conversations.astro";
-import Map from "../components/Map.astro";
+import Explorer from "../components/Explorer.astro";
 import Context from "../components/Context.astro";
 import Health from "../components/Health.astro";
 import Setup from "../components/Setup.astro";
@@ -17,14 +16,14 @@ import Settings from "../components/Settings.astro";
             <p id="subtitle" hidden></p>
           </div>
           <div class="header-actions">
+            <button id="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="false">Light mode</button>
             <button id="sync" class="sync-control"><span class="sync-dot" aria-hidden="true"></span><span id="sync-label">Sync</span></button>
           </div>
         </header>
         <p id="sync-status" class="sync-status" role="status" aria-live="polite" hidden><span class="sync-dot" aria-hidden="true"></span><span id="sync-message"></span></p>
         <div id="notice" role="status" aria-live="polite"></div>
         <Home />
-        <Conversations />
-        <Map />
+        <Explorer />
         <Context />
         <Health />
         <Setup />

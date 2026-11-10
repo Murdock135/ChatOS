@@ -6,16 +6,16 @@ import tempfile
 import unittest
 
 from chatos.core import Store
-from chatos.library import update
-from chatos.migration import migrate
-from chatos.recovery import doctor
-from chatos.retrieval import retrieve
-from chatos.runtime import backup, sync
+from chatos.archive.library import update
+from chatos.archive.migration import migrate
+from chatos.archive.recovery import doctor
+from chatos.search.retrieval import retrieve
+from chatos.automation.runtime import backup, sync
 
 
 class MigrationTests(unittest.TestCase):
     def test_activated_checkout_selects_workspace_for_explicit_root(self):
-        from chatos.setup import initialize
+        from chatos.setup.initialization import initialize
         from chatos.workspace import Workspace
 
         with tempfile.TemporaryDirectory() as temporary:

@@ -3,7 +3,7 @@ import json
 import sqlite3
 import tempfile
 import unittest
-from chatos.schedules import collect
+from chatos.automation.schedules import collect
 
 
 class ScheduleTests(unittest.TestCase):

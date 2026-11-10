@@ -1,5 +1,5 @@
 """Shared discovery for live skill inventory, snapshots, and consistency checks."""
-from ..workspace import workspace_path
+from chatos.workspace import workspace_path
 from pathlib import Path
 from datetime import datetime, timezone
 from urllib.parse import quote
@@ -9,7 +9,7 @@ import json
 import re
 import os
 
-from ..workspace import default_root, Workspace
+from chatos.workspace import default_root, Workspace
 VAULT = default_root()
 CODEX = Path.home() / '.codex'
 SKIP = {'.git', 'node_modules', '__pycache__', '.venv', '.DS_Store'}

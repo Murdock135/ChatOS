@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Topic and subtopic experiment</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ground: #080b12;
+      --panel: #11151e;
+      --raised: #1a1f2b;
+      --line: #30374a;
+      --text: #f1f3f9;
+      --read: #bac2d4;
+      --muted: #99a5bc;
+      --violet: #b9a4ff;
+      --cyan: #71e4d8;
+      font:
+        15px/1.5 system-ui,
+        sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--ground);
+      color: var(--text);
+      margin: 24px;
+    }
+    h1 {
+      font-size: 23px;
+      margin: 0;
+    }
+    h2 {
+      font-size: 18px;
+    }
+    h3 {
+      font-size: 15px;
+    }
+    p {
+      color: var(--read);
+    }
+    header {
+      max-width: 1100px;
+    }
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    input,
+    select,
+    button {
+      font: inherit;
+      color: inherit;
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 8px 12px;
+    }
+    button {
+      cursor: pointer;
+    }
+    button:hover {
+      border-color: var(--violet);
+    }
+    :focus-visible {
+      outline: 2px solid var(--violet);
+      outline-offset: 3px;
+    }
+    input[type="search"] {
+      min-width: 260px;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 18px;
+    }
+    .stage,
+    aside {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+    }
+    .stage {
+      min-width: 0;
+    }
+    svg {
+      width: 100%;
+      height: 620px;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+    }
+    svg:active {
+      cursor: grabbing;
+    }
+    aside {
+      padding: 20px;
+      max-height: 780px;
+      overflow: auto;
+    }
+    aside p {
+      overflow-wrap: anywhere;
+    }
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    #status {
+      min-height: 24px;
+    }
+    #results {
+      display: grid;
+      gap: 6px;
+      max-height: 240px;
+      overflow: auto;
+      padding: 14px;
+      border-top: 1px solid var(--line);
+    }
+    #results button {
+      text-align: left;
+      font-size: 13px;
+    }
+    .related {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 6px 0;
+    }
+    .selected {
+      stroke: white;
+      stroke-width: 2;
+    }
+    .node {
+      cursor: pointer;
+    }
+    .edge {
+      stroke: var(--violet);
+      stroke-width: 1;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .node:focus {
+      outline: none;
+      stroke: white;
+      stroke-width: 3;
+    }
+    details {
+      margin-top: 18px;
+      max-width: 1100px;
+    }
+    li {
+      color: var(--read);
+    }
+    .legend {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--read);
+    }
+    .main-key {
+      color: var(--violet);
+    }
+    .sub-key {
+      color: var(--cyan);
+    }
+    #empty {
+      padding: 10px;
+    }
+    .source {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+    }
+    @media (max-width: 900px) {
+      body {
+        margin: 12px;
+      }
+      main {
+        grid-template-columns: 1fr;
+      }
+      aside {
+        max-height: 550px;
+      }
+      svg {
+        height: 450px;
+      }
+      .legend {
+        margin-left: 0;
+      }
+    }
+  </style>
+  <header>
+    <h1>Topic and subtopic experiment</h1>
+    <p>
+      Explore separate subject embeddings from the saved 100-conversation pilot.
+      Select a point to inspect its conversation, hierarchy, and related topics.
+      No clustering is applied.
+    </p>
+  </header>
+  <nav aria-label="Map controls">
+    <label
+      >Summary model
+      <select id="model"></select
+    ></label>
+    <label
+      >Show
+      <select id="kind">
+        <option value="all">Topics and subtopics</option>
+        <option value="main">Main topics</option>
+        <option value="subtopic">Subtopics</option>
+      </select></label
+    >
+    <input
+      id="query"
+      type="search"
+      placeholder="Find a topic or conversation"
+      aria-label="Find a topic or conversation"
+    />
+    <button id="reset">Reset view</button
+    ><button id="zoom-in" aria-label="Zoom in">+</button
+    ><button id="zoom-out" aria-label="Zoom out">−</button>
+    <span class="legend"
+      ><span class="main-key">● Main topic</span> ·
+      <span class="sub-key">● Subtopic</span></span
+    >
+  </nav>
+  <p id="status" class="meta" aria-live="polite"></p>
+  <main>
+    <section class="stage" aria-label="Topic map and accessible topic list">
+      <svg
+        id="map"
+        viewBox="0 0 1000 620"
+        role="img"
+        aria-label="Unclustered topic map. Use the topic buttons below to select points with the keyboard."
+      >
+        <g id="world">
+          <g id="edges"></g>
+          <g id="nodes"></g>
+        </g>
+      </svg>
+      <div id="results" aria-label="Visible topic labels"></div>
+    </section>
+    <aside id="detail" aria-label="Selected topic">
+      <h2>Select a topic</h2>
+      <p>
+        Main topics are violet; subtopics are teal. Selecting a point draws
+        links to its source family, even when their meanings place them far
+        apart.
+      </p>
+      <p>
+        The list below the map provides the same selections with a keyboard.
+      </p>
+    </aside>
+  </main>
+  <details>
+    <summary>Method and limits</summary>
+    <p>
+      Existing <code>main_subject</code> and subtopic
+      <code>subject</code> fields are embedded separately with local MiniLM.
+      Titles, operations, and summary prose are available for inspection but are
+      excluded from embeddings. These are labels from the older prompt, without
+      fresh compact-label generation.
+    </p>
+    <p>
+      Each model has its own UMAP layout (cosine, 15 neighbors, minimum distance
+      0.15, seed 42). Switching models changes the coordinate system. Filters
+      retain existing positions. The five related points come from other
+      conversations using original embedding distances, rather than screen
+      distance.
+    </p>
+    <ul id="limits"></ul>
+    <p id="coverage" class="meta"></p>
+  </details>
+  <script id="topic-data" type="application/json">
+    __TOPIC_DATA__
+  </script>
+  <script>
+    "use strict";
+    const data = JSON.parse(document.getElementById("topic-data").textContent);
+    const names = {
+      opus: "Claude Opus 5.5",
+      astra: "GPT-6 Astra",
+      grok: "Grok 4.7",
+      kimi: "Kimi K3.1 Pro Highspeed",
+    };
+    const $ = (id) => document.getElementById(id),
+      ns = "http://www.w3.org/2000/svg";
+    let points = [],
+      lookup = new Map(),
+      selected = null,
+      pan = { x: 0, y: 0, scale: 1 },
+      drag = null;
+    for (const key of Object.keys(data.datasets)) {
+      const o = document.createElement("option");
+      o.value = key;
+      o.textContent = names[key] || key;
+      $("model").append(o);
+    }
+    for (const text of data.metadata.limits) {
+      const li = document.createElement("li");
+      li.textContent = text;
+      $("limits").append(li);
+    }
+    $("coverage").textContent =
+      `Excluded saved responses: ${data.metadata.excluded.length}. New paid calls: 0. Complete source-matched responses only; each model's coverage is shown above the map.`;
+    function element(tag, text, parent) {
+      const e = document.createElement(tag);
+      if (text !== undefined) e.textContent = text;
+      if (parent) parent.append(e);
+      return e;
+    }
+    function svgElement(tag, attrs, parent) {
+      const e = document.createElementNS(ns, tag);
+      for (const [key, value] of Object.entries(attrs))
+        e.setAttribute(key, String(value));
+      parent.append(e);
+      return e;
+    }
+    function visible() {
+      const kind = $("kind").value,
+        q = $("query").value.trim().toLowerCase();
+      return points.filter(
+        (p) =>
+          (kind === "all" || p.kind === kind) &&
+          [p.label, p.title, p.segment_title || "", p.pilot_id]
+            .join(" ")
+            .toLowerCase()
+            .includes(q),
+      );
+    }
+    function transform() {
+      $("world").setAttribute(
+        "transform",
+        `translate(${pan.x} ${pan.y}) scale(${pan.scale})`,
+      );
+    }
+    function load() {
+      points = data.datasets[$("model").value].points;
+      lookup = new Map(points.map((p) => [p.id, p]));
+      selected = null;
+      const xs = points.map((p) => p.x),
+        ys = points.map((p) => p.y),
+        minX = Math.min(...xs),
+        minY = Math.min(...ys),
+        spanX = Math.max(...xs) - minX || 1,
+        spanY = Math.max(...ys) - minY || 1,
+        scale = Math.min(900 / spanX, 520 / spanY);
+      for (const p of points) {
+        p.screenX = 500 + (p.x - minX - spanX / 2) * scale;
+        p.screenY = 310 + (p.y - minY - spanY / 2) * scale;
+      }
+      pan = { x: 0, y: 0, scale: 1 };
+      transform();
+      $("detail").replaceChildren();
+      element("h2", "Select a topic", $("detail"));
+      element(
+        "p",
+        "Choose a point or a topic button to inspect its source family.",
+        $("detail"),
+      );
+      render();
+    }
+    function render() {
+      const shown = visible(),
+        ids = new Set(shown.map((p) => p.id)),
+        family = selected
+          ? points.filter((p) => p.pilot_id === lookup.get(selected).pilot_id)
+          : [];
+      $("nodes").replaceChildren();
+      $("edges").replaceChildren();
+      $("results").replaceChildren();
+      for (const p of family) {
+        if (p.parent_id && ids.has(p.id) && ids.has(p.parent_id)) {
+          const parent = lookup.get(p.parent_id);
+          svgElement(
+            "line",
+            {
+              x1: p.screenX,
+              y1: p.screenY,
+              x2: parent.screenX,
+              y2: parent.screenY,
+              class: "edge",
+            },
+            $("edges"),
+          );
+        }
+      }
+      for (const p of shown) {
+        const member = family.some((f) => f.id === p.id),
+          node = svgElement(
+            "circle",
+            {
+              cx: p.screenX,
+              cy: p.screenY,
+              r: p.kind === "main" ? 5 : 3.3,
+              fill: p.kind === "main" ? "#b9a4ff" : "#71e4d8",
+              opacity: selected && !member ? 0.25 : 0.85,
+              class: "node" + (selected === p.id ? " selected" : ""),
+              "data-id": p.id,
+            },
+            $("nodes"),
+          );
+        svgElement("title", {}, node).textContent =
+          `${p.label} · ${p.pilot_id} · ${p.kind}`;
+        node.addEventListener("click", () => select(p.id));
+        const b = element(
+          "button",
+          `${p.kind === "main" ? "Topic" : "Subtopic"} · ${p.label} — ${p.pilot_id}`,
+          $("results"),
+        );
+        b.dataset.id = p.id;
+        b.addEventListener("click", () => select(p.id));
+      }
+      if (!shown.length)
+        element("p", "No topics match these filters.", $("results"));
+      const d = data.datasets[$("model").value];
+      $("status").textContent =
+        `${d.conversations} conversations · ${d.subtopics} subtopics · ${shown.length} / ${points.length} points shown · independent model layout`;
+    }
+    function select(id) {
+      const p = lookup.get(id);
+      if (!p) return;
+      selected = id;
+      const box = $("detail");
+      box.replaceChildren();
+      element(
+        "p",
+        p.kind === "main" ? "Main topic" : "Subtopic",
+        box,
+      ).className = "meta";
+      element("h2", p.label, box);
+      if (p.segment_title) element("p", p.segment_title, box);
+      element("h3", p.title || p.pilot_id, box);
+      element(
+        "p",
+        `${p.source} · ${p.pilot_id} · Exchanges ${p.start_exchange}–${p.end_exchange}`,
+        box,
+      ).className = "meta";
+      element("p", p.description, box);
+      if (p.operation)
+        element("p", `Operation: ${p.operation}`, box).className = "meta";
+      if (p.evidence_exchanges.length)
+        element(
+          "p",
+          `Supporting exchanges: ${p.evidence_exchanges.join(", ")}`,
+          box,
+        ).className = "meta";
+      element("h3", "Source record", box);
+      element("p", `${p.source}:${p.conversation_id}`, box).className =
+        "source";
+      element("p", p.file_path || "Source path unavailable", box).className =
+        "source";
+      if (p.capture_caveat)
+        element("p", p.capture_caveat, box).className = "meta";
+      if (p.source_url && p.source_url.startsWith("file://")) {
+        const a = element("a", "Open captured source record", box);
+        a.href = p.source_url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.color = "var(--violet)";
+        element("br", "", box);
+      }
+      if (p.source === "chatgpt" && /^[a-f0-9-]+$/i.test(p.conversation_id)) {
+        const a = element("a", "Open original ChatGPT conversation", box);
+        a.href =
+          "https://chatgpt.com/c/" + encodeURIComponent(p.conversation_id);
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.style.color = "var(--violet)";
+      }
+      element("h3", "Conversation topics", box);
+      for (const sibling of points.filter((n) => n.pilot_id === p.pilot_id)) {
+        const b = element(
+          "button",
+          `${sibling.kind === "main" ? "Main" : "↳"} ${sibling.label}`,
+          box,
+        );
+        b.className = "related";
+        b.addEventListener("click", () => select(sibling.id));
+      }
+      element("h3", "Related topics in other conversations", box);
+      for (const near of p.neighbors) {
+        const n = lookup.get(near.id);
+        const b = element(
+          "button",
+          `${n.label} · ${n.pilot_id} · cosine distance ${near.cosine_distance.toFixed(3)}`,
+          box,
+        );
+        b.className = "related";
+        b.addEventListener("click", () => {
+          $("query").value = "";
+          $("kind").value = "all";
+          select(n.id);
+        });
+      }
+      render();
+    }
+    function zoom(factor) {
+      const next = Math.max(0.4, Math.min(8, pan.scale * factor)),
+        ratio = next / pan.scale;
+      pan.x = 500 - (500 - pan.x) * ratio;
+      pan.y = 310 - (310 - pan.y) * ratio;
+      pan.scale = next;
+      transform();
+    }
+    $("model").addEventListener("change", load);
+    $("kind").addEventListener("change", render);
+    $("query").addEventListener("input", render);
+    $("reset").addEventListener("click", () => {
+      pan = { x: 0, y: 0, scale: 1 };
+      $("query").value = "";
+      $("kind").value = "all";
+      transform();
+      render();
+    });
+    $("zoom-in").addEventListener("click", () => zoom(1.3));
+    $("zoom-out").addEventListener("click", () => zoom(1 / 1.3));
+    $("map").addEventListener(
+      "wheel",
+      (event) => {
+        event.preventDefault();
+        zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12);
+      },
+      { passive: false },
+    );
+    $("map").addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".node")) return;
+      drag = { x: event.clientX, y: event.clientY, px: pan.x, py: pan.y };
+      $("map").setPointerCapture(event.pointerId);
+    });
+    $("map").addEventListener("pointermove", (event) => {
+      if (!drag) return;
+      const rect = $("map").getBoundingClientRect();
+      pan.x = drag.px + ((event.clientX - drag.x) * 1000) / rect.width;
+      pan.y = drag.py + ((event.clientY - drag.y) * 620) / rect.height;
+      transform();
+    });
+    $("map").addEventListener("pointerup", () => {
+      drag = null;
+    });
+    $("map").addEventListener("pointercancel", () => {
+      drag = null;
+    });
+    load();
+  </script>
+</html>

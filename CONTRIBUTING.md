@@ -30,3 +30,7 @@ node --test tests/browser_startup.test.cjs
 The test suite uses temporary workspaces; browser API tests bind a loopback port. Do not point tests at a personal archive. Core functionality uses the standard library; optional embedding packages are independent of the core installation.
 
 Before submitting code, run the relevant tests, Ruff lint and format checks, and scoped BasedPyright checks. No universal tool installation is implied by this checkout. Preserve source evidence and separate generated files from authored changes. Never include private workspace contents, real exports, credentials, or runtime databases in contributions.
+
+## Code and experiment organization
+
+Read [Code layout](docs/code-layout.md) for package responsibilities and import/resource rules. Keep reusable Python in `src/chatos/`, checkout wrappers in `scripts/`, and private data/results in the selected workspace. New local studies use [the experiment CLI](docs/experiments.md); do not add runnable implementations to `workspace/`. Historical relocated source stays private and outside the active workspace.

@@ -56,3 +56,7 @@ A seven-question source-labeled convenience set returned expected passages for 3
 The refreshed map represented 264 chats, left 12 unclustered, and retained about 38.8% of its five-neighbor relationships in the 2D projection. Its semantic groups still need review; the label-evaluation mechanism does not manufacture independent ground truth. These are dated observations, and later imports can make the map or embedding coverage stale again.
 
 A five-record assistant-labeled convenience sample produced two related pairs found and eight false merges (pair precision 0.2, recall 1.0). The sample was chosen from existing source-verified diagnostic cases and is not independently reviewed or representative. It demonstrates why cluster coverage and visually plausible geometry should not be treated as validated semantic organization.
+
+## Reproduce embedding and clustering runs
+
+Use the [experiment CLI](experiments.md) to freeze source data and settings, embed raw or separate topic/subtopic inputs, optionally cluster/project them, and retain vectors, diagnostics and hashes in a new run directory. This works without ground-truth labels; semantic accuracy remains explicitly unmeasured. The user-review interface is deferred.

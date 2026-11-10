@@ -2,7 +2,9 @@
 
 Read the [active style guide](STYLEGUIDE.md) before UI work. Its shared CSS tokens and component rules define the current design; historical sources and screenshots remain separate.
 
-- [v2.3 evidence](evidence/v2.3/README.md) and [archive](archive/v2.3/manifest.json): current Modern Dark composition with color.
+- [v4 evidence](evidence/v4/README.md): active unified search/map explorer; user review pending.
+- [v4 archive](archive/v4/manifest.json): immutable source/evidence snapshot.
+- [v2.3 evidence](evidence/v2.3/README.md) and [archive](archive/v2.3/manifest.json): historical Modern Dark composition with color, superseded by v4.
 - [Rejected v3 exploration](evidence/v3/README.md): historical screenshots, not the active layout.
 - [v2.2 evidence](evidence/v2.2/README.md): path-only vector branding and transparency checks.
 - [v2.2 archive](archive/v2.2/manifest.json): historical vector-branding snapshot.

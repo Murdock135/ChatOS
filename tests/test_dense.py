@@ -15,7 +15,7 @@ class DenseTests(unittest.TestCase):
     def test_semantic_only_hit_keeps_exact_citation_and_stale_text_is_excluded(self):
         import numpy as np
 
-        from chatos.dense import REVISION, passages, retrieve
+        from chatos.search.dense import REVISION, passages, retrieve
 
         with tempfile.TemporaryDirectory() as temp:
             store = Store(Path(temp))
@@ -46,13 +46,13 @@ class DenseTests(unittest.TestCase):
                 def predict(self, pairs, **kwargs):
                     return [1.0] * len(pairs)
 
-            from chatos.search_models import DEFAULTS
+            from chatos.search.search_models import DEFAULTS
 
             with (
-                patch("chatos.dense.settings", return_value=DEFAULTS),
-                patch("chatos.dense.fingerprint", return_value=REVISION),
+                patch('chatos.search.dense.settings', return_value=DEFAULTS),
+                patch('chatos.search.dense.fingerprint', return_value=REVISION),
                 patch(
-                    "chatos.dense.model",
+                    'chatos.search.dense.model',
                     side_effect=lambda root, kind, config: (
                         FakeEncoder() if kind == "embedding" else FakeReranker()
                     ),

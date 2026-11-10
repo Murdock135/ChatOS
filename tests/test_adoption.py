@@ -6,14 +6,14 @@ import shutil
 import tempfile
 import unittest
 from unittest.mock import patch
-from chatos.context import accept_artifact, import_artifact, retire_artifact
+from chatos.archive.context import accept_artifact, import_artifact, retire_artifact
 from chatos.core import Store
-from chatos.library import update
-from chatos.onboarding import setup_status, write_guide
-from chatos.portable import check_bundle, export_bundle
-from chatos.retrieval import retrieve
-from chatos.runtime import sync
-from chatos.setup import initialize
+from chatos.archive.library import update
+from chatos.setup.onboarding import setup_status, write_guide
+from chatos.archive.portable import check_bundle, export_bundle
+from chatos.search.retrieval import retrieve
+from chatos.automation.runtime import sync
+from chatos.setup.initialization import initialize
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -76,7 +76,7 @@ class AdoptionTests(unittest.TestCase):
             initialize(root)
             pending = import_artifact(root, ROOT / "docs/examples/context.json")
             with patch(
-                "chatos.context.write_json", side_effect=OSError("Interrupted review")
+                'chatos.archive.context.write_json', side_effect=OSError("Interrupted review")
             ):
                 with self.assertRaises(OSError):
                     accept_artifact(root, pending["id"], "Reviewed fictional sources")
@@ -237,7 +237,7 @@ class AdoptionTests(unittest.TestCase):
             note = Path(accepted["path"])
             original = note.read_bytes()
             with patch(
-                "chatos.context.write_json",
+                'chatos.archive.context.write_json',
                 side_effect=OSError("Interrupted review write"),
             ):
                 with self.assertRaises(OSError):

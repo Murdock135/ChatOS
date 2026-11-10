@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 from chatos.core import Store, write_json
-from chatos.coverage import report
+from chatos.archive.coverage import report
 
 
 class CoverageTests(unittest.TestCase):

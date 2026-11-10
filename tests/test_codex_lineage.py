@@ -6,8 +6,8 @@ import tempfile
 import unittest
 
 from chatos.core import Store
-from chatos.importers import read_codex
-from chatos.retrieval import refresh, retrieve
+from chatos.capture.importers import read_codex
+from chatos.search.retrieval import refresh, retrieve
 
 
 def event(kind: str, payload: dict) -> str:

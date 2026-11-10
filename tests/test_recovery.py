@@ -3,8 +3,8 @@ import json
 import tempfile
 import unittest
 from chatos.core import Store
-from chatos.runtime import backup
-from chatos.recovery import restore,verify_backup,doctor
+from chatos.automation.runtime import backup
+from chatos.archive.recovery import restore,verify_backup,doctor
 
 
 class RecoveryTests(unittest.TestCase):

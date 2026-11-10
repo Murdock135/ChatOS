@@ -17,7 +17,7 @@ import uuid
 import fcntl
 from contextlib import contextmanager
 
-from ..workspace import default_root, workspace_path
+from chatos.workspace import default_root, workspace_path
 ROOT = default_root()
 LOGS = workspace_path(ROOT, 'System/Logs')
 LEDGER = LOGS / 'events.jsonl'

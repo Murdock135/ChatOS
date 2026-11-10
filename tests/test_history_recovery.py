@@ -4,8 +4,8 @@ import sqlite3
 import tempfile
 import unittest
 from unittest.mock import patch
-from chatos.importers import read_codex_history
-from chatos.runtime import sync
+from chatos.capture.importers import read_codex_history
+from chatos.automation.runtime import sync
 from chatos.core import Store
 from chatos.visibility import clean_text,origin_hint
 
@@ -49,7 +49,7 @@ class HistoryTests(unittest.TestCase):
     def test_sync_recovers_and_preserves_trimmed_projection_items(self):
         archive=self.root/'archive'
         source=[(self.info['rollout_path'],self.info)]
-        with patch('chatos.runtime.codex_sources',return_value=source):
+        with patch('chatos.automation.runtime.codex_sources',return_value=source):
             first=sync(archive,self.home)
             self.assertEqual(first['status'],'ok')
             self.assertEqual(len(first['recovered_history']),1)

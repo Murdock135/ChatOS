@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from chatos import search_models
+from chatos.search import search_models
 
 
 class ModelLoadingTests(unittest.TestCase):

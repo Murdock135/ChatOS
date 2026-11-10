@@ -1,0 +1,1 @@
+"""Assistant responsibilities for smriti."""

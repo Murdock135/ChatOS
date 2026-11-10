@@ -7,9 +7,9 @@ import os
 from pathlib import Path
 from typing import Any
 
-from ..core import write_json
-from ..dense import MODEL, REVISION
-from ..workspace import default_root, workspace_path
+from chatos.core import write_json
+from chatos.search.dense import MODEL, REVISION
+from chatos.workspace import default_root, workspace_path
 
 WEIGHTS_SHA256 = "0437e45c94563b09e13cb7a64478fc406947a93cb34a7e05870fc8dcd48e23fd"
 MODEL_FILES = [

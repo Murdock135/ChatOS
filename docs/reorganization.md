@@ -1,5 +1,7 @@
 # Where things live
 
+For the current application package structure and experiment/source boundaries, see [Code layout](code-layout.md). The workspace layout below remains unchanged.
+
 The repository contains the application. Your visible `workspace/` contains your information:
 
 ```text

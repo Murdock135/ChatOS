@@ -1,5 +1,14 @@
 # Design history
 
+## v4 — 2026-11-10 — Search in the landscape
+
+- Authority: current user request in Codex chat `01a1c61c-26cf-7e72-9f54-017ac27d3d65`; separate UX and UI subagents explicitly requested.
+- References: user-supplied dark and white screenshots informed warm light surfaces and restrained dark contrasts; a persistent theme switch follows system appearance until explicitly selected.
+- Change: one search/list foreground over the embedding map; compact adjacent search in exploration; topic/subtopic/conversation levels with breadcrumbs and Back; bounded dark panels, violet/cyan accents, slow motion and reduced-motion support.
+- Product limits: subtopics are client-derived spatial subdivisions named from source titles, not validated semantic hierarchy. Existing APIs/source records remain authoritative.
+- Supersession: v2.3 separate-view/no-motion restrictions are replaced within this scope. Prior archives and rejected v3 evidence remain historical.
+- Verification and review status: see [v4 evidence](evidence/v4/README.md); user acceptance pending.
+
 ## v2.2 — 2026-11-06 — Transparent vector branding
 
 - Authority: user request to replace the image logo with a vector figure so it does not interfere with the background.

@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from chatos.maintenance import download_embedding_model as setup
-from chatos.setup import initialize
+from chatos.setup.initialization import initialize
 
 
 class ModelDownloadTests(unittest.TestCase):

@@ -7,10 +7,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from chatos.core import Store, digest
-from chatos.explorer import write_page
-from chatos.library import update
-from chatos.map_exploration import prepare_handoff, read_map
-from chatos.map_topics import label_groups, semantic_samples, topic_text
+from chatos.mapping.explorer import write_page
+from chatos.archive.library import update
+from chatos.mapping.map_exploration import prepare_handoff, read_map
+from chatos.mapping.map_topics import label_groups, semantic_samples, topic_text
 
 
 class MapExplorationTests(unittest.TestCase):
@@ -147,7 +147,7 @@ class MapExplorationTests(unittest.TestCase):
         ]:
             with self.assertRaises(ValueError):
                 prepare_handoff(self.store, {"selection": selection})
-        record, _ = __import__("chatos.library", fromlist=["get"]).get(
+        record, _ = __import__('chatos.archive.library', fromlist=["get"]).get(
             self.store, "codex", "one"
         )
         record["messages"][0]["text"] = "New content after the coordinate build."
@@ -156,7 +156,7 @@ class MapExplorationTests(unittest.TestCase):
 
     def test_semantic_search_keeps_explicit_mode_scope_and_limit(self):
         with patch(
-            "chatos.library.list_chats",
+            'chatos.archive.library.list_chats',
             return_value={
                 "items": [
                     {

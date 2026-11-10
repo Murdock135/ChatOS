@@ -56,7 +56,7 @@ cp docs/examples/conversations.json Demo/your_ais/chatgpt/imports/conversations.
 
 ### Optional semantic search and clustering
 
-Local hybrid search uses user-selected embedding and reranking models. Choose and explicitly download compatible models in **Setup & handoff → Local search models**, then index your passages. Optional Python dependencies are required; no inference API key is needed. Chief of Staff search review also works without local models. HDBSCAN creates optional clusters and UMAP creates the map projection.
+Local hybrid search uses user-selected embedding and reranking models. Choose and explicitly download compatible models in **Setup & handoff → Local search models**, then index your passages. Optional Python dependencies are required; no inference API key is needed. Chief of Staff search review also works without local models. HDBSCAN creates optional clusters and UMAP creates the map projection. Reproducible local runs use the [experiment CLI](docs/experiments.md); see [Code layout](docs/code-layout.md) for developer navigation.
 
 These are separate from the core setup above. Follow [Semantic setup](docs/semantic-search.md) to install the optional runtime and pinned model, build passage embeddings, and generate the map. The pretrained map needs at least six conversations with current embeddings; the one-chat demo cannot produce it. Ordinary sync does not download the model or rebuild embeddings.
 
@@ -74,7 +74,7 @@ Manage the app in the background from this checkout:
 
 For a foreground server, use `./scripts/chatos --root workspace serve --open` and stop it with Ctrl+C.
 
-- **Find a chat:** search its transcript text or your local notes; filter by source or project.
+- **Find a chat:** search its transcript text or your local notes; filter by source or project. Search and the embedding map share one workspace: choose **Explore map** to move search beside the map, then explore topics, provisional spatial subtopics and individual conversations. The light/dark switch remembers your appearance choice.
 - **Read and organize:** select a conversation, add a local title or note, or archive/restore it. These changes stay separate from the captured messages.
 - **See why a chat matched:** search results show matching passages, ordered by relevance. Select a result to jump to its matching message.
 - **Set up and hand off:** open **Setup & handoff** to choose source capture, review or retire context, create assistant instructions, and export a selected portable bundle.

@@ -8,15 +8,15 @@ from contextlib import nullcontext
 from pathlib import Path
 from unittest.mock import patch
 
-from chatos.capture_merge import merge_codex
-from chatos.chatgpt_history import capture as capture_chatgpt
-from chatos.chatgpt_history import stage
-from chatos.codex_api import HistoryError, pages, read_thread
-from chatos.codex_api import capture as capture_codex
+from chatos.capture.capture_merge import merge_codex
+from chatos.capture.chatgpt_history import capture as capture_chatgpt
+from chatos.capture.chatgpt_history import stage
+from chatos.capture.codex_api import HistoryError, pages, read_thread
+from chatos.capture.codex_api import capture as capture_codex
 from chatos.core import Store
-from chatos.importers import read_export_file
-from chatos.runtime import sync
-from chatos.setup import initialize
+from chatos.capture.importers import read_export_file
+from chatos.automation.runtime import sync
+from chatos.setup.initialization import initialize
 
 
 class FakeServer:
@@ -309,7 +309,7 @@ class CaptureTests(unittest.TestCase):
                 {"data": [], "nextCursor": "older"},
             ]
         )
-        with patch("chatos.codex_api.AppServer", return_value=nullcontext(server)):
+        with patch('chatos.capture.codex_api.AppServer', return_value=nullcontext(server)):
             result = capture_codex(
                 workspace, home, thread_ids=["fictional"], force=True
             )
@@ -330,7 +330,7 @@ class CaptureTests(unittest.TestCase):
             0,
             stdout="SENSITIVE RESPONSE\nDone: 0 downloaded, 0 unchanged, 2 failed -> export",
         )
-        with patch("chatos.chatgpt_history.subprocess.run", return_value=process):
+        with patch('chatos.capture.chatgpt_history.subprocess.run', return_value=process):
             result = capture_chatgpt(workspace, exporter, config)
         self.assertEqual(result["status"], "partial")
         self.assertEqual(result["failed"], 2)
@@ -351,7 +351,7 @@ class CaptureTests(unittest.TestCase):
             capture_chatgpt(workspace, exporter, config)
         config.chmod(0o600)
         with patch(
-            "chatos.chatgpt_history.subprocess.run",
+            'chatos.capture.chatgpt_history.subprocess.run',
             side_effect=subprocess.TimeoutExpired([], 3600, output="PRIVATE"),
         ):
             result = capture_chatgpt(workspace, exporter, config)

@@ -15,6 +15,7 @@ test("startup navigation survives and failed smart searches recover without stal
         checked: false,
         hidden: false,
         dataset: {},
+        style: {},
         classList: {
           values: new Set(),
           toggle(name, enabled) {
@@ -27,6 +28,8 @@ test("startup navigation survives and failed smart searches recover without stal
         attributes: {},
         setAttribute(name, value) { this.attributes[name] = value; },
         addEventListener() {},
+        getBoundingClientRect() { return {width: 0, height: 0}; },
+        getContext() { return null; },
         click() { this.clicked = true; },
       });
     return elements.get(id);
@@ -66,6 +69,7 @@ test("startup navigation survives and failed smart searches recover without stal
     fetch: async (url) => {
       let data;
       if (url === "/api/overview") data = await overview;
+      else if (url.startsWith("/api/map?")) data = {documents: [], groups: {}};
       else if (url.startsWith("/api/chats?")) data = { items: [], total: 0 };
       else if (url === "/api/search-models") data = {settings: {embedding: {model_id: "fixture/embed"}, reranker: {model_id: "fixture/rank"}}, downloaded: {}, runtime_ready: false};
       else if (url === "/api/setup")
@@ -76,7 +80,7 @@ test("startup navigation survives and failed smart searches recover without stal
   };
   vm.runInNewContext(
     fs.readFileSync(
-      path.join(__dirname, "../src/chatos/static/app.js"),
+      path.join(__dirname, "../frontend/public/app.js"),
       "utf8",
     ),
     sandbox,
@@ -94,6 +98,20 @@ test("startup navigation survives and failed smart searches recover without stal
   assert.equal(element("view-setup").hidden, false);
   assert.equal(element("view-chats").hidden, true);
   assert.equal(element("notice").textContent, "");
+
+  assert.equal(element("view-explore").hidden, true);
+  await vm.runInNewContext('showView("chats")', sandbox);
+  assert.equal(element("view-explore").hidden, false);
+  assert.equal(element("view-chats").hidden, false);
+  assert.equal(element("view-map").hidden, false);
+  element("search").value = "keep this query";
+  element("explore-toggle").onclick();
+  assert.equal(element("view-explore").dataset.mode, "map");
+  assert.equal(element("search").value, "keep this query");
+  assert.equal(element("explore-toggle").attributes["aria-pressed"], "true");
+  element("explore-toggle").onclick();
+  assert.equal(element("view-explore").dataset.mode, "search");
+  element("search").value = "";
 
   await element("nav-home").onclick();
   assert.equal(element("view-home").hidden, false);
@@ -260,5 +278,23 @@ test("startup navigation survives and failed smart searches recover without stal
   assert.equal(element("page-range").textContent, "0 conversations");
   assert.equal(element("previous-page").disabled, true);
   assert.equal(element("next-page").disabled, true);
+
+  // Derived subtopics retain exact source IDs and projected world coordinates.
+  const mapped = Array.from({length: 12}, (_, i) => ({source: "codex", id: "map-" + i, title: "Garden planning " + i, x: i, y: i % 3, group: "garden", projects: [], date: "2026-10-25"}));
+  sandbox.mappedFixture = mapped;
+  await vm.runInNewContext('mapData = {documents: mappedFixture, groups: {garden: "Gardening"}}; buildMapSubtopics(); filterMap();', sandbox);
+  assert.equal(vm.runInNewContext('mapSubtopics.size', sandbox), 3);
+  assert.equal(vm.runInNewContext('[...mapSubtopics.values()].reduce((sum, group) => sum + group.keys.size, 0)', sandbox), 12);
+  await vm.runInNewContext('enterMapLevel("garden", "")', sandbox);
+  assert.equal(element("map-level").textContent, "Subtopics");
+  await vm.runInNewContext('enterMapLevel("garden", "garden:0")', sandbox);
+  assert.equal(element("map-level").textContent, "Conversations");
+  assert.equal(vm.runInNewContext('visibleMapDocuments.length', sandbox), 4);
+  assert.equal(mapped[0].x, 0);
+  element("map-back").onclick();
+  assert.equal(element("map-level").textContent, "Subtopics");
+  element("map-back").onclick();
+  assert.equal(element("map-level").textContent, "Topics");
+  assert.equal(vm.runInNewContext('visibleMapDocuments.length', sandbox), 12);
 
 });

@@ -45,3 +45,9 @@ System/Models/
 
 # Fictional context walkthrough.
 /ContextDemo/
+
+# Private historical script evidence relocated out of workspace.
+/experiments/archive/
+# Local experiment runs and dependency caches.
+/experiments/runs/
+/.cache/

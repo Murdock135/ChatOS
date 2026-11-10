@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "dataset": "sample.json",
+  "responses": "responses",
+  "summary_model": "example-model",
+  "model_path": "downloaded-model",
+  "representation": "topic-subtopic",
+  "seed": 42,
+  "batch_size": 16,
+  "max_length": 256,
+  "clustering": "none",
+  "projection": "umap",
+  "n_neighbors": 15,
+  "min_dist": 0.15
+}

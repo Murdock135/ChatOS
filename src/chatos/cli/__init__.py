@@ -1,0 +1,1 @@
+"""Cli responsibilities for smriti."""

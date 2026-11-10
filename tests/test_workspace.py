@@ -7,13 +7,13 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from chatos.context import accept_artifact, import_artifact
+from chatos.archive.context import accept_artifact, import_artifact
 from chatos.core import Store
-from chatos.library import get, update
-from chatos.recovery import doctor, restore
-from chatos.retrieval import retrieve
-from chatos.runtime import backup, sync
-from chatos.setup import initialize
+from chatos.archive.library import get, update
+from chatos.archive.recovery import doctor, restore
+from chatos.search.retrieval import retrieve
+from chatos.automation.runtime import backup, sync
+from chatos.setup.initialization import initialize
 from chatos.workspace import Workspace
 
 EXAMPLE = Path(__file__).resolve().parents[1] / "docs/examples/conversations.json"

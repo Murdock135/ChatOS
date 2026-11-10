@@ -9,11 +9,11 @@ repository = next(
     if (parent / "src/chatos").is_dir()
 )
 sys.path.insert(0, str(repository / "src"))
-from chatos.runtime import sync  # noqa: E402
+from chatos.automation.runtime import sync  # noqa: E402
 
 if __name__ == "__main__":
     import argparse
-    from chatos.terminal import print_report
+    from chatos.cli.terminal import print_report
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true")

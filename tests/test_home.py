@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from chatos import home
+from chatos.web import home
 from chatos.core import Store
 
 
@@ -62,7 +62,7 @@ class HomeTests(unittest.TestCase):
 
     def test_gmail_verifies_before_connecting_and_does_not_persist_tokens(self):
         with patch(
-            "chatos.home.gmail_request",
+            'chatos.web.home.gmail_request',
             return_value={
                 "emailAddress": "fictional@example.test",
                 "messagesTotal": 12,
@@ -75,7 +75,7 @@ class HomeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             home.gmail_messages(None)
         with patch(
-            "chatos.home.gmail_request",
+            'chatos.web.home.gmail_request',
             side_effect=[
                 {"messages": [{"id": "abc123"}]},
                 {

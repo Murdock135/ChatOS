@@ -18,7 +18,7 @@ The interfaces overlap: a person can run a CLI command, and an assistant can ins
 
 ## What a sync actually does
 
-The implementation is in [runtime.py](../src/chatos/runtime.py).
+The implementation is in [runtime.py](../src/chatos/automation/runtime.py).
 
 1. **Acquire the workspace lock and start a run.** Record a run ID and time. An earlier unfinished running row is marked interrupted. Overlapping sync is refused.
 2. **Discover and import available conversations.** Compare source fingerprints and retry incomplete sources. Codex source files and supported local metadata are read; export inbox files are parsed. Imports normalize visible messages and known metadata. Missing rollouts can have explicitly partial history-projection recovery.
@@ -31,7 +31,7 @@ Core sync does not call `file-projects`. External project-index delivery and sub
 
 ## How a question becomes an answer
 
-[retrieval.py](../src/chatos/retrieval.py) splits captured messages and selected workspace notes into overlapping passages, stores their source locations, and ranks query matches with SQLite full-text search. The command returns an evidence packet. It does not produce a model-written answer.
+[retrieval.py](../src/chatos/search/retrieval.py) splits captured messages and selected workspace notes into overlapping passages, stores their source locations, and ranks query matches with SQLite full-text search. The command returns an evidence packet. It does not produce a model-written answer.
 
 The [archive-retrieval skill](../workspace/chief_of_staff/skills/archive-retrieval/SKILL.md) tells an active assistant to inspect passages and neighboring turns, distinguish proposals from user instructions, check later evidence, and answer with links. The [project-briefing skill](../workspace/chief_of_staff/skills/project-briefing/SKILL.md) adds current project files when resuming work. This reasoning happens in the host assistant. Core import and default retrieval run locally; using an assistant is governed by that host's access and data handling. Local storage does not mean every assistant interaction runs offline.
 
@@ -58,18 +58,18 @@ The [Git ignore rules](../.gitignore) omit conversation payloads and runtime dir
 
 | Responsibility | Main implementation |
 | --- | --- |
-| Local browser and annotations | [Server](../src/chatos/web.py), [library storage](../src/chatos/library.py), [static app](../src/chatos/static/index.html) |
-| Commands and report display | [CLI](../src/chatos/__main__.py), [terminal reports](../src/chatos/terminal.py) |
+| Local browser and annotations | [Server](../src/chatos/web/server.py), [library storage](../src/chatos/archive/library.py), [static app](../src/chatos/static/index.html) |
+| Commands and report display | [CLI](../src/chatos/cli/main.py), [terminal reports](../src/chatos/cli/terminal.py) |
 | Records, routing candidates, revisions, and search | [core](../src/chatos/core.py) |
-| Source parsing and desktop normalization | [importers](../src/chatos/importers.py), [desktop capture](../src/chatos/desktop_capture.py), [visibility filters](../src/chatos/visibility.py) |
-| Sync, backup, change counts, and health | [runtime](../src/chatos/runtime.py), [changes](../src/chatos/changes.py), [recovery](../src/chatos/recovery.py) |
-| Passage retrieval and optional semantic experiments | [retrieval](../src/chatos/retrieval.py), [semantic](../src/chatos/semantic.py), [dense](../src/chatos/dense.py), [dense map](../src/chatos/dense_map.py) |
-| Browsing and map generation | [runtime views](../src/chatos/runtime.py), [explorer](../src/chatos/explorer.py), [HTML template](../src/chatos/templates/explorer.html) |
-| Project delivery and reviewed ownership | [routing](../src/chatos/routing.py) |
+| Source parsing and desktop normalization | [importers](../src/chatos/capture/importers.py), [desktop capture](../src/chatos/capture/desktop_capture.py), [visibility filters](../src/chatos/visibility.py) |
+| Sync, backup, change counts, and health | [runtime](../src/chatos/automation/runtime.py), [changes](../src/chatos/archive/changes.py), [recovery](../src/chatos/archive/recovery.py) |
+| Passage retrieval and optional semantic experiments | [retrieval](../src/chatos/search/retrieval.py), [semantic](../src/chatos/search/semantic.py), [dense](../src/chatos/search/dense.py), [dense map](../src/chatos/mapping/dense_map.py) |
+| Browsing and map generation | [runtime views](../src/chatos/automation/runtime.py), [explorer](../src/chatos/mapping/explorer.py), [HTML template](../src/chatos/templates/explorer.html) |
+| Project delivery and reviewed ownership | [routing](../src/chatos/assistant/routing.py) |
 | Operating-file inventory and snapshots | [inventory](../src/chatos/maintenance/system_inventory.py), [snapshot writer](../src/chatos/maintenance/snapshot_codex_state.py) |
-| Schedules, errors, and feedback cues | [schedule evidence](../src/chatos/schedules.py), [native scheduler](../src/chatos/scheduler.py), [error collection](../src/chatos/maintenance/system_log.py), [feedback review](../src/chatos/feedback.py) |
-| Setup, reviewed context and portable handoff | [browser workflows](../src/chatos/web_workflows.py), [onboarding](../src/chatos/onboarding.py), [context lifecycle](../src/chatos/context.py), [portable bundle](../src/chatos/portable.py) |
-| Chief of Staff skill | [bundled instructions](../src/chatos/skills/chatos/SKILL.md), [workspace binding/export](../src/chatos/assistant_skill.py), [host setup](chief-of-staff-skill.md) |
+| Schedules, errors, and feedback cues | [schedule evidence](../src/chatos/automation/schedules.py), [native scheduler](../src/chatos/automation/scheduler.py), [error collection](../src/chatos/maintenance/system_log.py), [feedback review](../src/chatos/assistant/feedback.py) |
+| Setup, reviewed context and portable handoff | [browser workflows](../src/chatos/web/web_workflows.py), [onboarding](../src/chatos/setup/onboarding.py), [context lifecycle](../src/chatos/archive/context.py), [portable bundle](../src/chatos/archive/portable.py) |
+| Chief of Staff skill | [bundled instructions](../src/chatos/skills/chatos/SKILL.md), [workspace binding/export](../src/chatos/assistant/assistant_skill.py), [host setup](chief-of-staff-skill.md) |
 | Assistant procedures | [public assistant guide](assistant-workflow.md); each initialized workspace generates its own ASSISTANT.md |
 
 The supported hourly maintenance task belongs to the Codex host, outside the core Python runner. The native launch-agent implementation also exists, but this installation disabled it after Documents-folder access was blocked. Merely cloning the repository installs neither scheduler. Details and dated execution evidence belong in the [schedule record](../workspace/chief_of_staff/reference/Scheduled%20tasks.md).

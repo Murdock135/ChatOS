@@ -44,3 +44,8 @@ The product name is **smriti**. Existing `chatos` commands, Python package/skill
 - [Higher-fidelity history capture](history-capture.md): Codex API, optional chatgpt-history, authentication and source limits.
 
 - [Interface design and provenance](design/README.md): active style guide, design tokens, version history, fictional-data evidence, and immutable design archives.
+
+## Development and reproducible studies
+
+- [Code layout](code-layout.md): package responsibilities, compatibility entrypoints and source/data boundaries.
+- [Experiments](experiments.md): configuration-driven local embeddings, optional HDBSCAN/UMAP, frozen inputs and integrity checks.

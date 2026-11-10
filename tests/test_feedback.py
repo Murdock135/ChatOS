@@ -2,7 +2,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from chatos.core import Store
-from chatos.feedback import candidates,review,refresh
+from chatos.assistant.feedback import candidates,review,refresh
 
 
 class FeedbackTests(unittest.TestCase):

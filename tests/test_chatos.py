@@ -4,8 +4,8 @@ import sqlite3
 import tempfile
 import unittest
 from chatos.core import Store, digest, redact
-from chatos.importers import read_codex, read_chatgpt_export
-from chatos.runtime import sync
+from chatos.capture.importers import read_codex, read_chatgpt_export
+from chatos.automation.runtime import sync
 
 
 def event(kind,payload,time='2026-10-22T16:00:00Z'):
@@ -158,7 +158,7 @@ class ImportTests(unittest.TestCase):
         with self.assertRaises(ValueError):store.put(record)
 
     def test_local_semantic_retrieval_respects_actual_source_terms(self):
-        from chatos.semantic import build,query
+        from chatos.search.semantic import build,query
         records=[]
         for i,text in enumerate(['Dempster Shafer evidence combination belief masses',
                                  'Cheap laptop computer shopping discounts']):

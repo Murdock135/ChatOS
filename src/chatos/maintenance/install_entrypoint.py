@@ -1,7 +1,7 @@
 """Install one reversible Codex entry skill and a bounded global instruction reference."""
 
 from pathlib import Path
-from ..workspace import default_root, workspace_path
+from chatos.workspace import default_root, workspace_path
 from datetime import datetime, timezone
 import hashlib
 import json
