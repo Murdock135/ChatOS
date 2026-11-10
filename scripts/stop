@@ -1,0 +1,4 @@
+#!/bin/sh
+# Manage the app from any working directory.
+repository=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+PYTHONPATH="$repository/src${PYTHONPATH:+:$PYTHONPATH}" exec python3 "$repository/scripts/app_control.py" stop "$@"
