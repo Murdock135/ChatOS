@@ -153,6 +153,8 @@ The previous MiniLM comparison is a diagnostic baseline, not an independently re
 
 ## Measured corpus and cost analysis
 
+**November 9 refresh:** A newer local count and official-provider pricing comparison is saved in the private [exported-chat token and cost study](../../workspace/chief_of_staff/reference/Evaluations/2026-11-09-summary-cost-study/report.md). Use that dated report for the newer captured-corpus size and planning scenarios; retain the October measurements below as historical pilot evidence. The refresh includes MiniMax, DeepSeek, Z.ai, xAI, Kimi, Google, Anthropic and OpenAI. Provider token counts and summary quality remain unmeasured for the refreshed corpus; no production model was selected and no inference run was performed.
+
 These are historical measurements from October 25, 2026, not live quotes or complete account-history lengths. The private [study report](../../workspace/chief_of_staff/reference/Evaluations/2026-10-25-bedrock-summary-study/report.md) retains exact requests, usage and reproducible calculations. Fresh clones do not include those private files.
 
 ### Captured conversation lengths
