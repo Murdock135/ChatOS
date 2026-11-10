@@ -2,7 +2,7 @@
 
 **Status:** proposal; implementation deferred. **Recorded:** October 25, 2026.
 
-Zayan requested this document to preserve the discussion, implementation plan and cost analysis for later work. The preferred first experiment is one strong-model structured summary of each entire available conversation, followed by local embedding and clustering. Five-exchange weighted representations remain a later alternative. Two authorized Bedrock pilot calls are complete; a full-library API run and production integration have not been authorized by this proposal.
+Zayan requested this document to preserve the discussion, implementation plan and cost analysis for later work. The preferred first experiment is one strong-model structured summary of each entire available conversation, followed by local embedding and clustering. Five-exchange weighted representations remain a later alternative. The initial two-call Bedrock pilot and a later user-authorized 100-chat comparison are complete; see the dated refresh below. A full-library API run and production integration have not been authorized by this proposal.
 
 This extends [clustering and exploration](0002-clustering-exploration.md). That proposal's coordinated map controls have already been implemented; the work here concerns representation quality, optional user corrections and their integration with that experience. It is not an adopted software ADR or a claim of improved accuracy.
 
@@ -154,6 +154,8 @@ The previous MiniLM comparison is a diagnostic baseline, not an independently re
 ## Measured corpus and cost analysis
 
 **November 9 refresh:** A newer local count and official-provider pricing comparison is saved in the private [exported-chat token and cost study](../../workspace/chief_of_staff/reference/Evaluations/2026-11-09-summary-cost-study/report.md). Use that dated report for the newer captured-corpus size and planning scenarios; retain the October measurements below as historical pilot evidence. The refresh includes MiniMax, DeepSeek, Z.ai, xAI, Kimi, Google, Anthropic and OpenAI. Provider token counts and summary quality remain unmeasured for the refreshed corpus; no production model was selected and no inference run was performed.
+
+**November 9 pilot, subsequent to that count:** Zayan authorized using 100 chats and requested recording each model's performance and cost without selecting a winner. The private [completed comparison](../../workspace/chief_of_staff/reference/Evaluations/2026-11-09-clustering-pilot/report.md) retains 400 inferences across Opus 5.5, GPT-6 Astra, Grok 4.7 and Kimi K3.1 Pro Highspeed, plus GLM's denied preflight, for $31.6891 calculated Bedrock list-price usage. It includes structured-output checks, local summary embeddings, raw baselines, clustering memberships, a frozen assistant-labeled diagnostic, bounded faithfulness review, parameter/subset sensitivity, and unavailable-candidate reasons. Summary completeness and clustering scores did not establish a reliable winner or consistent clustering gain. Every model's outputs and costs were retained; the production map and model configuration were not changed. This bounded pilot does not establish full-corpus quality or authorize a full-library run.
 
 These are historical measurements from October 25, 2026, not live quotes or complete account-history lengths. The private [study report](../../workspace/chief_of_staff/reference/Evaluations/2026-10-25-bedrock-summary-study/report.md) retains exact requests, usage and reproducible calculations. Fresh clones do not include those private files.
 
