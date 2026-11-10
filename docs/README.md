@@ -1,6 +1,6 @@
-# Understand and use ChatGrep
+# Understand and use smriti
 
-ChatGrep keeps captured AI conversations and related context in a visible local workspace. You can browse and search the records yourself. An assistant with access to the workspace can also use them to help you continue earlier work.
+smriti keeps captured AI conversations and related context in a visible local workspace. You can browse and search the records yourself. An assistant with access to the workspace can also use them to help you continue earlier work.
 
 Start with the problem and product, then follow a conversation through the system:
 
@@ -39,4 +39,8 @@ Links into `workspace/` describe a configured installation and are absent from a
 4. [Guided onboarding](onboarding.md): initialize independently, inspect readiness, choose assistant access and verify backup.
 5. [Portable bundles](portable-bundles.md): select local records/context for a different assistant without automatic transmission.
 
-The product name is **ChatGrep**. Existing `chatos` commands, Python package/skill paths, saved project IDs and authentication-header identifiers remain compatible. Historical proposals, decisions and evaluation records may retain the former name.
+The product name is **smriti**. Existing `chatos` commands, Python package/skill paths, saved project IDs and authentication-header identifiers remain compatible. Historical proposals, decisions and evaluation records may retain the former name.
+
+- [Higher-fidelity history capture](history-capture.md): Codex API, optional chatgpt-history, authentication and source limits.
+
+- [Interface design and provenance](design/README.md): active style guide, design tokens, version history, fictional-data evidence, and immutable design archives.

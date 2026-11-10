@@ -1,14 +1,14 @@
 ---
 import SearchPanel from "./SearchPanel.astro";
 ---
-        <section id="view-chats">
+        <section hidden id="view-chats">
           <SearchPanel />
           <div id="search-error" class="search-error" role="alert" hidden>
             <svg class="search-error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v6m0 3v1" /></svg>
             <div class="search-error-content">
               <strong id="search-error-title">Search error</strong>
               <p id="search-error-message"></p>
-              <button id="search-error-retry" type="button">Retry search</button>
+              <button id="search-error-retry" type="button">Retry</button>
             </div>
             <button id="search-error-dismiss" class="search-error-dismiss" type="button" aria-label="Dismiss search error"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
           </div>

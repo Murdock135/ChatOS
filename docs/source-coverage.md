@@ -25,6 +25,10 @@ From the repository, run:
 
 No account-wide completeness percentage is calculated: the available tools do not establish a complete denominator. Model fields can also be missing; a record's thread-level model does not establish the model for every historical turn.
 
+## Optional history APIs
+
+[Higher-fidelity history capture](history-capture.md) documents the official Codex API adapter and explicit chatgpt-history capture. Codex API reads can be enabled within sync; authenticated ChatGPT capture runs separately. Captures report successful and failed source reads without claiming account-wide completeness. Combined Codex records retain unmatched source evidence and disclose uncertain ordering.
+
 ## Codex: retained files and partial history
 
 The adapter reads local retained rollout files and observed thread metadata. If a rollout is absent, it can recover available user/assistant text from the supported local history projection, labeled `partial_history_projection`. It preserves earlier richer captures when the projection is smaller. A missing file is therefore different from an uncaptured conversation.

@@ -1,4 +1,4 @@
-# ChatGrep operations
+# smriti operations
 
 Use the command prefix and actual paths in connection.md. `chatos --root WORKSPACE --help` lists supported commands. Commands accept `--json` for structured results.
 

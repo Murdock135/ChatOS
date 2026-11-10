@@ -64,6 +64,9 @@ class LocalServer(ThreadingHTTPServer):
         self.token = workspace_token(self.root)
         self.sync_lock = threading.Lock()
         self.log_lock = threading.Lock()
+        self.home_lock = threading.Lock()
+        self.gmail_token = None
+        self.gmail_profile: dict = {}
         super().__init__(("127.0.0.1", port), Handler)
         self.origin = "http://127.0.0.1:" + str(self.server_port)
         self.host = "127.0.0.1:" + str(self.server_port)
@@ -139,19 +142,25 @@ class Handler(BaseHTTPRequestHandler):
                 "/app.js": ("app.js", "text/javascript"),
                 "/styles.css": ("styles.css", "text/css"),
                 "/workspace.css": ("workspace.css", "text/css"),
+                "/smriti-brand.png": ("smriti-brand.png", "image/png"),
+                "/smriti-brand.svg": ("smriti-brand.svg", "image/svg+xml"),
+                "/smriti-icon.svg": ("smriti-icon.svg", "image/svg+xml"),
+                "/geist-OFL.txt": ("geist-OFL.txt", "text/plain"),
                 "/chatgrep-icon.png": ("chatgrep-icon.png", "image/png"),
             }
             if method != "GET" or parsed.path not in assets:
                 if method == "GET" and re.fullmatch(
-                    r"/_astro/[A-Za-z0-9_.-]+\.(css|js)", parsed.path
+                    r"/_astro/[A-Za-z0-9_.-]+\.(css|js|woff2)", parsed.path
                 ):
                     asset = STATIC / "_astro" / parsed.path.rsplit("/", 1)[-1]
                     if asset.is_file() and not asset.is_symlink():
                         self.reply(
                             asset.read_bytes(),
-                            content_type="text/css"
-                            if asset.suffix == ".css"
-                            else "text/javascript",
+                            content_type={
+                                ".css": "text/css",
+                                ".js": "text/javascript",
+                                ".woff2": "font/woff2",
+                            }[asset.suffix],
                         )
                         return
                 self.reply({"error": "Not found"}, 404)
@@ -207,6 +216,41 @@ class Handler(BaseHTTPRequestHandler):
             store.close()
 
     def api(self, store: Store, method: str, path: str, query: dict) -> dict:
+        if path.startswith("/api/home"):
+            from . import home
+
+            if path == "/api/home" and method == "GET":
+                return {
+                    **home.overview(store),
+                    "gmail": self.server.gmail_profile or None,
+                }
+            if path == "/api/home/directive" and method == "GET":
+                return home.read_directive(store.root, query.get("id", ""))
+            if path == "/api/home/source" and method == "GET":
+                return home.browse_source(
+                    store, query.get("id", ""), query.get("path", "")
+                )
+            if path == "/api/home/source" and method == "POST":
+                data = self.body()
+                with self.server.home_lock:
+                    return home.mount_source(
+                        store.root, data.get("kind"), data.get("path")
+                    )
+            if path == "/api/home/gmail" and method == "POST":
+                data = self.body()
+                profile = home.connect_gmail(data.get("token"))
+                with self.server.home_lock:
+                    self.server.gmail_token = data["token"]
+                    self.server.gmail_profile = profile
+                return profile
+            if path == "/api/home/gmail" and method == "GET":
+                return home.gmail_messages(self.server.gmail_token, query.get("q", ""))
+            if path == "/api/home/gmail/disconnect" and method == "POST":
+                with self.server.home_lock:
+                    self.server.gmail_token = None
+                    self.server.gmail_profile = {}
+                return {"status": "disconnected"}
+            raise LookupError("Home operation not found")
         if path == "/api/setup" and method == "GET":
             from .web_workflows import setup_details
 
@@ -495,7 +539,7 @@ def serve(
         print(
             json.dumps({"url": url, "workspace": str(server.root)})
             if as_json
-            else "ChatGrep local interface\n"
+            else "smriti local interface\n"
             + url
             + "\nWorkspace: "
             + str(server.root)

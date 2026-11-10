@@ -85,6 +85,24 @@ class MapExplorationTests(unittest.TestCase):
             read_map(self.store, {"q": "unfindablephrase"})["documents"], []
         )
 
+    def test_saved_membership_strength_survives_current_record_enrichment(self):
+        for point, strength in zip(self.data["documents"], [0.0, 0.4, 1.0]):
+            point["membership_strength"] = strength
+        write_page(self.store, self.data)
+        result = read_map(self.store, {})
+        self.assertEqual(
+            [p["membership_strength"] for p in result["documents"]],
+            [0.0, 0.4, 1.0],
+        )
+
+    def test_legacy_map_does_not_invent_membership_strength(self):
+        self.assertTrue(
+            all(
+                "membership_strength" not in p
+                for p in read_map(self.store, {})["documents"]
+            )
+        )
+
     def test_archives_and_local_titles_are_current_without_coordinate_rebuild(self):
         update(self.store, "codex", "one", {"title": "Renamed database chat"})
         data = read_map(self.store, {})

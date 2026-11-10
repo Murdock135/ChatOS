@@ -1,5 +1,6 @@
 ---
 import WorkspaceLayout from "../layouts/WorkspaceLayout.astro";
+import Home from "../components/Home.astro";
 import Conversations from "../components/Conversations.astro";
 import Map from "../components/Map.astro";
 import Context from "../components/Context.astro";
@@ -11,6 +12,7 @@ import Settings from "../components/Settings.astro";
       <main>
         <header>
           <div>
+            <p class="workspace-eyebrow">smriti <span aria-hidden="true">/</span> <span id="workspace-section">Home</span></p>
             <h1 id="page-title" hidden>Conversations</h1>
             <p id="subtitle" hidden></p>
           </div>
@@ -20,6 +22,7 @@ import Settings from "../components/Settings.astro";
         </header>
         <p id="sync-status" class="sync-status" role="status" aria-live="polite" hidden><span class="sync-dot" aria-hidden="true"></span><span id="sync-message"></span></p>
         <div id="notice" role="status" aria-live="polite"></div>
+        <Home />
         <Conversations />
         <Map />
         <Context />

@@ -206,6 +206,78 @@ class WebTests(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertNotIn("<script>alert(1)</script>", html)
 
+    def test_home_uses_live_allowlisted_files_and_authenticated_mounts(self):
+        source = self.root / "AGENTS.md"
+        source.write_text("Current workspace instructions")
+        self.assertEqual(self.request("/api/home", authenticated=False)[0], 401)
+        self.assertEqual(
+            self.request("/api/home", Origin="https://example.com")[0], 403
+        )
+        status, dashboard = self.request("/api/home")
+        self.assertEqual(status, 200)
+        self.assertEqual(dashboard["conversations"], 1)
+        self.assertEqual(
+            self.request("/api/home/agent", "POST", {"task": "Do nothing"})[0], 404
+        )
+        directive = next(
+            item for item in dashboard["directives"] if item["name"] == "AGENTS.md"
+        )
+        source.write_text("Updated since listing")
+        status, result = self.request("/api/home/directive?id=" + directive["id"])
+        self.assertEqual(status, 200)
+        self.assertEqual(result["text"], "Updated since listing")
+        self.assertEqual(
+            self.request("/api/home/directive?id=../../private.md")[0], 404
+        )
+        repo = Path(self.temp.name) / "fictional-repo"
+        (repo / ".git").mkdir(parents=True)
+        (repo / "README.md").write_text("Fictional repository")
+        self.assertEqual(
+            self.request(
+                "/api/home/source",
+                "POST",
+                {"kind": "git", "path": str(repo)},
+                authenticated=False,
+            )[0],
+            401,
+        )
+        status, mounted = self.request(
+            "/api/home/source", "POST", {"kind": "git", "path": str(repo)}
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(
+            self.request("/api/home/source?id=" + mounted["id"] + "&path=README.md")[1][
+                "text"
+            ],
+            "Fictional repository",
+        )
+        self.assertEqual(
+            self.request(
+                "/api/home/source?id=" + mounted["id"] + "&path=../private.md"
+            )[0],
+            400,
+        )
+
+    def test_home_gmail_credentials_are_session_scoped_and_never_returned(self):
+        from chatos import home
+
+        profile = {
+            "email": "fictional@example.test",
+            "verified_at": "2026-11-06T12:00:00Z",
+        }
+        with patch.object(home, "connect_gmail", return_value=profile):
+            status, result = self.request(
+                "/api/home/gmail", "POST", {"token": "fictional-oauth-token"}
+            )
+        self.assertEqual(status, 200)
+        self.assertEqual(result, profile)
+        overview = self.request("/api/home")[1]
+        self.assertEqual(overview["gmail"], profile)
+        self.assertNotIn("fictional-oauth-token", json.dumps(overview))
+        self.assertEqual(self.request("/api/home/gmail/disconnect", "POST", {})[0], 200)
+        self.assertIsNone(self.server.gmail_token)
+        self.assertEqual(self.request("/api/home/gmail")[0], 400)
+
     def test_browser_authorization_survives_restart_and_is_workspace_scoped(self):
         from chatos.web import workspace_token
 
@@ -230,11 +302,77 @@ class WebTests(unittest.TestCase):
         status, content = self.request(stylesheet.group(1), authenticated=False)
         self.assertEqual(status, 200)
         self.assertIn("search-bar", content)
+        self.assertIn("smriti · Your conversation workspace", html)
+        for asset, content_type in (
+            ("/smriti-brand.png", "image/png"),
+            ("/smriti-icon.svg", "image/svg+xml"),
+        ):
+            with self.subTest(asset=asset):
+                connection = http.client.HTTPConnection(self.server.host, timeout=5)
+                try:
+                    connection.request("GET", asset)
+                    response = connection.getresponse()
+                    self.assertEqual(response.status, 200)
+                    self.assertTrue(
+                        response.getheader("Content-Type").startswith(content_type)
+                    )
+                    self.assertTrue(response.read())
+                finally:
+                    connection.close()
         self.assertEqual(
             self.request("/_astro/missing.css", authenticated=False)[0], 404
         )
         self.assertEqual(
             self.request("/_astro/../../pyproject.toml", authenticated=False)[0], 404
+        )
+
+    def test_brand_vectors_contain_paths_without_embedded_images(self):
+        import xml.etree.ElementTree as ET
+
+        for asset in ["/smriti-icon.svg", "/smriti-brand.svg"]:
+            with self.subTest(asset=asset):
+                status, content = self.request(asset, authenticated=False)
+                self.assertEqual(status, 200)
+                root = ET.fromstring(content)
+                tags = {item.tag.rsplit("}", 1)[-1] for item in root.iter()}
+                self.assertEqual(tags, {"svg", "path"})
+                self.assertIn("viewBox", root.attrib)
+                self.assertNotIn("data:image", content)
+                self.assertNotIn("<rect", content)
+        html = self.request("/", authenticated=False)[1]
+        self.assertIn('src="/smriti-brand.svg"', html)
+        self.assertNotIn('src="/smriti-brand.png"', html)
+
+    def test_local_design_fonts_are_served_as_font_assets(self):
+        import re
+
+        html = self.request("/", authenticated=False)[1]
+        stylesheet = re.search(r'href="(/_astro/[^\"]+\.css)"', html)
+        self.assertIsNotNone(stylesheet)
+        css = self.request(stylesheet.group(1), authenticated=False)[1]
+        fonts = set(re.findall(r"/_astro/[A-Za-z0-9_.-]+\.woff2", css))
+        self.assertEqual(len(fonts), 2)
+        self.assertIn(
+            "SIL OPEN FONT LICENSE",
+            self.request("/geist-OFL.txt", authenticated=False)[1],
+        )
+        for font in fonts:
+            connection = http.client.HTTPConnection(self.server.host, timeout=5)
+            try:
+                connection.request("GET", font)
+                response = connection.getresponse()
+                self.assertEqual(response.status, 200)
+                self.assertTrue(
+                    response.getheader("Content-Type").startswith("font/woff2")
+                )
+                self.assertEqual(response.read(4), b"wOF2")
+            finally:
+                connection.close()
+        self.assertEqual(
+            self.request("/_astro/missing.woff2", authenticated=False)[0], 404
+        )
+        self.assertEqual(
+            self.request("/_astro/../../private.woff2", authenticated=False)[0], 404
         )
 
     def test_annotations_search_archive_restore_and_source_preservation(self):

@@ -1,0 +1,214 @@
+/* v2.3: retain the Modern Dark composition; add restrained, semantic color. */
+:root {
+  --dp-color-accent: #b9a4ff;
+  --dp-color-accent-ink: #170d2b;
+  --ds-accent: var(--dp-color-accent);
+  --ds-accent-bg: #231b34;
+  --ds-accent-border: #68518c;
+  --ds-accent-text: #d8caff;
+  --ds-focus: #ccbbff;
+  --ds-purple: #c1a0f4;
+  --ds-warning: #e8bd7d;
+  --ds-danger: #f49ab1;
+  --ds-danger-bg: #29151f;
+  --ds-map-colors:
+    #9bbaff, #6fd9c0, #e5bd87, #bba0ef, #ea9abf, #d7ce86, #81cddf, #a7d293;
+}
+::selection {
+  background: #483363;
+  color: #fff;
+}
+button.primary,
+.form-actions button:first-child,
+#check-health,
+#make-guide,
+#make-skill,
+.settings-section button.settings-action,
+#view-map .map-search button,
+.hub-dialog .hub-primary {
+  background: var(--dp-color-accent);
+  border-color: var(--dp-color-accent);
+  color: var(--dp-color-accent-ink);
+}
+button.primary:hover,
+.form-actions button:first-child:hover,
+#check-health:hover,
+#make-guide:hover,
+#make-skill:hover,
+.settings-section button.settings-action:hover,
+#view-map .map-search button:hover,
+.hub-dialog .hub-primary:hover {
+  background: #d1bfff;
+  border-color: #d1bfff;
+  color: var(--dp-color-accent-ink);
+}
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-color: var(--ds-focus);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #a18ac6;
+}
+input[type="checkbox"] {
+  accent-color: var(--dp-color-accent);
+}
+a,
+.reader-close,
+.annotations summary,
+.capture-details summary,
+.branch-details summary,
+.conversation-search-footer .assistant-action {
+  color: #d0bfff;
+}
+.sidebar nav button.active {
+  background: #1c1725;
+  border-color: #514164;
+  color: #e4d9ff;
+}
+.sidebar nav button.active svg {
+  color: #c8b3ff;
+}
+.choice-control button[aria-pressed="true"],
+.conversation-search-panel .mode-segments button[aria-pressed="true"],
+.chat-card.selected {
+  background: #241c32;
+  border-color: #6c558c;
+  color: #e1d2ff;
+}
+.role.user {
+  color: #e6c2f4;
+  background: #271a31;
+  border-color: #5a3b6a;
+}
+.role.assistant {
+  color: #adcfef;
+  background: #152838;
+  border-color: #36536a;
+}
+.metadata-tag {
+  color: #aed2ed;
+  background: #14232e;
+  border-color: #2e495b;
+}
+.search-excerpt mark,
+mark {
+  background: #493661;
+  color: #f5ebff;
+}
+.hub-heading-knowledge,
+.hub-git .hub-icon {
+  color: #70d9c2;
+}
+.hub-vault .hub-icon {
+  color: #c3a0ef;
+}
+.hub-history .hub-icon {
+  color: #9cbcff;
+}
+.hub-heading-actuators,
+.hub-gmail .hub-icon {
+  color: #f39ab3;
+}
+.hub-git .hub-icon {
+  background: #102a25;
+}
+.hub-vault .hub-icon {
+  background: #251a30;
+}
+.hub-history .hub-icon {
+  background: #172238;
+}
+.hub-gmail .hub-icon {
+  background: #301a25;
+}
+.hub-git {
+  border-left-color: #396e61;
+}
+.hub-vault {
+  border-left-color: #66507f;
+}
+.hub-history {
+  border-left-color: #4a6187;
+}
+.hub-gmail {
+  border-left-color: #7f4258;
+}
+.hub-file-groups details:nth-child(1) summary,
+.hub-file-groups details:nth-child(1) .hub-file-icon {
+  color: #9dbfff;
+}
+.hub-file-groups details:nth-child(2) summary,
+.hub-file-groups details:nth-child(2) .hub-file-icon {
+  color: #74d5bd;
+}
+.hub-file-groups details:nth-child(3) summary,
+.hub-file-groups details:nth-child(3) .hub-file-icon {
+  color: #e4bd83;
+}
+.agent-hub .hub-core {
+  background: radial-gradient(
+    ellipse at 30% 18%,
+    #343044,
+    #18151f 62%,
+    #0e0d12
+  );
+  border-color: #6b5b83;
+}
+.hub-core svg {
+  color: #c7b1ff;
+}
+.hub-ring {
+  border-color: #302538;
+}
+.hub-execution-bar {
+  background: #b9a4ff;
+}
+/* Match the base component selectors without changing their geometry. */
+.hub-heading-knowledge {
+  color: #70d9c2 !important;
+}
+.hub-heading-connectors {
+  color: #f39ab3 !important;
+}
+.agent-hub .hub-git {
+  border-left-color: #396e61;
+}
+.agent-hub .hub-vault {
+  border-left-color: #66507f;
+}
+.agent-hub .hub-history {
+  border-left-color: #4a6187;
+}
+.agent-hub .hub-gmail {
+  border-left-color: #7f4258;
+}
+.hub-file-groups details[data-category="instructions"] summary::before {
+  background: #9dbfff;
+}
+.hub-file-groups details[data-category="memory"] summary::before {
+  background: #74d5bd;
+}
+.hub-file-groups details[data-category="skills"] summary::before {
+  background: #e4bd83;
+}
+[data-category="instructions"] .hub-file-symbol {
+  color: #9dbfff;
+}
+[data-category="memory"] .hub-file-symbol {
+  color: #74d5bd;
+}
+[data-category="skills"] .hub-file-symbol {
+  color: #e4bd83;
+}
+.hub-orbit i {
+  background: #b9a4ff;
+}
+.hub-orbit i + i {
+  background: #6fd9c0;
+}

@@ -31,7 +31,7 @@ test("startup navigation survives and failed smart searches recover without stal
       });
     return elements.get(id);
   }
-  const navigation = ["chats", "map", "context", "health", "setup", "settings"].map(
+  const navigation = ["home", "chats", "map", "context", "health", "setup", "settings"].map(
     (view) => {
       const button = element("nav-" + view);
       button.dataset.view = view;
@@ -48,7 +48,7 @@ test("startup navigation survives and failed smart searches recover without stal
       createElement: () => element(Symbol()),
       createTextNode: (text) => ({ textContent: text }),
       querySelectorAll: (selector) =>
-        selector === "[data-view]" ? navigation : [],
+        (selector === "[data-view]" || selector === "nav [data-view]") ? navigation : [],
     },
     window: { addEventListener() {} },
     location: { origin: "http://localhost", hash: "", pathname: "/" },
@@ -95,6 +95,13 @@ test("startup navigation survives and failed smart searches recover without stal
   assert.equal(element("view-chats").hidden, true);
   assert.equal(element("notice").textContent, "");
 
+  await element("nav-home").onclick();
+  assert.equal(element("view-home").hidden, false);
+  assert.equal(element("view-setup").hidden, true);
+  assert.equal(element("page-title").hidden, true);
+  assert.equal(element("home-chat-count").textContent, "1 captured conversation");
+  assert.equal(element("nav-home").attributes["aria-label"], "Home");
+
   assert.equal(element("nav-settings").attributes["aria-label"], "Settings");
   await element("nav-settings").onclick();
   assert.equal(element("page-title").textContent, "Settings");
@@ -119,6 +126,7 @@ test("startup navigation survives and failed smart searches recover without stal
   assert.equal(element("search-error-title").textContent, "Smart search error");
   assert.equal(element("next-page").disabled, true);
   assert.equal(element("search-error-message").textContent, "Local model could not initialize");
+  await vm.runInNewContext('notice("Local model could not initialize", true)', sandbox);
   assert.equal(element("notice").textContent, "");
 
   element("search-error-dismiss").onclick();
@@ -180,6 +188,7 @@ test("startup navigation survives and failed smart searches recover without stal
     : normalFetch(url);
   await element("sync").onclick();
   assert.equal(element("sync-message").textContent, "Sync complete · 3 new chats, 4 updated chats");
+  assert.equal(element("sync-label").textContent, "Synced");
   assert.equal(element("sync-status").classList.values.has("has-error"), false);
 
   sandbox.fetch = async () => { throw new Error("Connection lost"); };

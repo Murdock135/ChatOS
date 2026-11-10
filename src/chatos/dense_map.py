@@ -69,9 +69,10 @@ def build(store):
     matrix = np.asarray(vectors, dtype=np.float64)
     distances = np.maximum(cosine_distances(matrix), 0)
     np.fill_diagonal(distances, 0)
-    labels = HDBSCAN(
+    clustering = HDBSCAN(
         min_cluster_size=4, min_samples=2, metric="precomputed", n_jobs=1
-    ).fit_predict(distances.copy())
+    ).fit(distances.copy())
+    labels = clustering.labels_
     plane = np.asarray(
         UMAP(
             n_neighbors=min(15, len(vectors) - 1),
@@ -119,6 +120,7 @@ def build(store):
                 "x": float(plane[i, 0]),
                 "y": float(plane[i, 1]),
                 "group": group_for[i],
+                "membership_strength": float(clustering.probabilities_[i]),
                 "neighbors": neighbors,
             }
         )
@@ -131,6 +133,7 @@ def build(store):
         "documents": documents,
         "groups": group_labels,
         "label_method": LABEL_VERSION,
+        "membership_method": "HDBSCAN assigned-cluster persistence strength; not calibrated topic confidence.",
         "variance_2d": None,
         "neighbor_retention_5": neighbor_retention(matrix.tolist(), plane.tolist()),
         "coverage": {

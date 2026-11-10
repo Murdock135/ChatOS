@@ -25,7 +25,7 @@ def skill_files(root: Path) -> dict[str, str]:
     }
     command = assistant_command(root)
     files["references/connection.md"] = (
-        "# This skill's ChatGrep connection\n\n"
+        "# This skill's smriti connection\n\n"
         + "Workspace: "
         + str(root)
         + "\n\n"

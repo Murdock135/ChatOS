@@ -1,0 +1,25 @@
+<section id="view-home" class="agent-hub" aria-labelledby="hub-heading">
+  <div class="hub-heading"><span class="hub-status" id="hub-system-status"><i></i> Connecting to workspace</span><h1 id="hub-heading">Autonomous agent hub</h1><p>Your directives, grounded knowledge, and tools.<br />One workspace. Real work.</p></div>
+  <div id="hub-error" class="hub-error" role="alert" hidden></div>
+  <div class="hub-architecture">
+    <section class="hub-directives" aria-labelledby="hub-directives-heading"><h2 class="hub-section-heading" id="hub-directives-heading"><span>Control directives</span></h2><div class="hub-registry"><div class="hub-registry-heading">
+        <button id="hub-registry-toggle" class="hub-registry-toggle" type="button" aria-expanded="true" aria-controls="hub-registry-content">
+          <span class="hub-icon" aria-hidden="true">▣</span>
+          <span class="hub-registry-title"><strong>Directive registry</strong><small id="hub-file-count">Loading workspace files…</small></span>
+          <span class="hub-registry-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <button id="hub-refresh" aria-label="Refresh dashboard" title="Refresh dashboard">↻</button>
+      </div><div id="hub-registry-content"><label class="hub-filter"><span class="hub-sr-only">Filter directive files</span><input id="hub-file-filter" type="search" placeholder="Find a directive…" /></label><div id="hub-file-groups" class="hub-file-groups"><p class="hub-empty">Reading registered sources…</p></div><div class="hub-registry-foot"><i></i> Live files · click to inspect</div></div></div></section>
+    <section class="hub-runtime" aria-label="ChatGPT interface visualization">
+      <div class="hub-core-space"><div class="hub-wire hub-wire-left"></div><div class="hub-wire hub-wire-right"></div><div class="hub-ring hub-ring-outer"></div><div class="hub-ring hub-ring-middle"></div><div class="hub-orbit"><i></i><i></i></div><div class="hub-core" role="img" aria-label="ChatGPT interfaces with instructions, knowledge sources, and connected tools"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m27 13 5 13 13 5-13 5-5 13-5-13-13-5 13-5Z"/><path d="m48 5 3 7 7 3-7 3-3 7-3-7-7-3 7-3Z"/></svg><strong>ChatGPT</strong><span>Observe · Reason · Act</span><small>Assistant interface</small></div></div>
+      <div class="hub-execution"><span class="hub-execution-bar"></span><span>Context ↔ tools</span></div>
+      <p class="hub-runtime-detail">How ChatGPT interfaces with your workspace</p>
+    </section>
+    <div class="hub-world"><section aria-labelledby="hub-knowledge-heading"><h2 id="hub-knowledge-heading" class="hub-section-heading hub-heading-knowledge"><span>Knowledge &amp; memory</span></h2><div class="hub-connection-list"><button class="hub-connection hub-git" id="hub-git"><span class="hub-icon">⌘</span><span><strong>Git repositories</strong><small id="hub-git-detail">Checking registered repositories</small></span><span class="hub-tag" id="hub-git-count">Local</span></button><button class="hub-connection hub-vault" id="hub-vault"><span class="hub-icon">▱</span><span><strong>Obsidian vaults</strong><small id="hub-vault-detail">Checking local vaults</small></span><span class="hub-tag" id="hub-vault-count">Vault</span></button><button class="hub-connection hub-history" data-view="map" aria-label="Open conversation clustering" title="Open conversation clustering"><span class="hub-icon">▧</span><span><strong>Conversation pool</strong><small id="home-chat-count">Loading captured conversations</small></span><span class="hub-tag">Map ↗</span></button></div></section>
+      <section class="hub-actuators" aria-labelledby="hub-connectors-heading"><h2 id="hub-connectors-heading" class="hub-section-heading hub-heading-connectors"><span>Active connectors</span></h2><button class="hub-connection hub-gmail" id="hub-gmail"><span class="hub-icon">✉<i id="hub-gmail-dot"></i></span><span><strong>Gmail integration</strong><small id="hub-gmail-detail">Connect an account to read your inbox</small></span><span class="hub-tag" id="hub-gmail-state">Connect ↗</span></button><button id="hub-mount" class="hub-mount"><span>＋</span> Mount source / tool</button></section>
+      <div class="hub-workspace-footer"><span id="hub-workspace-label">Local workspace</span><div><button id="hub-health">Check health</button><button data-view="setup">Manage setup ↗</button></div></div>
+    </div>
+  </div>
+  <dialog id="hub-dialog" class="hub-dialog" aria-labelledby="hub-dialog-heading"><form method="dialog"><button class="hub-dialog-close" aria-label="Close dialog">×</button></form><span class="hub-kicker" id="hub-dialog-kicker">Workspace</span><h2 id="hub-dialog-heading"></h2><p id="hub-dialog-message" role="status"></p><div id="hub-dialog-body"></div></dialog>
+</section>
+<script src="../scripts/home.ts"></script>

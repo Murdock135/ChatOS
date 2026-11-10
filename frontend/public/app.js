@@ -138,7 +138,7 @@ function acceptLaunchToken() {
 acceptLaunchToken();
 let overview,
   current,
-  currentView = "chats",
+  currentView = "home",
   chatPage = 1,
   chatPages = 1,
   requestId = 0,
@@ -151,6 +151,7 @@ window.addEventListener("beforeunload", (event) => {
   }
 });
 const notice = (message, error = false) => {
+  if (error && !$("search-error").hidden && $("search-error-message").textContent === message) return;
   $("notice").textContent = message;
   $("notice").className = error ? "error" : "";
 };
@@ -173,7 +174,7 @@ async function api(path, method = "GET", body) {
   if (!response.ok) {
     if (response.status === 401) {
       $("result-count").textContent = "Workspace disconnected";
-      throw new Error("This browser is disconnected from your workspace. Open ChatGrep using its launch link to reconnect; your conversations are still stored locally.");
+      throw new Error("This browser is disconnected from your workspace. Open smriti using its launch link to reconnect; your conversations are still stored locally.");
     }
     throw new Error(data.error || "Request failed");
   }
@@ -220,8 +221,14 @@ function fillProjects() {
 }
 async function refreshOverview() {
   overview = await api("overview");
+  if (!$("sync").disabled) {
+    const synced = overview.status?.status === "ok" && overview.status?.finished_at;
+    $("sync-label").textContent = synced ? "Synced" : "Sync";
+  }
   $("workspace-path").textContent = overview.workspace;
   fillProjects();
+  const chatCount = Number(overview.chats || 0);
+  $("home-chat-count").textContent = `${chatCount.toLocaleString()} captured ${chatCount === 1 ? "conversation" : "conversations"}`;
 }
 async function showView(view) {
   if (
@@ -232,14 +239,15 @@ async function showView(view) {
     return;
   if (view !== currentView) dirty = false;
   currentView = view;
-  for (const section of ["chats", "map", "context", "health", "setup", "settings"])
+  for (const section of ["home", "chats", "map", "context", "health", "setup", "settings"])
     $("view-" + section).hidden = section !== view;
-  for (const button of document.querySelectorAll("[data-view]")) {
+  for (const button of document.querySelectorAll("nav [data-view]")) {
     const selected = button.dataset.view === view;
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   }
   const titles = {
+    home: ["Home", ""],
     chats: ["Conversations", ""],
     map: [
       "Conversation map",
@@ -256,10 +264,11 @@ async function showView(view) {
       "Know what is captured, current, and still missing.",
     ],
   };
+  $("workspace-section").textContent = titles[view][0];
   $("page-title").textContent = titles[view][0];
-  $("page-title").hidden = view === "chats";
+  $("page-title").hidden = view === "chats" || view === "home";
   $("subtitle").textContent = titles[view][1];
-  $("subtitle").hidden = view === "chats";
+  $("subtitle").hidden = view === "chats" || view === "map" || view === "home";
   if (view === "chats") await loadChats();
   if (view === "context") await loadContext();
   if (view === "health") renderHealth();
@@ -302,6 +311,7 @@ async function loadChats(page = 1) {
     $("page-range").textContent = "";
     $("page-label").textContent = "Unavailable";
     $("search-error-title").textContent = $("search-mode").value === "hybrid" ? "Smart search error" : "Search error";
+    if ($("notice").textContent === error.message) notice("");
     $("search-error-message").textContent = error.message;
     $("search-error").hidden = false;
     return;
@@ -690,6 +700,7 @@ let mapData,
   dragging,
   moved = false,
   mapPositions = [],
+  mapLabelPositions = [],
   selectedMapKeys = new Set(),
   mapGroup = "",
   mapExpanded = false,
@@ -698,14 +709,14 @@ let mapData,
   mapRequest = 0,
   mapHandoff;
 const mapPalette = [
-  "#8eb5ff",
-  "#79d4bb",
-  "#e5a77d",
-  "#b9a0f4",
-  "#f18fb8",
-  "#e0d780",
-  "#79cedf",
-  "#b1cd8a",
+  "#5278b9",
+  "#37866f",
+  "#a96b3b",
+  "#8063ad",
+  "#b4547c",
+  "#897a30",
+  "#357f91",
+  "#648141",
 ];
 function mapKey(item) {
   return JSON.stringify([item.source, item.id]);
@@ -716,7 +727,16 @@ function mapColor(group) {
     .filter((key) => key !== "unclustered")
     .sort();
   const index = Math.max(0, groups.indexOf(group));
-  return mapPalette[index] || `hsl(${(index * 137.5) % 360}, 65%, 70%)`;
+  const tokenPalette = typeof getComputedStyle === "function"
+    ? getComputedStyle($("map-canvas")).getPropertyValue("--ds-map-colors").split(",").map(color => color.trim()).filter(Boolean)
+    : [];
+  return tokenPalette[index] || mapPalette[index] || `hsl(${(index * 137.5) % 360}, 65%, 70%)`;
+}
+function mapPointOpacity(item) {
+  const strength = item.membership_strength;
+  // Keep weak members visible; never invent a score for legacy maps.
+  if (!Number.isFinite(strength)) return 0.65;
+  return 0.2 + 0.8 * Math.max(0, Math.min(1, strength));
 }
 function mapFilters() {
   return {
@@ -815,11 +835,22 @@ function filterMap() {
   );
   mapListLimit = 40;
   $("map-handoff").hidden = true;
+  const topicCount = new Set(
+    visibleMapDocuments.filter((item) => item.group !== "unclustered").map((item) => item.group),
+  ).size;
   $("map-summary").textContent =
-    `${visibleMapDocuments.length} of ${mapData.mapped_total ?? mapData.documents.length} mapped conversations · Built ${date(mapData.checked_at)} · ${mapData.freshness_note || "Freshness unverified."}`;
+    `${visibleMapDocuments.length} conversations · ${topicCount} topic ${topicCount === 1 ? "group" : "groups"}`;
+  $("map-hover").textContent = "Select a topic label to focus, or a point to select a conversation. Drag to pan; scroll to zoom.";
+  $("map-freshness").textContent = `Built ${date(mapData.checked_at)} · ${mapData.freshness_note || "Freshness unverified."}`;
+  $("map-results-heading").textContent = mapGroup ? `${mapData.groups[mapGroup] || "Mixed topics"} · ${visibleMapDocuments.length} conversations` : "Conversations in this view";
   $("map-search-note").textContent = mapData.search?.note || "";
   $("map-method").textContent =
     `${mapData.method || "Experimental representation"} ${mapData.limits || ""} Labels: distinctive source phrases; sampled text, not verified summaries. Projection quality (neighbor retention): ${mapData.neighbor_retention_5 == null ? "not measured" : Math.round(mapData.neighbor_retention_5 * 100) + "%"}.`;
+  $("map-method").textContent += mapBaseDocuments.some(
+    (item) => !Number.isFinite(item.membership_strength),
+  )
+    ? " Membership strength is unavailable for some points; rebuild the semantic map to enable strength-based fading."
+    : " Dot opacity shows cluster membership strength: faded is weaker, solid is stronger. This is not calibrated topic confidence.";
   renderMapLegend();
   renderMapResults();
   updateMapSelection();
@@ -836,6 +867,8 @@ function renderMapLegend() {
   all.setAttribute("aria-pressed", String(!mapGroup));
   all.onclick = () => {
     mapGroup = "";
+    mapZoom = 1;
+    panX = panY = 0;
     filterMap();
   };
   legend.append(all);
@@ -858,6 +891,8 @@ function renderMapLegend() {
     button.setAttribute("aria-pressed", String(mapGroup === group));
     button.onclick = () => {
       mapGroup = mapGroup === group ? "" : group;
+      mapZoom = 1;
+      panX = panY = 0;
       filterMap();
     };
     legend.append(button);
@@ -949,18 +984,31 @@ function drawMap() {
   const canvas = $("map-canvas"),
     context = canvas.getContext("2d"),
     docs = visibleMapDocuments,
-    width = canvas.clientWidth,
-    height = canvas.clientHeight,
-    ratio = devicePixelRatio || 1;
-  canvas.width = width * ratio;
-  canvas.height = height * ratio;
-  context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  context.fillStyle = "#ffffff";
+    { width, height } = canvas.getBoundingClientRect(),
+    ratio = Math.max(2, window.devicePixelRatio || 1);
+  if (!width || !height) return;
+  // Match the fractional CSS size exactly, including at browser zoom levels.
+  canvas.width = Math.round(width * ratio);
+  canvas.height = Math.round(height * ratio);
+  context.setTransform(
+    canvas.width / width,
+    0,
+    0,
+    canvas.height / height,
+    0,
+    0,
+  );
+  const mapTheme = typeof getComputedStyle === "function" ? getComputedStyle(canvas) : null;
+  const mapSurface = mapTheme?.getPropertyValue("--ds-map-surface").trim() || "#ffffff";
+  const mapLabel = mapTheme?.getPropertyValue("--ds-map-label").trim() || "#ffffff";
+  const mapText = mapTheme?.getPropertyValue("--ds-map-text").trim() || "#000000";
+  context.fillStyle = mapSurface;
   context.fillRect(0, 0, width, height);
   mapPositions = [];
+  mapLabelPositions = [];
   if (!mapData || !docs.length) {
-    context.fillStyle = "#69746c";
-    context.font = "13px system-ui";
+    context.fillStyle = mapText;
+    context.font = '400 13px "Modern Dark Grotesk", sans-serif';
     context.fillText("No mapped conversations in this view", 24, 42);
     return;
   }
@@ -979,13 +1027,15 @@ function drawMap() {
     radius = radii[$("map-density").value] || 5;
   const centers = new Map();
   for (const item of docs) {
+    const selected = selectedMapKeys.has(mapKey(item));
     const x = width / 2 + (item.x - (minX + maxX) / 2) * scale + panX,
       y = height / 2 - (item.y - (minY + maxY) / 2) * scale + panY;
+    context.globalAlpha = mapPointOpacity(item);
     context.beginPath();
     context.arc(x, y, radius, 0, Math.PI * 2);
     context.fillStyle = mapColor(item.group);
     context.fill();
-    if (selectedMapKeys.has(mapKey(item))) {
+    if (selected) {
       context.strokeStyle = "#fff";
       context.lineWidth = 2;
       context.stroke();
@@ -997,22 +1047,26 @@ function drawMap() {
     center.count++;
     centers.set(item.group, center);
   }
+  context.globalAlpha = 1;
   if ($("map-labels").checked) {
-    context.font = "600 12px system-ui";
+    context.font = '400 13px "Modern Dark Grotesk", sans-serif';
+    context.textBaseline = "middle";
     const placed = [];
     for (const [group, center] of [...centers].sort(
       (a, b) => b[1].count - a[1].count,
     )) {
       if (group === "unclustered") continue;
-      const raw = mapData.groups[group] || "Mixed topics",
-        text = raw.length > 40 ? raw.slice(0, 39) + "…" : raw;
-      const w = Math.min(context.measureText(text).width + 16, width - 16),
-        h = 25;
-      const x = Math.max(
-        8,
-        Math.min(width - w - 8, center.x / center.count - w / 2),
+      const raw = mapData.groups[group] || "Mixed topics";
+      let text = raw.length > 40 ? raw.slice(0, 39) + "…" : raw;
+      // Truncate narrow labels instead of horizontally compressing the font.
+      while (text.length > 1 && context.measureText(text).width > width - 32)
+        text = text.replace(/…$/, "").slice(0, -1) + "…";
+      const w = Math.ceil(context.measureText(text).width) + 16,
+        h = 28;
+      const x = Math.round(
+        Math.max(8, Math.min(width - w - 8, center.x / center.count - w / 2)),
       );
-      let y = center.y / center.count - 34;
+      let y = Math.round(center.y / center.count - 34);
       for (
         let attempt = 0;
         attempt < 5 &&
@@ -1030,11 +1084,12 @@ function drawMap() {
         )
       )
         continue;
-      context.fillStyle = "#fffffff0";
+      context.fillStyle = mapLabel;
       context.fillRect(x, y, w, h);
-      context.fillStyle = mapColor(group);
-      context.fillText(text, x + 8, y + 17, w - 16);
-      placed.push({ x, y, w });
+      context.fillStyle = mapText;
+      context.fillText(text, x + 8, y + h / 2);
+      mapLabelPositions.push({ x, y, w, h, group });
+      placed.push({ x, y, w, h });
     }
   }
 }
@@ -1073,6 +1128,7 @@ function mapSnapshot() {
       path: item.path,
       topic: mapData.groups[item.group],
       group: item.group,
+      membership_strength: item.membership_strength ?? null,
       date: item.date,
       capture: item.capture,
       x: item.x,
@@ -1085,6 +1141,9 @@ function mapSnapshot() {
     limits:
       "Exported metadata and preview excerpts, not full transcripts. Topic labels are suggestions. No chats were transmitted.",
   };
+}
+function mapLabelAt(x, y) {
+  return mapLabelPositions.find((label) => x >= label.x && x <= label.x + label.w && y >= label.y && y <= label.y + label.h);
 }
 const canvas = $("map-canvas");
 canvas.onpointerdown = (event) => {
@@ -1100,11 +1159,16 @@ canvas.onpointermove = (event) => {
     const point = mapPositions.find(
       (point) => (point.x - x) ** 2 + (point.y - y) ** 2 < 144,
     );
-    $("map-hover").textContent = point
+    const label = mapLabelAt(x, y);
+    canvas.style.cursor = point || label ? "pointer" : "grab";
+    $("map-hover").textContent = label ? `Explore ${mapData.groups[label.group] || "Mixed topics"}` : point
       ? point.item.title +
         " · " +
-        (mapData.groups[point.item.group] || "Mixed topics")
-      : "Select a point to highlight its conversation below. Drag to pan; scroll to zoom.";
+        (mapData.groups[point.item.group] || "Mixed topics") +
+        (Number.isFinite(point.item.membership_strength)
+          ? ` · Membership strength ${point.item.membership_strength.toFixed(2)}`
+          : " · Membership strength unavailable")
+      : "Select a topic label to focus, or a point to select a conversation. Drag to pan; scroll to zoom.";
     return;
   }
   const dx = event.clientX - dragging.x,
@@ -1116,6 +1180,16 @@ canvas.onpointermove = (event) => {
 };
 canvas.onpointerup = () => {
   if (!moved && dragging) {
+    const box = canvas.getBoundingClientRect();
+    const label = mapLabelAt(dragging.x - box.left, dragging.y - box.top);
+    if (label) {
+      mapGroup = mapGroup === label.group ? "" : label.group;
+      mapZoom = 1;
+      panX = panY = 0;
+      dragging = null;
+      filterMap();
+      return;
+    }
     const point = mapPositions.find(
       (point) =>
         (point.x - (dragging.x - canvas.getBoundingClientRect().left)) ** 2 +
@@ -1274,8 +1348,8 @@ for (const button of document.querySelectorAll("[data-view]"))
     await showView(button.dataset.view);
   });
 let timer;
-const navigationLabels = {chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff", settings: "Settings"};
-for (const button of document.querySelectorAll("[data-view]")) {
+const navigationLabels = {home: "Home", chats: "Conversations", map: "Conversation map", context: "Skills & memory", health: "Health & sync", setup: "Setup & handoff", settings: "Settings"};
+for (const button of document.querySelectorAll("nav [data-view]")) {
   button.setAttribute("aria-label", navigationLabels[button.dataset.view]);
   button.title = navigationLabels[button.dataset.view];
 }
@@ -1451,10 +1525,12 @@ async function syncWorkspace() {
   $("sync-label").textContent = "Syncing…";
   $("settings-sync-label").textContent = "Syncing…";
   syncStatus("Syncing workspace…");
+  let synced = false;
   try {
     const result = await api("sync", "POST", {});
     const changes = result.changes.chats;
     const failed = result.status !== "ok";
+    synced = !failed;
     const summary = `${quantity(changes.new, "new chat")}, ${quantity(changes.updated, "updated chat")}`;
     const errors = (result.errors || []).map((item) => item.error).filter(Boolean);
     syncStatus(failed ? `Sync needs attention · ${summary}${errors.length ? " · " + errors.join("; ") : ". Check Health & sync for details."}` : `Sync complete · ${summary}`, failed);
@@ -1471,7 +1547,7 @@ async function syncWorkspace() {
       $(id).disabled = false;
       $(id).classList.toggle("is-syncing", false);
     }
-    $("sync-label").textContent = "Sync";
+    $("sync-label").textContent = synced ? "Synced" : "Sync";
     $("settings-sync-label").textContent = "Sync now";
   }
 }
@@ -1480,7 +1556,7 @@ $("settings-sync").onclick = syncWorkspace;
 // Queue navigation until the initial overview and default view are ready.
 const startup = (async () => {
   await refreshOverview();
-  await showView(overview.chats || overview.archived ? "chats" : "setup");
+  await showView("home");
 })();
 startup.catch((error) => notice(error.message, true));
 
@@ -1796,7 +1872,7 @@ $("make-skill").onclick = safely(async () => {
     const result = await api("assistant-skill", "POST", {});
     $("skill-path").textContent = result.entrypoint;
     notice(
-      "ChatGrep skill prepared. Give SKILL.md to your assistant or install the folder in its documented skill location, then verify discovery.",
+      "smriti skill prepared. Give SKILL.md to your assistant or install the folder in its documented skill location, then verify discovery.",
     );
   } finally {
     button.disabled = false;

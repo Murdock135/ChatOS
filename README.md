@@ -1,4 +1,4 @@
-# ChatGrep
+# smriti
 
 **A local library for your AI conversations and the context around them.**
 
@@ -39,6 +39,8 @@ To include local **Codex history**, use this initialization command *instead of*
 
 Codex capture is disabled unless you opt in. The initializer creates an empty project registry and does not install an assistant integration or scheduled task. Follow [Guided setup](docs/onboarding.md) for readiness checks, reviewed context, assistant access and recovery, or [Getting started](docs/getting-started.md) for the fictional walkthrough.
 
+For fuller persisted Codex history and incremental ChatGPT capture using **chatgpt-history**, see [Higher-fidelity history capture](docs/history-capture.md). These optional routes retain the manual export workflow and report source gaps.
+
 ### Try it before importing personal data
 
 This separate demo imports one fictional conversation:
@@ -60,7 +62,17 @@ These are separate from the core setup above. Follow [Semantic setup](docs/seman
 
 ## Everyday use
 
-Open the app with `./scripts/chatos --root workspace serve --open` whenever you want to use your library.
+Manage the app in the background from this checkout:
+
+```bash
+./scripts/start --open
+./scripts/status
+./scripts/stop
+```
+
+`start` defaults to port 8765 and leaves the app running after the terminal closes. Repeated starts reuse the managed server. Use `--port 0` to choose a free port, or `--root /path/to/workspace` on all three scripts for another initialized workspace. Status exits with 0 when ready, 1 when stopped, and 2 on an error or an unresponsive server. The scripts only manage servers they started; a server launched with `chatos serve` must be stopped from its own terminal. The private log path is printed on start and may contain a browser authorization URL.
+
+For a foreground server, use `./scripts/chatos --root workspace serve --open` and stop it with Ctrl+C.
 
 - **Find a chat:** search its transcript text or your local notes; filter by source or project.
 - **Read and organize:** select a conversation, add a local title or note, or archive/restore it. These changes stay separate from the captured messages.
@@ -79,13 +91,13 @@ You can also use the terminal:
 ./scripts/chatos --root workspace backup --fresh
 ```
 
-`search` finds conversations; `retrieve` finds specific passages. Both return captured evidence that you or an assistant can inspect. `coverage` reports retained records and known gaps; see [Source coverage](docs/source-coverage.md). An assistant acting as your **Chief of Staff** can use those passages and current project files to help resume work. That role needs an active host with file/tool access; ChatGrep does not include an always-running AI agent.
+`search` finds conversations; `retrieve` finds specific passages. Both return captured evidence that you or an assistant can inspect. `coverage` reports retained records and known gaps; see [Source coverage](docs/source-coverage.md). An assistant acting as your **Chief of Staff** can use those passages and current project files to help resume work. That role needs an active host with file/tool access; smriti does not include an always-running AI agent.
 
 [Chat-library guide](docs/chat-library.md) · [Using earlier conversations](docs/using-history.md)
 
 ## Optional Chief of Staff setup
 
-To let your own assistant use ChatGrep, load the bundled **chatos skill**. New workspaces include a copy under `shared_context/skills/chatos/`. For an existing workspace, select **Setup & handoff → Prepare Chief of Staff skill**, or run `./scripts/chatos --root workspace assistant-skill`.
+To let your own assistant use smriti, load the bundled **chatos skill**. New workspaces include a copy under `shared_context/skills/chatos/`. For an existing workspace, select **Setup & handoff → Prepare Chief of Staff skill**, or run `./scripts/chatos --root workspace assistant-skill`.
 
 Give the returned SKILL.md path to an assistant with local file/terminal access. For automatic discovery and `$chatos` prompts, follow the [skill setup guide](docs/chief-of-staff-skill.md), which includes installation, verification and example prompts. The skill is optional for using the app; preparing its files does not activate it in a host or install a scheduled agent.
 
@@ -104,13 +116,13 @@ Checked features are implemented within the [documented limits](docs/features.md
 - [x] Keep application code and a visible private workspace separately organized.
 - [x] Evaluate exact passage retrieval, negative queries, project scope, map geometry and supplied topic labels. [Evaluation guide](docs/search-evaluation.md).
 - [x] Prepare, import, explicitly review and retire AI context artifacts with source references and uncertainty. [Context guide](docs/context-artifacts.md).
-- [x] Give your Chief of Staff a bundled, workspace-bound ChatGrep skill with setup and verification instructions.
+- [x] Give your Chief of Staff a bundled, workspace-bound smriti skill with setup and verification instructions.
 - [x] Follow guided local setup in the app, inspect readiness, and generate an optional assistant-access guide; independent fictional-user flows are tested. [Onboarding](docs/onboarding.md).
 - [x] Export and verify explicitly selected portable local bundles of chats, annotations and optional reviewed context. [Migration guide](docs/portable-bundles.md).
 
 ### Remaining limitations and future work
 
-- [ ] Broader source capture where history or reply text is unavailable. Fuller ChatGPT capture requires a supplied export; raw Muse work remains deferred.
+- [ ] Broader source capture where history or reply text is unavailable. Fuller ChatGPT capture supports supplied exports and an optional authenticated chatgpt-history route; raw Muse work remains deferred.
 - [ ] Stronger, independently reviewed evidence of semantic search and clustering quality. Measurement is implemented; semantic discovery remains experimental.
 
 The implemented migration format is a portable reading bundle. Native destination-app import, automatic uploads, provider-memory activation and public release are not claimed. Clean-machine, wider export-schema and cross-platform validation remain open.
