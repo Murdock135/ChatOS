@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "version": "v1.1",
+  "captured_at": "2026-11-07T00:24:42.297367+00:00",
+  "source_ref": "codex:01a1b32b-dcb2-7823-bdb5-159c764aeb53",
+  "summary": "Behance-informed graphite and mint refinement with attributed image observations, token palette and explicit verification limits.",
+  "authority": "User-requested redesign; specific design choices delegated to the assistant. User visual acceptance is not inferred.",
+  "git": {
+    "head": "c71adb6aa91d8bcd7570b6f18f5cc235b13d89b9",
+    "public_working_tree": "M frontend/astro.config.mjs\n M frontend/public/app.js\n M frontend/src/components/Conversations.astro\n M frontend/src/components/Map.astro\n M frontend/src/components/Settings.astro\n M frontend/src/components/Setup.astro\n M frontend/src/components/Sidebar.astro\n M frontend/src/layouts/WorkspaceLayout.astro\n M frontend/src/pages/index.astro\n M frontend/src/styles/global.css\n M frontend/src/styles/search-panel.css\n M frontend/src/styles/workspace.css\n?? docs/adr/0011-interface-design-system.md\n?? docs/design/\n?? frontend/public/smriti-brand.png\n?? frontend/public/smriti-icon.svg\n?? frontend/src/components/Home.astro\n?? frontend/src/scripts/\n?? frontend/src/styles/design-system.css\n?? frontend/src/styles/design-tokens.css\n?? frontend/src/styles/home.css\n?? frontend/src/styles/map-panel.css\n?? scripts/archive_design.py",
+    "interpretation": "Sources are copied from the current working tree, including uncommitted changes. HEAD is a base reference, not a claim that these sources are committed."
+  },
+  "files": [
+    {
+      "path": "sources/AGENTS.md",
+      "source": "AGENTS.md",
+      "sha256": "112dbee828709014773a167023bc41b0f7c1f49952ae2a1804ad29c30c7c24e9",
+      "bytes": 2691
+    },
+    {
+      "path": "sources/docs/adr/0011-interface-design-system.md",
+      "source": "docs/adr/0011-interface-design-system.md",
+      "sha256": "a062976e427afd167adc8824e34656b0096c25307a58a7fdfcaf0fb77d7f0375",
+      "bytes": 1987
+    },
+    {
+      "path": "sources/docs/design/CHANGELOG.md",
+      "source": "docs/design/CHANGELOG.md",
+      "sha256": "44791feeda70dffe6d144e77a72b3e6a6aef89ac86983d5ad7e1279c0350dad9",
+      "bytes": 2425
+    },
+    {
+      "path": "sources/docs/design/README.md",
+      "source": "docs/design/README.md",
+      "sha256": "db30ac1efd7f6b38f14ec87a39e15811e9ac39652ef0d085b925628438d94523",
+      "bytes": 1658
+    },
+    {
+      "path": "sources/docs/design/REFERENCES.md",
+      "source": "docs/design/REFERENCES.md",
+      "sha256": "a68f416bba00fe8d3f807679d740c1850f7cd0cc64dbf4629b3941f91f5582c2",
+      "bytes": 4333
+    },
+    {
+      "path": "sources/docs/design/STYLEGUIDE.md",
+      "source": "docs/design/STYLEGUIDE.md",
+      "sha256": "d93fe9272a9c165c7c4e46751bcce3cbd14051c79f14bc5d14e4d502b44894e5",
+      "bytes": 10228
+    },
+    {
+      "path": "sources/docs/design/evidence/v1.1/README.md",
+      "source": "docs/design/evidence/v1.1/README.md",
+      "sha256": "11a885c4fb04585123f139d2bb07e877a22170a1c57015becf384da8508d201f",
+      "bytes": 2149
+    },
+    {
+      "path": "sources/docs/design/evidence/v1.1/contrast.json",
+      "source": "docs/design/evidence/v1.1/contrast.json",
+      "sha256": "65d2b638a0e717d2b3818dc6f962d08e62e4da013948b677a575f28f100077ef",
+      "bytes": 140
+    },
+    {
+      "path": "sources/docs/design/evidence/v1.1/palette.svg",
+      "source": "docs/design/evidence/v1.1/palette.svg",
+      "sha256": "c09c6f0c917d90961ded2fbb7c88719f3fa783a4bbc37709aecaf8c0d6974c9e",
+      "bytes": 3370
+    },
+    {
+      "path": "sources/docs/design/evidence/v1.1/reference-receipts.json",
+      "source": "docs/design/evidence/v1.1/reference-receipts.json",
+      "sha256": "6d1300b9a0dd4a94021ab8c1ef29e172e4d4a57817ed5bbecf5ea901a23cedf8",
+      "bytes": 1528
+    },
+    {
+      "path": "sources/frontend/public/app.js",
+      "source": "frontend/public/app.js",
+      "sha256": "f73f5ca8db939eb90e27930997e7c3a0a7d66772547f9c2a14745c2ede572060",
+      "bytes": 68225
+    },
+    {
+      "path": "sources/frontend/public/smriti-brand.png",
+      "source": "frontend/public/smriti-brand.png",
+      "sha256": "17f34f9f8ebb9fcc2f5724761f07d21098e33b26a7bb6fb4d61a67bfbe9b685a",
+      "bytes": 225752
+    },
+    {
+      "path": "sources/frontend/public/smriti-icon.svg",
+      "source": "frontend/public/smriti-icon.svg",
+      "sha256": "6af95056cf5bc0a99f847f5f33cd3274f8bb4499e9902a12490a8083fa6d0c56",
+      "bytes": 301141
+    },
+    {
+      "path": "sources/frontend/src/components/Context.astro",
+      "source": "frontend/src/components/Context.astro",
+      "sha256": "b913128929d06f1c4dc74fe4eee11882e550d907dea627fa97987d337c74e332",
+      "bytes": 1389
+    },
+    {
+      "path": "sources/frontend/src/components/Conversations.astro",
+      "source": "frontend/src/components/Conversations.astro",
+      "sha256": "cdeaa6eea7215df8ac1ab1364e3810947a9ab11b92230e112b07ea4103c4f68c",
+      "bytes": 3130
+    },
+    {
+      "path": "sources/frontend/src/components/Health.astro",
+      "source": "frontend/src/components/Health.astro",
+      "sha256": "32b7af448e347a56980f84778a559f484afe20cb47091833963c7d5e3b174102",
+      "bytes": 578
+    },
+    {
+      "path": "sources/frontend/src/components/Home.astro",
+      "source": "frontend/src/components/Home.astro",
+      "sha256": "625b80fc1b2b9d9da695d7885f6769f46bf032290d3b80a3746907f4857ce7fc",
+      "bytes": 4928
+    },
+    {
+      "path": "sources/frontend/src/components/Map.astro",
+      "source": "frontend/src/components/Map.astro",
+      "sha256": "a786feb0527ebfdb8df2e3ba7c80671f5068d2d84c06c9f8c4c6be3aaeed91b6",
+      "bytes": 4459
+    },
+    {
+      "path": "sources/frontend/src/components/SearchFilters.astro",
+      "source": "frontend/src/components/SearchFilters.astro",
+      "sha256": "5b5074285ce6b022ba2417d396b0dd8112ae42325b2bbcaa97ec1150322166a1",
+      "bytes": 1022
+    },
+    {
+      "path": "sources/frontend/src/components/SearchModePicker.astro",
+      "source": "frontend/src/components/SearchModePicker.astro",
+      "sha256": "9bfb31b8ff74f14df67a96168cf30d09d89efdfd55605b885d2cfb0ce7ae1988",
+      "bytes": 1924
+    },
+    {
+      "path": "sources/frontend/src/components/SearchPanel.astro",
+      "source": "frontend/src/components/SearchPanel.astro",
+      "sha256": "71f823386e7a7a7268c0dcdadfaa43cb9e15bf9762e7224caaac129874cba4a5",
+      "bytes": 1660
+    },
+    {
+      "path": "sources/frontend/src/components/Settings.astro",
+      "source": "frontend/src/components/Settings.astro",
+      "sha256": "b5affca2967584f1db699180519259f2b69ec25293ffef4ee8adce1bdda6f988",
+      "bytes": 2589
+    },
+    {
+      "path": "sources/frontend/src/components/Setup.astro",
+      "source": "frontend/src/components/Setup.astro",
+      "sha256": "c5c26cb6b28c77215352991b07e02c37deb2bf0a8ae21bb2d695c23acf646851",
+      "bytes": 5791
+    },
+    {
+      "path": "sources/frontend/src/components/Sidebar.astro",
+      "source": "frontend/src/components/Sidebar.astro",
+      "sha256": "8d556545b91a021b2a7a5114b50508318873bad13f6d28a3f1ac6e830dcb8aee",
+      "bytes": 3902
+    },
+    {
+      "path": "sources/frontend/src/layouts/WorkspaceLayout.astro",
+      "source": "frontend/src/layouts/WorkspaceLayout.astro",
+      "sha256": "ec56c5af5bc81e11d6ab2c579a4cd32305b0b8058ac279d9cb2ec3b44091a284",
+      "bytes": 526
+    },
+    {
+      "path": "sources/frontend/src/pages/index.astro",
+      "source": "frontend/src/pages/index.astro",
+      "sha256": "9881760b73f7f08b6a7eaffd4fdf89264bc00b6b3eb52c8f065d88574f5acc4d",
+      "bytes": 1543
+    },
+    {
+      "path": "sources/frontend/src/scripts/home.ts",
+      "source": "frontend/src/scripts/home.ts",
+      "sha256": "806a4041cdf2f25c5836f8d3fd6f07d1c60a81f69b3dbce4196d23dbe2f066b4",
+      "bytes": 14136
+    },
+    {
+      "path": "sources/frontend/src/styles/base.css",
+      "source": "frontend/src/styles/base.css",
+      "sha256": "cce6fcccc6419ff7274b51d7beefcfca2318e69afa554ecd336c2ef6fcacdcb3",
+      "bytes": 13906
+    },
+    {
+      "path": "sources/frontend/src/styles/design-system.css",
+      "source": "frontend/src/styles/design-system.css",
+      "sha256": "269f37bc4ea2fad20959e046b6adc09dca00216f851f8e91a6ab074629d5dd1d",
+      "bytes": 35617
+    },
+    {
+      "path": "sources/frontend/src/styles/design-tokens.css",
+      "source": "frontend/src/styles/design-tokens.css",
+      "sha256": "1e512a116768d1d03e646995351a2122238ea321820fadf1b86992bddd23fc71",
+      "bytes": 1330
+    },
+    {
+      "path": "sources/frontend/src/styles/global.css",
+      "source": "frontend/src/styles/global.css",
+      "sha256": "de2f8a952bc60acaf1b3a87bc76727ce4af92c4a40ce9d1e5441fccc261ccbe0",
+      "bytes": 482
+    },
+    {
+      "path": "sources/frontend/src/styles/home.css",
+      "source": "frontend/src/styles/home.css",
+      "sha256": "e4c2dd65aa525193b4483b41eec85574e615622f48f66d54bfc1cf535de51bc1",
+      "bytes": 18022
+    },
+    {
+      "path": "sources/frontend/src/styles/map-panel.css",
+      "source": "frontend/src/styles/map-panel.css",
+      "sha256": "b2645c8b73c617107a5231525db69ee16b6e61b368740efcb4cb683b9d81904a",
+      "bytes": 3910
+    },
+    {
+      "path": "sources/frontend/src/styles/search-panel.css",
+      "source": "frontend/src/styles/search-panel.css",
+      "sha256": "752cb3ef985dbd68f8970cbda32dc1d6e837b0590b4a0bf37f052aa287d1a2e9",
+      "bytes": 7416
+    },
+    {
+      "path": "sources/frontend/src/styles/workspace.css",
+      "source": "frontend/src/styles/workspace.css",
+      "sha256": "f4a96140f8141cb3cf18404ee1bbba235a15012ac995aa203fc2b028ed65cd5c",
+      "bytes": 45606
+    },
+    {
+      "path": "sources/scripts/archive_design.py",
+      "source": "scripts/archive_design.py",
+      "sha256": "f9ae5307f41218862ef5a16cf19a7420f6066ab8b9433d5def60b06f51aa3865",
+      "bytes": 7140
+    },
+    {
+      "path": "sources/tests/test_design_archive.py",
+      "source": "tests/test_design_archive.py",
+      "sha256": "32f37679e5a8ea21c15290d48f846cf9850f238e3e5402fdd65503cea7634e67",
+      "bytes": 2754
+    }
+  ]
+}

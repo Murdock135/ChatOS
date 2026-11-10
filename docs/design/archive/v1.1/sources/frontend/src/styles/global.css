@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "./base.css" layer(components);
+@import "./workspace.css" layer(components);
+@import "./search-panel.css" layer(components);
+@import "./map-panel.css" layer(components);
+@import "./home.css" layer(components);
+@import "./design-tokens.css" layer(components);
+@import "./design-system.css" layer(components);
+
+@theme {
+  --color-canvas: #f7f7f7;
+  --color-panel: #ffffff;
+  --color-accent: #315b83;
+  --color-ink: #242424;
+  --color-subtle: #737373;
+}

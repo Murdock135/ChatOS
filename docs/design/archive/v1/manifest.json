@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "version": "v1",
+  "captured_at": "2026-11-07T00:15:04.310321+00:00",
+  "source_ref": "codex:01a1b32b-dcb2-7823-bdb5-159c764aeb53",
+  "summary": "Unify all seven app destinations with the Midnight workspace style guide, shared tokens, fictional-data visual evidence, and archival provenance.",
+  "authority": "User-requested redesign; specific design choices delegated to the assistant. User visual acceptance is not inferred.",
+  "git": {
+    "head": "c71adb6aa91d8bcd7570b6f18f5cc235b13d89b9",
+    "public_working_tree": "M frontend/astro.config.mjs\n M frontend/public/app.js\n M frontend/src/components/Conversations.astro\n M frontend/src/components/Map.astro\n M frontend/src/components/Settings.astro\n M frontend/src/components/Setup.astro\n M frontend/src/components/Sidebar.astro\n M frontend/src/layouts/WorkspaceLayout.astro\n M frontend/src/pages/index.astro\n M frontend/src/styles/global.css\n M frontend/src/styles/search-panel.css\n M frontend/src/styles/workspace.css\n?? docs/adr/0011-interface-design-system.md\n?? docs/design/\n?? frontend/public/smriti-brand.png\n?? frontend/public/smriti-icon.svg\n?? frontend/src/components/Home.astro\n?? frontend/src/scripts/\n?? frontend/src/styles/design-system.css\n?? frontend/src/styles/design-tokens.css\n?? frontend/src/styles/home.css\n?? frontend/src/styles/map-panel.css\n?? scripts/archive_design.py",
+    "interpretation": "Sources are copied from the current working tree, including uncommitted changes. HEAD is a base reference, not a claim that these sources are committed."
+  },
+  "files": [
+    {
+      "path": "sources/AGENTS.md",
+      "source": "AGENTS.md",
+      "sha256": "2207ab2b3d70c2a88b128474ec0fcc92240a3a1a0e86880a02fa7b8de9c3d435",
+      "bytes": 2401
+    },
+    {
+      "path": "sources/docs/adr/0011-interface-design-system.md",
+      "source": "docs/adr/0011-interface-design-system.md",
+      "sha256": "a062976e427afd167adc8824e34656b0096c25307a58a7fdfcaf0fb77d7f0375",
+      "bytes": 1987
+    },
+    {
+      "path": "sources/docs/design/CHANGELOG.md",
+      "source": "docs/design/CHANGELOG.md",
+      "sha256": "c679074a57b81cb8e5107a9c6df32046675dfd5bc769c9ffab2012b302a08ad4",
+      "bytes": 1227
+    },
+    {
+      "path": "sources/docs/design/README.md",
+      "source": "docs/design/README.md",
+      "sha256": "891c49af4589e885dc1a1687f8979a7976dd78948ec16fd4ae836b2d5eedf153",
+      "bytes": 1374
+    },
+    {
+      "path": "sources/docs/design/STYLEGUIDE.md",
+      "source": "docs/design/STYLEGUIDE.md",
+      "sha256": "442de6291a07613d6beb143ba3f1def46f4cbb2f69c9b15139dbd21cd3d9f2e7",
+      "bytes": 9209
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/README.md",
+      "source": "docs/design/evidence/v1/README.md",
+      "sha256": "7ea3e353c345951f9fc4a540b7bf59513ef5b7fbe786120ce735ab4be8148932",
+      "bytes": 4743
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/contrast.json",
+      "source": "docs/design/evidence/v1/contrast.json",
+      "sha256": "e39b1eacc0d4963aba0e615b40190510d447fd42543668bf010d3f611840341a",
+      "bytes": 139
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-chats.png",
+      "source": "docs/design/evidence/v1/desktop-chats.png",
+      "sha256": "831eaebd5d03d4596c0b4523a8a53eaace9d3e626d462b5f4506bc4d0547c671",
+      "bytes": 137648
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-context.png",
+      "source": "docs/design/evidence/v1/desktop-context.png",
+      "sha256": "08f954d2647d195b942b1e06f4b5c189359c48841d8638238319ea8fded7ebec",
+      "bytes": 105579
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-directive-dialog.png",
+      "source": "docs/design/evidence/v1/desktop-directive-dialog.png",
+      "sha256": "29948f5c132d1b6d17a7035fa0a4ba33eacd46266ec412c071f5c8cfd0ce1505",
+      "bytes": 124787
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-health.png",
+      "source": "docs/design/evidence/v1/desktop-health.png",
+      "sha256": "56b14536b986672e54a3a2bf8d892afa69b2ae67db5de7e941a014620e84118d",
+      "bytes": 94234
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-home.png",
+      "source": "docs/design/evidence/v1/desktop-home.png",
+      "sha256": "1a7802c15975492909bb7dabc21be42166f6fea499346d14153485bc5474b7ce",
+      "bytes": 384474
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-map.png",
+      "source": "docs/design/evidence/v1/desktop-map.png",
+      "sha256": "853d0fe036e98d8b92414f2b41f9779ff26ad61376f73e10ff9a0565c02c57e9",
+      "bytes": 83469
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-navigation.png",
+      "source": "docs/design/evidence/v1/desktop-navigation.png",
+      "sha256": "76d8f756235a0dd72136668714da6d7bc93df51e6d625342ee49d848bbc2a2ec",
+      "bytes": 189174
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-reader.png",
+      "source": "docs/design/evidence/v1/desktop-reader.png",
+      "sha256": "a8f0cb0423e16dd908a61ad9001ddcf6c9f6617406fef380daf53baf202d49fa",
+      "bytes": 120504
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-search-filters.png",
+      "source": "docs/design/evidence/v1/desktop-search-filters.png",
+      "sha256": "da95cdec708b84dfe09c02af65cabf78a9acf262ac4e432b3170f559e9564e38",
+      "bytes": 147786
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-settings.png",
+      "source": "docs/design/evidence/v1/desktop-settings.png",
+      "sha256": "aef6502ebd30af4a30a0ba1786e680b949269e0255e51f2cb287e0a54a216b35",
+      "bytes": 148121
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/desktop-setup.png",
+      "source": "docs/design/evidence/v1/desktop-setup.png",
+      "sha256": "040da25b055c2112e4cb1f04ca60efefcaf1dc8445315635cc778314207b296a",
+      "bytes": 181951
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-chats.png",
+      "source": "docs/design/evidence/v1/mobile-chats.png",
+      "sha256": "595996dcfa1970029bf68472f3201953dd6aa07b1575aad056ba74ed5f02b86a",
+      "bytes": 78228
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-context.png",
+      "source": "docs/design/evidence/v1/mobile-context.png",
+      "sha256": "12847ac762ab844703c8be5ad8570dc4437b6a05426d8fbba59b188607d74c1f",
+      "bytes": 78316
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-health.png",
+      "source": "docs/design/evidence/v1/mobile-health.png",
+      "sha256": "bd3ba00457ed0bc0f9ef2827b3f86765bd97be8b4f5fb293f3f35e129da11344",
+      "bytes": 66142
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-home.png",
+      "source": "docs/design/evidence/v1/mobile-home.png",
+      "sha256": "af303aa26ce65d15aeee7afacf72aad48aa0407665cca9ea2c9df5c999cb3e9d",
+      "bytes": 157982
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-map.png",
+      "source": "docs/design/evidence/v1/mobile-map.png",
+      "sha256": "97698969edd1a360a180737579cec63f3774ce41de544b11de2a73ffb807ca23",
+      "bytes": 68925
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-settings.png",
+      "source": "docs/design/evidence/v1/mobile-settings.png",
+      "sha256": "aa6263201f3970f99164b16a2af47dab7347c952198076ee802c5e578aa237a4",
+      "bytes": 98600
+    },
+    {
+      "path": "sources/docs/design/evidence/v1/mobile-setup.png",
+      "source": "docs/design/evidence/v1/mobile-setup.png",
+      "sha256": "c59ccd00de66982605e286819ca9f1e992d8c6f6257b7b293b4ec0324ff8169d",
+      "bytes": 87942
+    },
+    {
+      "path": "sources/frontend/public/app.js",
+      "source": "frontend/public/app.js",
+      "sha256": "f73f5ca8db939eb90e27930997e7c3a0a7d66772547f9c2a14745c2ede572060",
+      "bytes": 68225
+    },
+    {
+      "path": "sources/frontend/public/smriti-brand.png",
+      "source": "frontend/public/smriti-brand.png",
+      "sha256": "17f34f9f8ebb9fcc2f5724761f07d21098e33b26a7bb6fb4d61a67bfbe9b685a",
+      "bytes": 225752
+    },
+    {
+      "path": "sources/frontend/public/smriti-icon.svg",
+      "source": "frontend/public/smriti-icon.svg",
+      "sha256": "6af95056cf5bc0a99f847f5f33cd3274f8bb4499e9902a12490a8083fa6d0c56",
+      "bytes": 301141
+    },
+    {
+      "path": "sources/frontend/src/components/Context.astro",
+      "source": "frontend/src/components/Context.astro",
+      "sha256": "b913128929d06f1c4dc74fe4eee11882e550d907dea627fa97987d337c74e332",
+      "bytes": 1389
+    },
+    {
+      "path": "sources/frontend/src/components/Conversations.astro",
+      "source": "frontend/src/components/Conversations.astro",
+      "sha256": "cdeaa6eea7215df8ac1ab1364e3810947a9ab11b92230e112b07ea4103c4f68c",
+      "bytes": 3130
+    },
+    {
+      "path": "sources/frontend/src/components/Health.astro",
+      "source": "frontend/src/components/Health.astro",
+      "sha256": "32b7af448e347a56980f84778a559f484afe20cb47091833963c7d5e3b174102",
+      "bytes": 578
+    },
+    {
+      "path": "sources/frontend/src/components/Home.astro",
+      "source": "frontend/src/components/Home.astro",
+      "sha256": "625b80fc1b2b9d9da695d7885f6769f46bf032290d3b80a3746907f4857ce7fc",
+      "bytes": 4928
+    },
+    {
+      "path": "sources/frontend/src/components/Map.astro",
+      "source": "frontend/src/components/Map.astro",
+      "sha256": "a786feb0527ebfdb8df2e3ba7c80671f5068d2d84c06c9f8c4c6be3aaeed91b6",
+      "bytes": 4459
+    },
+    {
+      "path": "sources/frontend/src/components/SearchFilters.astro",
+      "source": "frontend/src/components/SearchFilters.astro",
+      "sha256": "5b5074285ce6b022ba2417d396b0dd8112ae42325b2bbcaa97ec1150322166a1",
+      "bytes": 1022
+    },
+    {
+      "path": "sources/frontend/src/components/SearchModePicker.astro",
+      "source": "frontend/src/components/SearchModePicker.astro",
+      "sha256": "9bfb31b8ff74f14df67a96168cf30d09d89efdfd55605b885d2cfb0ce7ae1988",
+      "bytes": 1924
+    },
+    {
+      "path": "sources/frontend/src/components/SearchPanel.astro",
+      "source": "frontend/src/components/SearchPanel.astro",
+      "sha256": "71f823386e7a7a7268c0dcdadfaa43cb9e15bf9762e7224caaac129874cba4a5",
+      "bytes": 1660
+    },
+    {
+      "path": "sources/frontend/src/components/Settings.astro",
+      "source": "frontend/src/components/Settings.astro",
+      "sha256": "b5affca2967584f1db699180519259f2b69ec25293ffef4ee8adce1bdda6f988",
+      "bytes": 2589
+    },
+    {
+      "path": "sources/frontend/src/components/Setup.astro",
+      "source": "frontend/src/components/Setup.astro",
+      "sha256": "c5c26cb6b28c77215352991b07e02c37deb2bf0a8ae21bb2d695c23acf646851",
+      "bytes": 5791
+    },
+    {
+      "path": "sources/frontend/src/components/Sidebar.astro",
+      "source": "frontend/src/components/Sidebar.astro",
+      "sha256": "8d556545b91a021b2a7a5114b50508318873bad13f6d28a3f1ac6e830dcb8aee",
+      "bytes": 3902
+    },
+    {
+      "path": "sources/frontend/src/layouts/WorkspaceLayout.astro",
+      "source": "frontend/src/layouts/WorkspaceLayout.astro",
+      "sha256": "ec56c5af5bc81e11d6ab2c579a4cd32305b0b8058ac279d9cb2ec3b44091a284",
+      "bytes": 526
+    },
+    {
+      "path": "sources/frontend/src/pages/index.astro",
+      "source": "frontend/src/pages/index.astro",
+      "sha256": "9881760b73f7f08b6a7eaffd4fdf89264bc00b6b3eb52c8f065d88574f5acc4d",
+      "bytes": 1543
+    },
+    {
+      "path": "sources/frontend/src/scripts/home.ts",
+      "source": "frontend/src/scripts/home.ts",
+      "sha256": "806a4041cdf2f25c5836f8d3fd6f07d1c60a81f69b3dbce4196d23dbe2f066b4",
+      "bytes": 14136
+    },
+    {
+      "path": "sources/frontend/src/styles/base.css",
+      "source": "frontend/src/styles/base.css",
+      "sha256": "cce6fcccc6419ff7274b51d7beefcfca2318e69afa554ecd336c2ef6fcacdcb3",
+      "bytes": 13906
+    },
+    {
+      "path": "sources/frontend/src/styles/design-system.css",
+      "source": "frontend/src/styles/design-system.css",
+      "sha256": "c92b1b6fdc8ca9690c15557aaca6f2c7ebb9e54491e058b8ef32c291905fabaf",
+      "bytes": 30199
+    },
+    {
+      "path": "sources/frontend/src/styles/design-tokens.css",
+      "source": "frontend/src/styles/design-tokens.css",
+      "sha256": "0d7af521f0ffcb84d0406c2c2ddd0d073e1f1f7b9a034b7f7cef7f112748bba8",
+      "bytes": 1268
+    },
+    {
+      "path": "sources/frontend/src/styles/global.css",
+      "source": "frontend/src/styles/global.css",
+      "sha256": "de2f8a952bc60acaf1b3a87bc76727ce4af92c4a40ce9d1e5441fccc261ccbe0",
+      "bytes": 482
+    },
+    {
+      "path": "sources/frontend/src/styles/home.css",
+      "source": "frontend/src/styles/home.css",
+      "sha256": "e4c2dd65aa525193b4483b41eec85574e615622f48f66d54bfc1cf535de51bc1",
+      "bytes": 18022
+    },
+    {
+      "path": "sources/frontend/src/styles/map-panel.css",
+      "source": "frontend/src/styles/map-panel.css",
+      "sha256": "b2645c8b73c617107a5231525db69ee16b6e61b368740efcb4cb683b9d81904a",
+      "bytes": 3910
+    },
+    {
+      "path": "sources/frontend/src/styles/search-panel.css",
+      "source": "frontend/src/styles/search-panel.css",
+      "sha256": "752cb3ef985dbd68f8970cbda32dc1d6e837b0590b4a0bf37f052aa287d1a2e9",
+      "bytes": 7416
+    },
+    {
+      "path": "sources/frontend/src/styles/workspace.css",
+      "source": "frontend/src/styles/workspace.css",
+      "sha256": "f4a96140f8141cb3cf18404ee1bbba235a15012ac995aa203fc2b028ed65cd5c",
+      "bytes": 45606
+    },
+    {
+      "path": "sources/scripts/archive_design.py",
+      "source": "scripts/archive_design.py",
+      "sha256": "864e2916fb76dafed4fb07d906cb1d8a54b8d0b987bdda5f44d4462ee6d9066c",
+      "bytes": 7099
+    },
+    {
+      "path": "sources/tests/test_design_archive.py",
+      "source": "tests/test_design_archive.py",
+      "sha256": "32f37679e5a8ea21c15290d48f846cf9850f238e3e5402fdd65503cea7634e67",
+      "bytes": 2754
+    }
+  ]
+}

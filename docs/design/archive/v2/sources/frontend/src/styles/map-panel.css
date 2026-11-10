@@ -1,0 +1,207 @@
+/* The visualization stays primary; construction details remain available below it. */
+#view-map {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+#view-map .map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+#view-map #map-summary {
+  margin: 0;
+  font-size: 13px;
+  color: #626262;
+}
+#view-map button,
+#view-map summary {
+  border-radius: 8px;
+}
+#view-map button:focus-visible,
+#view-map summary:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+#view-map .map-search {
+  gap: 10px;
+  margin-bottom: 6px;
+}
+#view-map .map-search .search {
+  font-size: 12px;
+}
+#view-map .map-search input {
+  margin-top: 6px;
+  min-height: 40px;
+  padding: 10px 14px;
+  background: white;
+  font-size: 14px;
+}
+#view-map .map-search > button {
+  min-height: 40px;
+  padding-inline: 24px;
+}
+#view-map .map-filter-panel {
+  margin: 0;
+}
+#view-map .map-filter-panel > summary {
+  padding: 8px 0;
+  color: #626262;
+}
+#view-map .map-filters {
+  background: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 4px 0 12px;
+}
+#view-map .map-surface {
+  margin-top: 6px;
+  background: white;
+}
+#view-map .map-controls {
+  justify-content: space-between;
+  background: #f4f4f3;
+  padding: 8px 12px;
+  gap: 8px;
+}
+#view-map .map-controls button,
+#view-map .map-controls summary {
+  min-height: 32px;
+  padding: 5px 9px;
+  font-size: 12px;
+}
+#view-map .map-zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#view-map .map-options {
+  position: relative;
+}
+#view-map .map-options > summary {
+  cursor: pointer;
+  list-style: none;
+}
+#view-map .map-options > summary::-webkit-details-marker {
+  display: none;
+}
+#view-map .map-options-panel {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 200px;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 8px 24px #00000014;
+  z-index: 3;
+  display: grid;
+  gap: 14px;
+}
+#view-map .map-options-panel label {
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  font-size: 12px;
+}
+#view-map #map-canvas {
+  height: clamp(340px, 52vh, 620px);
+  cursor: grab;
+}
+#view-map #map-canvas:active {
+  cursor: grabbing;
+}
+#view-map .expanded #map-canvas {
+  height: 100%;
+}
+#view-map .map-caption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 10px 0 22px;
+}
+#view-map #map-hover {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+#view-map .map-about {
+  margin: 0;
+  max-width: 440px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+#view-map .map-about summary {
+  text-align: right;
+  cursor: pointer;
+}
+#view-map .map-about[open] {
+  flex-shrink: 1;
+}
+#view-map .map-topics-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+#view-map h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+#view-map .map-topics-heading span {
+  font-size: 12px;
+}
+#view-map .map-legend {
+  margin: 10px 0 24px;
+}
+#view-map .topic-chip {
+  background: white;
+  border: 1px solid #dedede;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+#view-map .topic-chip[aria-pressed="true"] {
+  background: #edf2f6;
+  border-color: #7892ab;
+  color: #244a70;
+  font-weight: 600;
+}
+#view-map .map-selection-bar {
+  margin-top: 10px;
+  padding: 10px 0;
+}
+#view-map .map-result {
+  padding: 16px 12px;
+}
+@media (max-width: 600px) {
+  #view-map .map-heading {
+    gap: 8px;
+  }
+  #view-map .map-search .search {
+    min-width: 0;
+    width: auto;
+  }
+  #view-map .map-search > button {
+    padding-inline: 14px;
+  }
+  #view-map .map-controls {
+    padding: 8px;
+  }
+  #view-map .map-zoom-controls {
+    flex-wrap: wrap;
+  }
+  #view-map #map-canvas {
+    height: 360px;
+  }
+  #view-map .map-caption,
+  #view-map .map-topics-heading {
+    flex-direction: column;
+    gap: 8px;
+  }
+  #view-map .map-about summary {
+    text-align: left;
+  }
+}

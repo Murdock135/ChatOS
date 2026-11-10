@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="310" viewBox="0 0 1040 310">
+<rect width="1040" height="310" rx="16" fill="#101113"/>
+<text x="28" y="38" fill="#f0f1f3" font-family="sans-serif" font-size="20">smriti · v1.1 Graphite &amp; mint</text>
+<text x="28" y="62" fill="#9ca5b3" font-family="sans-serif" font-size="12">Chosen implementation tokens informed by inspected Behance references</text>
+<rect x="28" y="90" width="144" height="48" rx="8" fill="#101113" stroke="#4a5867"/>
+<text x="28" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">canvas</text>
+<text x="28" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#101113</text>
+<rect x="194" y="90" width="144" height="48" rx="8" fill="#191c21" stroke="#4a5867"/>
+<text x="194" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">surface</text>
+<text x="194" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#191c21</text>
+<rect x="360" y="90" width="144" height="48" rx="8" fill="#22262d" stroke="#4a5867"/>
+<text x="360" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">raised</text>
+<text x="360" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#22262d</text>
+<rect x="526" y="90" width="144" height="48" rx="8" fill="#f0f1f3" stroke="#4a5867"/>
+<text x="526" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">text</text>
+<text x="526" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#f0f1f3</text>
+<rect x="692" y="90" width="144" height="48" rx="8" fill="#c0c5cf" stroke="#4a5867"/>
+<text x="692" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">secondary</text>
+<text x="692" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#c0c5cf</text>
+<rect x="858" y="90" width="144" height="48" rx="8" fill="#9ca5b3" stroke="#4a5867"/>
+<text x="858" y="158" fill="#c0c5cf" font-family="sans-serif" font-size="12">muted</text>
+<text x="858" y="175" fill="#9ca5b3" font-family="monospace" font-size="11">#9ca5b3</text>
+<rect x="28" y="198" width="144" height="48" rx="8" fill="#b4edca" stroke="#4a5867"/>
+<text x="28" y="266" fill="#c0c5cf" font-family="sans-serif" font-size="12">accent</text>
+<text x="28" y="283" fill="#9ca5b3" font-family="monospace" font-size="11">#b4edca</text>
+<rect x="194" y="198" width="144" height="48" rx="8" fill="#7eddb9" stroke="#4a5867"/>
+<text x="194" y="266" fill="#c0c5cf" font-family="sans-serif" font-size="12">teal</text>
+<text x="194" y="283" fill="#9ca5b3" font-family="monospace" font-size="11">#7eddb9</text>
+<rect x="360" y="198" width="144" height="48" rx="8" fill="#bca8ee" stroke="#4a5867"/>
+<text x="360" y="266" fill="#c0c5cf" font-family="sans-serif" font-size="12">purple</text>
+<text x="360" y="283" fill="#9ca5b3" font-family="monospace" font-size="11">#bca8ee</text>
+<rect x="526" y="198" width="144" height="48" rx="8" fill="#e6be85" stroke="#4a5867"/>
+<text x="526" y="266" fill="#c0c5cf" font-family="sans-serif" font-size="12">warning</text>
+<text x="526" y="283" fill="#9ca5b3" font-family="monospace" font-size="11">#e6be85</text>
+<rect x="692" y="198" width="144" height="48" rx="8" fill="#f4a1b6" stroke="#4a5867"/>
+<text x="692" y="266" fill="#c0c5cf" font-family="sans-serif" font-size="12">danger</text>
+<text x="692" y="283" fill="#9ca5b3" font-family="monospace" font-size="11">#f4a1b6</text>
+</svg>

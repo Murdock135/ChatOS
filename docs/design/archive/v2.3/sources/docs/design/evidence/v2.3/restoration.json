@@ -1,0 +1,27 @@
+[
+  {
+    "path": "frontend/src/components/Home.astro",
+    "matches_v2_2": true,
+    "sha256": "d28ecc75b32010fab84e7d5ade9b7ab898bac54473da169bd448f20b32bc0911"
+  },
+  {
+    "path": "frontend/src/scripts/home.ts",
+    "matches_v2_2": true,
+    "sha256": "6b8d9a49fd52724e30feb0cebb18aefb1ceb45e45b936c24806879888bd4ed3f"
+  },
+  {
+    "path": "frontend/public/app.js",
+    "matches_v2_2": true,
+    "sha256": "1e5ad3dd88a8268fb6f46a8f18565d600524d9cff23d35b8d6fa3e9569a6cfe2"
+  },
+  {
+    "path": "frontend/src/styles/design-system.css",
+    "matches_v2_2": true,
+    "sha256": "dbc2ad3a17ba5039c939b345beeb2afd354589a4e6f74bc461efcb554ec63722"
+  },
+  {
+    "path": "frontend/src/styles/design-tokens.css",
+    "matches_v2_2": true,
+    "sha256": "1e512a116768d1d03e646995351a2122238ea321820fadf1b86992bddd23fc71"
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "source": "/smriti-icon.svg",
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "visible_pixels": 107096
+  },
+  {
+    "source": "/smriti-brand.svg",
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "visible_pixels": 63926
+  }
+]

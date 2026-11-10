@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "observed_baseline",
+  "captured_at": "2026-11-07T00:07:29.725228+00:00",
+  "source_ref": "codex:01a1b32b-dcb2-7823-bdb5-159c764aeb53",
+  "files": [
+    {
+      "path": "sources/frontend/src/styles/base.css",
+      "sha256": "cce6fcccc6419ff7274b51d7beefcfca2318e69afa554ecd336c2ef6fcacdcb3"
+    },
+    {
+      "path": "sources/frontend/src/styles/global.css",
+      "sha256": "be43f4bc42a2bd67260f5e9e1f4526b4eb7347a501d2c1ebdfb276e7d8da95fb"
+    },
+    {
+      "path": "sources/frontend/src/styles/home.css",
+      "sha256": "e4c2dd65aa525193b4483b41eec85574e615622f48f66d54bfc1cf535de51bc1"
+    },
+    {
+      "path": "sources/frontend/src/styles/map-panel.css",
+      "sha256": "b2645c8b73c617107a5231525db69ee16b6e61b368740efcb4cb683b9d81904a"
+    },
+    {
+      "path": "sources/frontend/src/styles/search-panel.css",
+      "sha256": "752cb3ef985dbd68f8970cbda32dc1d6e837b0590b4a0bf37f052aa287d1a2e9"
+    },
+    {
+      "path": "sources/frontend/src/styles/workspace.css",
+      "sha256": "f4a96140f8141cb3cf18404ee1bbba235a15012ac995aa203fc2b028ed65cd5c"
+    },
+    {
+      "path": "sources/frontend/src/components/Sidebar.astro",
+      "sha256": "8d556545b91a021b2a7a5114b50508318873bad13f6d28a3f1ac6e830dcb8aee"
+    },
+    {
+      "path": "sources/frontend/src/layouts/WorkspaceLayout.astro",
+      "sha256": "ec56c5af5bc81e11d6ab2c579a4cd32305b0b8058ac279d9cb2ec3b44091a284"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2e9d8d8aea1141ff3dddff8b8c36b53aa9decd182af8afc5afd0b8022c94f84a"
+    }
+  ]
+}

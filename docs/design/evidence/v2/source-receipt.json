@@ -1,0 +1,8 @@
+{
+  "source": "user-supplied attachment Pasted text.txt",
+  "retained_spec": "docs/design/sources/modern-dark-v2.txt",
+  "source_sha256": "294b389093f9dc25f39ed220c9aeeb55f0b0dd12a049aeb9ba8e9dca90d0a115",
+  "authority": "Explicit user specification supersedes earlier reference-inspired palettes.",
+  "font_provenance": "frontend/src/assets/fonts/README.md",
+  "status": "implemented; user visual review pending"
+}

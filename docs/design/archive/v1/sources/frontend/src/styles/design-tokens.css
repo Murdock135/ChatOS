@@ -1,0 +1,45 @@
+/* smriti design system v1. See docs/design/STYLEGUIDE.md before changing tokens. */
+:root {
+  color-scheme: dark;
+  --ds-canvas: #0b0e14;
+  --ds-sidebar: #0e131c;
+  --ds-surface: #121923;
+  --ds-raised: #182230;
+  --ds-hover: #1d2b3c;
+  --ds-input: #0e151f;
+  --ds-text: #e6edf6;
+  --ds-secondary: #b0bed0;
+  --ds-muted: #879bb4;
+  --ds-faint: #627994;
+  --ds-border: #27364a;
+  --ds-border-strong: #3a526d;
+  --ds-accent: #6dcfff;
+  --ds-accent-bg: #12344a;
+  --ds-teal: #50ddc3;
+  --ds-purple: #c3a1fa;
+  --ds-warning: #edc17c;
+  --ds-danger: #ff9cb0;
+  --ds-danger-bg: #321e2c;
+  --ds-focus: #8cdaff;
+  --ds-font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --ds-text-xs: 11px;
+  --ds-text-sm: 12px;
+  --ds-text-md: 14px;
+  --ds-text-lg: 16px;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 24px;
+  --ds-space-6: 32px;
+  --ds-space-7: 48px;
+  --ds-radius-sm: 7px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 18px;
+  --ds-shadow: 0 18px 55px #0005;
+  --ds-map-surface: #0e1622;
+  --ds-map-label: #182638;
+  --ds-map-text: #e6f2ff;
+  --ds-map-colors: #70b7ff, #58d5b4, #f2bd7a, #b49af1, #ed96b8, #d8ce70, #73d0e4, #a8cd86;
+}

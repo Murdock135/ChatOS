@@ -1,0 +1,54 @@
+{
+  "source_sha256": "17f34f9f8ebb9fcc2f5724761f07d21098e33b26a7bb6fb4d61a67bfbe9b685a",
+  "method": "Threshold 128, six-pixel padding, VTracer 0.6.15 spline paths",
+  "assets": [
+    {
+      "asset": "smriti-icon.svg",
+      "source_crop": [
+        120,
+        145,
+        405,
+        430
+      ],
+      "foreground_bounds_in_crop": [
+        11,
+        15,
+        269,
+        266
+      ],
+      "view_box": [
+        0,
+        0,
+        270,
+        263
+      ],
+      "paths": 5,
+      "bytes": 8638,
+      "sha256": "fa0bae78828a3f25eaffe220940be0892eae29474800a29f0f1d4222e2d9b6e2"
+    },
+    {
+      "asset": "smriti-brand.svg",
+      "source_crop": [
+        120,
+        145,
+        905,
+        430
+      ],
+      "foreground_bounds_in_crop": [
+        11,
+        15,
+        773,
+        266
+      ],
+      "view_box": [
+        0,
+        0,
+        774,
+        263
+      ],
+      "paths": 13,
+      "bytes": 20569,
+      "sha256": "f4f772d6abd047d23f5d74d1e1cb3c7fcea3bdcbdb2bf6833fabdbc18a2036d4"
+    }
+  ]
+}

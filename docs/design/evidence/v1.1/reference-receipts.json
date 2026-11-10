@@ -1,0 +1,28 @@
+{
+  "inspected_on": "2026-11-06",
+  "method": "Downloaded public project images from Behance CDN and inspected with view_image. Full gallery page opens returned HTTP 403. Browser host unavailable; native Chrome follow-up failed screen capture.",
+  "sources": [
+    {
+      "id": "imesas",
+      "project_url": "https://www.behance.net/gallery/247104579/Imesas-AI-Agent-SaaS-Analytics-Dashboard-Design",
+      "image_url": "https://mir-s3-cdn-cf.behance.net/project_modules/fs/75241b247104579.69d3e065c4190.jpg",
+      "image_sha256": "43046b66873584dbadcf3af525c335b6742f5eabb036a478d5bc5364a0ea8719",
+      "bytes": 216681
+    },
+    {
+      "id": "project-client",
+      "project_url": "https://www.behance.net/gallery/237697241/Project-Client-Management-Dashboard-Dark-UI",
+      "image_url": "https://mir-s3-cdn-cf.behance.net/project_modules/fs_webp/41a82b237697241.6905d29f38f9f.png",
+      "image_sha256": "9315396f8f12df66001fa2568880977bcb2204d3edef3a310631d55d079bc249",
+      "bytes": 143896
+    },
+    {
+      "id": "bes",
+      "project_url": "https://www.behance.net/gallery/229197739/BES-AI-Powered-B2B-SaaS-Dashboard-Design",
+      "image_url": "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/85c99b229197739.68608820a59ec.png",
+      "image_sha256": "860f7024d638e2e84fc2dfea4904f42e2fc8daaa20548c352e5ea50574c62f88",
+      "bytes": 146108
+    }
+  ],
+  "retention": "Reference artwork remains in temporary storage; no third-party artwork is shipped in the app or copied into the public archive."
+}

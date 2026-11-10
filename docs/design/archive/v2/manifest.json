@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "version": "v2",
+  "captured_at": "2026-11-07T00:37:58.352164+00:00",
+  "source_ref": "codex:01a1b32b-dcb2-7823-bdb5-159c764aeb53; supplied Modern Dark attachment",
+  "summary": "Apply exact user-supplied Modern Dark tokens, local Geist fonts, neutral surfaces and white pill actions while preserving application behavior; archive rendered-width evidence and font provenance.",
+  "authority": "User-requested redesign; specific design choices delegated to the assistant. User visual acceptance is not inferred.",
+  "git": {
+    "head": "c71adb6aa91d8bcd7570b6f18f5cc235b13d89b9",
+    "public_working_tree": "M frontend/astro.config.mjs\n M frontend/public/app.js\n M frontend/src/components/Conversations.astro\n M frontend/src/components/Map.astro\n M frontend/src/components/Settings.astro\n M frontend/src/components/Setup.astro\n M frontend/src/components/Sidebar.astro\n M frontend/src/layouts/WorkspaceLayout.astro\n M frontend/src/pages/index.astro\n M frontend/src/styles/global.css\n M frontend/src/styles/search-panel.css\n M frontend/src/styles/workspace.css\n?? docs/adr/0011-interface-design-system.md\n?? docs/design/\n?? frontend/public/geist-OFL.txt\n?? frontend/public/smriti-brand.png\n?? frontend/public/smriti-icon.svg\n?? frontend/src/assets/\n?? frontend/src/components/Home.astro\n?? frontend/src/scripts/\n?? frontend/src/styles/design-system.css\n?? frontend/src/styles/design-tokens.css\n?? frontend/src/styles/home.css\n?? frontend/src/styles/map-panel.css\n?? frontend/src/styles/modern-dark.css\n?? scripts/archive_design.py",
+    "interpretation": "Sources are copied from the current working tree, including uncommitted changes. HEAD is a base reference, not a claim that these sources are committed."
+  },
+  "files": [
+    {
+      "path": "sources/AGENTS.md",
+      "source": "AGENTS.md",
+      "sha256": "26c4ffd0f87abb40791317b91db15f717814c2efcd6bffd08c0d0de9694a14cf",
+      "bytes": 2935
+    },
+    {
+      "path": "sources/docs/adr/0011-interface-design-system.md",
+      "source": "docs/adr/0011-interface-design-system.md",
+      "sha256": "a062976e427afd167adc8824e34656b0096c25307a58a7fdfcaf0fb77d7f0375",
+      "bytes": 1987
+    },
+    {
+      "path": "sources/docs/adr/0012-modern-dark-style.md",
+      "source": "docs/adr/0012-modern-dark-style.md",
+      "sha256": "ace700d596a90e7980cb8d19669a41461c1870ffea7f994a8ca4edc10124e310",
+      "bytes": 1676
+    },
+    {
+      "path": "sources/docs/design/CHANGELOG.md",
+      "source": "docs/design/CHANGELOG.md",
+      "sha256": "8afecbac85434ca80004b2f2a73d2a5827fa20eeda9f52785ca57d8447978907",
+      "bytes": 3389
+    },
+    {
+      "path": "sources/docs/design/README.md",
+      "source": "docs/design/README.md",
+      "sha256": "bfd25933a58d89de91361f2fc3ae57be493141ed1de0f466e09c2da9560352cd",
+      "bytes": 1929
+    },
+    {
+      "path": "sources/docs/design/REFERENCES.md",
+      "source": "docs/design/REFERENCES.md",
+      "sha256": "a68f416bba00fe8d3f807679d740c1850f7cd0cc64dbf4629b3941f91f5582c2",
+      "bytes": 4333
+    },
+    {
+      "path": "sources/docs/design/STYLEGUIDE.md",
+      "source": "docs/design/STYLEGUIDE.md",
+      "sha256": "79f2a00554964308e48e23c65b197bd6705e18c22536de67229b0ee0f6369522",
+      "bytes": 9082
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/README.md",
+      "source": "docs/design/evidence/v2/README.md",
+      "sha256": "ec21c47867665b1effb6f1e6f9216b4bcbe2750c826b0930dcf29954b96fccb9",
+      "bytes": 4670
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/contrast.json",
+      "source": "docs/design/evidence/v2/contrast.json",
+      "sha256": "56933a84097b8412e5ff4a696a45cf40db646a474a72510d26103b583f7b8086",
+      "bytes": 104
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-chats.png",
+      "source": "docs/design/evidence/v2/desktop-chats.png",
+      "sha256": "b06a2041999dbc7f4adeadd1702ed8adb516a4eae11bff3d7221c3ae89606cd9",
+      "bytes": 105347
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-context.png",
+      "source": "docs/design/evidence/v2/desktop-context.png",
+      "sha256": "ccfe508a383955683b6bceb1e7dc7eeb8f97e7639f635eeee23ae4766e4e675c",
+      "bytes": 87726
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-directive-dialog.png",
+      "source": "docs/design/evidence/v2/desktop-directive-dialog.png",
+      "sha256": "bd4c32ee07cab2c54caec733bc5e8b1ab1ecf902eacb721174357822539f5000",
+      "bytes": 88897
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-health.png",
+      "source": "docs/design/evidence/v2/desktop-health.png",
+      "sha256": "e0fbb251adbafed1e5eace56c6bae4893d3f334ab8ceb8e4f4b097c5774d7ff5",
+      "bytes": 78262
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-home.png",
+      "source": "docs/design/evidence/v2/desktop-home.png",
+      "sha256": "17816e211d166021d20c28f853670eb7eb27d25b6f5f9ff1c7c4e208e7b74129",
+      "bytes": 141184
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-map.png",
+      "source": "docs/design/evidence/v2/desktop-map.png",
+      "sha256": "7c3c23a8621414e4b15cdcdd56b4127fa3b58f988812d91a4052d7ef0271ac38",
+      "bytes": 65226
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-navigation.png",
+      "source": "docs/design/evidence/v2/desktop-navigation.png",
+      "sha256": "8f747c7578d4079a2e821b4dec9824c34dfd6f6234de8ac700d6664550e1e364",
+      "bytes": 121924
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-reader.png",
+      "source": "docs/design/evidence/v2/desktop-reader.png",
+      "sha256": "5bfb869a0322609727e0064c92b81d06cf617cc3f0141cb59cc4e2dbf23952d2",
+      "bytes": 96338
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-search-filters.png",
+      "source": "docs/design/evidence/v2/desktop-search-filters.png",
+      "sha256": "21d02d92aae296ca08b7904cdf9e94a0513a7ffb1ee04ccbac7c18ea5f6f458b",
+      "bytes": 114615
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-settings.png",
+      "source": "docs/design/evidence/v2/desktop-settings.png",
+      "sha256": "e2a3d712f39bf908db6ec2a4c73b1c0be58df0e729b4caeeff2c29d2522d488d",
+      "bytes": 96065
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/desktop-setup.png",
+      "source": "docs/design/evidence/v2/desktop-setup.png",
+      "sha256": "f9efc4e43674ee6d9c0699578913c8782e02aff13f950e9da38d5b742949ce3b",
+      "bytes": 160487
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-chats.png",
+      "source": "docs/design/evidence/v2/mobile-chats.png",
+      "sha256": "e1cdcaca2296f554f87c3698a2b82a1cb4dd0cf04335a89c9a89e51aafe248ef",
+      "bytes": 58751
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-context.png",
+      "source": "docs/design/evidence/v2/mobile-context.png",
+      "sha256": "4d9c03a1b80599b04aafb4c58ffecebbbd8f86e8048cf4d22304edf2e54dffc0",
+      "bytes": 62742
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-health.png",
+      "source": "docs/design/evidence/v2/mobile-health.png",
+      "sha256": "8a49fabec227c6121683eee11fbc48c3a5bc75a06199e9b295cc0185f83a49dc",
+      "bytes": 53079
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-home.png",
+      "source": "docs/design/evidence/v2/mobile-home.png",
+      "sha256": "8ec1a518d8578205e9623e87fa31f3834db8d3eb3e939d94fb8b3ec079ecde1c",
+      "bytes": 49919
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-map.png",
+      "source": "docs/design/evidence/v2/mobile-map.png",
+      "sha256": "539cc9f528e26dc9fd73c5888a8558640666de86e77458b0dd89d77e60f0bfa6",
+      "bytes": 53940
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-settings.png",
+      "source": "docs/design/evidence/v2/mobile-settings.png",
+      "sha256": "c761a49afbfadca103df53ff4518546bf309d40ea9f5c82f64c1055a0a5ab623",
+      "bytes": 68993
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/mobile-setup.png",
+      "source": "docs/design/evidence/v2/mobile-setup.png",
+      "sha256": "40c7eb16affa4b558fff62bcc4cf740d976ec9ab45309a1cd4eac7b5609d36b1",
+      "bytes": 71002
+    },
+    {
+      "path": "sources/docs/design/evidence/v2/source-receipt.json",
+      "source": "docs/design/evidence/v2/source-receipt.json",
+      "sha256": "0f24615640f2052fac8475eeb20fd311ffc6a688d394f4c2c18d4066cfef95ed",
+      "bytes": 416
+    },
+    {
+      "path": "sources/docs/design/sources/modern-dark-v2.txt",
+      "source": "docs/design/sources/modern-dark-v2.txt",
+      "sha256": "294b389093f9dc25f39ed220c9aeeb55f0b0dd12a049aeb9ba8e9dca90d0a115",
+      "bytes": 5897
+    },
+    {
+      "path": "sources/frontend/public/app.js",
+      "source": "frontend/public/app.js",
+      "sha256": "1e5ad3dd88a8268fb6f46a8f18565d600524d9cff23d35b8d6fa3e9569a6cfe2",
+      "bytes": 68277
+    },
+    {
+      "path": "sources/frontend/public/geist-OFL.txt",
+      "source": "frontend/public/geist-OFL.txt",
+      "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "bytes": 4368
+    },
+    {
+      "path": "sources/frontend/public/smriti-brand.png",
+      "source": "frontend/public/smriti-brand.png",
+      "sha256": "17f34f9f8ebb9fcc2f5724761f07d21098e33b26a7bb6fb4d61a67bfbe9b685a",
+      "bytes": 225752
+    },
+    {
+      "path": "sources/frontend/public/smriti-icon.svg",
+      "source": "frontend/public/smriti-icon.svg",
+      "sha256": "6af95056cf5bc0a99f847f5f33cd3274f8bb4499e9902a12490a8083fa6d0c56",
+      "bytes": 301141
+    },
+    {
+      "path": "sources/frontend/src/assets/fonts/Geist-Variable.woff2",
+      "source": "frontend/src/assets/fonts/Geist-Variable.woff2",
+      "sha256": "2ffebe993e969069a9789d15164b7715d42491b5835516c5e3b935d5f81b05f1",
+      "bytes": 69760
+    },
+    {
+      "path": "sources/frontend/src/assets/fonts/GeistMono-Variable.woff2",
+      "source": "frontend/src/assets/fonts/GeistMono-Variable.woff2",
+      "sha256": "afaacc4c5fbba89d2ebf7a02dc4070208540874592a5504d57175782fe893101",
+      "bytes": 71596
+    },
+    {
+      "path": "sources/frontend/src/assets/fonts/LICENSE.txt",
+      "source": "frontend/src/assets/fonts/LICENSE.txt",
+      "sha256": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+      "bytes": 4368
+    },
+    {
+      "path": "sources/frontend/src/assets/fonts/README.md",
+      "source": "frontend/src/assets/fonts/README.md",
+      "sha256": "3f03b2e5fa0acefdb56d7aa8e22070ce8c0fb7bec29c1267252ee74fb8f0e3bf",
+      "bytes": 1159
+    },
+    {
+      "path": "sources/frontend/src/components/Context.astro",
+      "source": "frontend/src/components/Context.astro",
+      "sha256": "b913128929d06f1c4dc74fe4eee11882e550d907dea627fa97987d337c74e332",
+      "bytes": 1389
+    },
+    {
+      "path": "sources/frontend/src/components/Conversations.astro",
+      "source": "frontend/src/components/Conversations.astro",
+      "sha256": "cdeaa6eea7215df8ac1ab1364e3810947a9ab11b92230e112b07ea4103c4f68c",
+      "bytes": 3130
+    },
+    {
+      "path": "sources/frontend/src/components/Health.astro",
+      "source": "frontend/src/components/Health.astro",
+      "sha256": "32b7af448e347a56980f84778a559f484afe20cb47091833963c7d5e3b174102",
+      "bytes": 578
+    },
+    {
+      "path": "sources/frontend/src/components/Home.astro",
+      "source": "frontend/src/components/Home.astro",
+      "sha256": "625b80fc1b2b9d9da695d7885f6769f46bf032290d3b80a3746907f4857ce7fc",
+      "bytes": 4928
+    },
+    {
+      "path": "sources/frontend/src/components/Map.astro",
+      "source": "frontend/src/components/Map.astro",
+      "sha256": "a786feb0527ebfdb8df2e3ba7c80671f5068d2d84c06c9f8c4c6be3aaeed91b6",
+      "bytes": 4459
+    },
+    {
+      "path": "sources/frontend/src/components/SearchFilters.astro",
+      "source": "frontend/src/components/SearchFilters.astro",
+      "sha256": "5b5074285ce6b022ba2417d396b0dd8112ae42325b2bbcaa97ec1150322166a1",
+      "bytes": 1022
+    },
+    {
+      "path": "sources/frontend/src/components/SearchModePicker.astro",
+      "source": "frontend/src/components/SearchModePicker.astro",
+      "sha256": "9bfb31b8ff74f14df67a96168cf30d09d89efdfd55605b885d2cfb0ce7ae1988",
+      "bytes": 1924
+    },
+    {
+      "path": "sources/frontend/src/components/SearchPanel.astro",
+      "source": "frontend/src/components/SearchPanel.astro",
+      "sha256": "71f823386e7a7a7268c0dcdadfaa43cb9e15bf9762e7224caaac129874cba4a5",
+      "bytes": 1660
+    },
+    {
+      "path": "sources/frontend/src/components/Settings.astro",
+      "source": "frontend/src/components/Settings.astro",
+      "sha256": "b5affca2967584f1db699180519259f2b69ec25293ffef4ee8adce1bdda6f988",
+      "bytes": 2589
+    },
+    {
+      "path": "sources/frontend/src/components/Setup.astro",
+      "source": "frontend/src/components/Setup.astro",
+      "sha256": "c5c26cb6b28c77215352991b07e02c37deb2bf0a8ae21bb2d695c23acf646851",
+      "bytes": 5791
+    },
+    {
+      "path": "sources/frontend/src/components/Sidebar.astro",
+      "source": "frontend/src/components/Sidebar.astro",
+      "sha256": "8d556545b91a021b2a7a5114b50508318873bad13f6d28a3f1ac6e830dcb8aee",
+      "bytes": 3902
+    },
+    {
+      "path": "sources/frontend/src/layouts/WorkspaceLayout.astro",
+      "source": "frontend/src/layouts/WorkspaceLayout.astro",
+      "sha256": "ec56c5af5bc81e11d6ab2c579a4cd32305b0b8058ac279d9cb2ec3b44091a284",
+      "bytes": 526
+    },
+    {
+      "path": "sources/frontend/src/pages/index.astro",
+      "source": "frontend/src/pages/index.astro",
+      "sha256": "9881760b73f7f08b6a7eaffd4fdf89264bc00b6b3eb52c8f065d88574f5acc4d",
+      "bytes": 1543
+    },
+    {
+      "path": "sources/frontend/src/scripts/home.ts",
+      "source": "frontend/src/scripts/home.ts",
+      "sha256": "806a4041cdf2f25c5836f8d3fd6f07d1c60a81f69b3dbce4196d23dbe2f066b4",
+      "bytes": 14136
+    },
+    {
+      "path": "sources/frontend/src/styles/base.css",
+      "source": "frontend/src/styles/base.css",
+      "sha256": "cce6fcccc6419ff7274b51d7beefcfca2318e69afa554ecd336c2ef6fcacdcb3",
+      "bytes": 13906
+    },
+    {
+      "path": "sources/frontend/src/styles/design-system.css",
+      "source": "frontend/src/styles/design-system.css",
+      "sha256": "269f37bc4ea2fad20959e046b6adc09dca00216f851f8e91a6ab074629d5dd1d",
+      "bytes": 35617
+    },
+    {
+      "path": "sources/frontend/src/styles/design-tokens.css",
+      "source": "frontend/src/styles/design-tokens.css",
+      "sha256": "1e512a116768d1d03e646995351a2122238ea321820fadf1b86992bddd23fc71",
+      "bytes": 1330
+    },
+    {
+      "path": "sources/frontend/src/styles/global.css",
+      "source": "frontend/src/styles/global.css",
+      "sha256": "d2b58434aa2acfb3189fb6ac400d5fa89c5d90bed028fa3139e8824e6e0ccb07",
+      "bytes": 529
+    },
+    {
+      "path": "sources/frontend/src/styles/home.css",
+      "source": "frontend/src/styles/home.css",
+      "sha256": "e4c2dd65aa525193b4483b41eec85574e615622f48f66d54bfc1cf535de51bc1",
+      "bytes": 18022
+    },
+    {
+      "path": "sources/frontend/src/styles/map-panel.css",
+      "source": "frontend/src/styles/map-panel.css",
+      "sha256": "b2645c8b73c617107a5231525db69ee16b6e61b368740efcb4cb683b9d81904a",
+      "bytes": 3910
+    },
+    {
+      "path": "sources/frontend/src/styles/modern-dark.css",
+      "source": "frontend/src/styles/modern-dark.css",
+      "sha256": "bfa7cfeb6ab1ebd4d61bce218cc30ab82bdea6fbbd23657dc37784aeefc382c6",
+      "bytes": 22907
+    },
+    {
+      "path": "sources/frontend/src/styles/search-panel.css",
+      "source": "frontend/src/styles/search-panel.css",
+      "sha256": "752cb3ef985dbd68f8970cbda32dc1d6e837b0590b4a0bf37f052aa287d1a2e9",
+      "bytes": 7416
+    },
+    {
+      "path": "sources/frontend/src/styles/workspace.css",
+      "source": "frontend/src/styles/workspace.css",
+      "sha256": "f4a96140f8141cb3cf18404ee1bbba235a15012ac995aa203fc2b028ed65cd5c",
+      "bytes": 45606
+    },
+    {
+      "path": "sources/scripts/archive_design.py",
+      "source": "scripts/archive_design.py",
+      "sha256": "a2d2d3f7f4447c16996c46e235b76c4feabdabca3830bc7b36053611c25cbc12",
+      "bytes": 7770
+    },
+    {
+      "path": "sources/src/chatos/web.py",
+      "source": "src/chatos/web.py",
+      "sha256": "213ba374c68bfbe0fb9db232b039e5c9d355ac4288678f0fc34432b1c4ce31ab",
+      "bytes": 22172
+    },
+    {
+      "path": "sources/tests/test_design_archive.py",
+      "source": "tests/test_design_archive.py",
+      "sha256": "32f37679e5a8ea21c15290d48f846cf9850f238e3e5402fdd65503cea7634e67",
+      "bytes": 2754
+    },
+    {
+      "path": "sources/tests/test_web.py",
+      "source": "tests/test_web.py",
+      "sha256": "37ec5f11fcfdccdaf7990bb29570eb075da4b69c953b23c4f9457bec56704519",
+      "bytes": 35367
+    }
+  ]
+}
