@@ -1,0 +1,485 @@
+{
+  "fictional": true,
+  "conversations": [
+    {
+      "id": "fictional-1",
+      "title": "Designing a quieter place for our notes",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What would a calmer note-taking experience look like? I keep saving things, but finding the original reasoning is still difficult."
+        },
+        {
+          "role": "assistant",
+          "text": "A useful knowledge system should help us return to an idea, not just collect it."
+        }
+      ]
+    },
+    {
+      "id": "fictional-2",
+      "title": "Retrieval evaluation: measuring what actually helps",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Atlas research",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Can we design an evaluation for retrieval that measures evidence usefulness?"
+        },
+        {
+          "role": "assistant",
+          "text": "Separate retrieval quality from answer quality before choosing a metric."
+        }
+      ]
+    },
+    {
+      "id": "fictional-3",
+      "title": "A small garden, a seasonal planting plan",
+      "source": "ChatGPT",
+      "model": "Unknown",
+      "project": "Commonplace",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Help me plan a small balcony garden that gets afternoon sunlight."
+        },
+        {
+          "role": "assistant",
+          "text": "A practical plan for the balcony, with room for a little experimentation."
+        }
+      ]
+    },
+    {
+      "id": "fictional-4",
+      "title": "SQLite migrations without losing local annotations",
+      "source": "Codex",
+      "model": "GPT-5 · GPT-4.1",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How should we preserve local notes when an imported conversation is updated?"
+        },
+        {
+          "role": "assistant",
+          "text": "Keep source records and local changes in separate tables."
+        }
+      ]
+    },
+    {
+      "id": "fictional-5",
+      "title": "Reading list: attention, memory, and the shape of a good explanation",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Atlas research",
+      "partial": true,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Let’s outline a reading path about attention and memory."
+        },
+        {
+          "role": "assistant",
+          "text": "A reading path from attention to working memory, with questions to explore."
+        }
+      ]
+    },
+    {
+      "id": "fictional-6",
+      "title": "Building an accessible keyboard-first command palette",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Little experiments",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What keyboard interactions should our command palette support?"
+        },
+        {
+          "role": "assistant",
+          "text": "Start with predictable focus, clear labels, and an escape route."
+        }
+      ]
+    },
+    {
+      "id": "fictional-7",
+      "title": "What we meant by “local first”",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Can you help clarify our local-first design principles?"
+        },
+        {
+          "role": "assistant",
+          "text": "Local storage is a starting point; inspectability is a separate design choice."
+        }
+      ]
+    },
+    {
+      "id": "fictional-8",
+      "title": "A weekend field recording kit",
+      "source": "ChatGPT",
+      "model": "Unknown",
+      "project": "Commonplace",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What should I pack for a weekend of field recordings?"
+        },
+        {
+          "role": "assistant",
+          "text": "A lightweight checklist for listening walks and recording ambient sound."
+        }
+      ]
+    },
+    {
+      "id": "fictional-9",
+      "title": "Exploring the tradeoffs of passage-level indexing",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Atlas research",
+      "partial": true,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Let’s compare message-level and passage-level indexing."
+        },
+        {
+          "role": "assistant",
+          "text": "Smaller passages improve precision but can lose the surrounding argument."
+        }
+      ]
+    },
+    {
+      "id": "fictional-10",
+      "title": "A tiny generative art experiment with circles",
+      "source": "Codex",
+      "model": "GPT-4.1",
+      "project": "Little experiments",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "I want to try a small browser-based generative art sketch."
+        },
+        {
+          "role": "assistant",
+          "text": "Fixed positions and simple transformations can be surprisingly expressive."
+        }
+      ]
+    },
+    {
+      "id": "fictional-11",
+      "title": "How to document uncertainty in research notes",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Atlas research",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How can I record uncertainty without making my notes hard to read?"
+        },
+        {
+          "role": "assistant",
+          "text": "Keep observations, interpretations, and open questions visible."
+        }
+      ]
+    },
+    {
+      "id": "fictional-12",
+      "title": "Export formats that stay useful five years from now",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What should a durable conversation export contain?"
+        },
+        {
+          "role": "assistant",
+          "text": "Readable Markdown, stable references, and a plain manifest."
+        }
+      ]
+    },
+    {
+      "id": "fictional-13",
+      "title": "A better way to organize recipe experiments",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Commonplace",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Help me organize the notes from my bread experiments."
+        },
+        {
+          "role": "assistant",
+          "text": "Record the small changes that explain the result."
+        }
+      ]
+    },
+    {
+      "id": "fictional-14",
+      "title": "Investigating a focus trap in the settings dialog",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Little experiments",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Our settings dialog loses keyboard focus when it closes."
+        },
+        {
+          "role": "assistant",
+          "text": "Return focus to the triggering control when the dialog closes."
+        }
+      ]
+    },
+    {
+      "id": "fictional-15",
+      "title": "Pilot study protocol and unresolved sampling questions",
+      "source": "ChatGPT",
+      "model": "GPT-4.1 · GPT-5",
+      "project": "Atlas research",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Let’s draft a pilot protocol and make the uncertainties explicit."
+        },
+        {
+          "role": "assistant",
+          "text": "A draft protocol with sampling assumptions that need review."
+        }
+      ]
+    },
+    {
+      "id": "fictional-16",
+      "title": "What belongs in a project handoff?",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What context should I give another assistant to continue a project?"
+        },
+        {
+          "role": "assistant",
+          "text": "Include evidence, current state, and unresolved questions."
+        }
+      ]
+    },
+    {
+      "id": "fictional-17",
+      "title": "A simple audio waveform viewer",
+      "source": "Codex",
+      "model": "Unknown",
+      "project": "Little experiments",
+      "partial": true,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Can we sketch a simple waveform interface?"
+        },
+        {
+          "role": "assistant",
+          "text": "A canvas prototype for exploring short audio clips."
+        }
+      ]
+    },
+    {
+      "id": "fictional-18",
+      "title": "Walking routes for a slower Sunday",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Commonplace",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Help me make a loose plan for a long Sunday walk."
+        },
+        {
+          "role": "assistant",
+          "text": "A few ways to make a familiar neighborhood feel new."
+        }
+      ]
+    },
+    {
+      "id": "fictional-19",
+      "title": "Comparing annotation schemas for the pilot corpus",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Atlas research",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How should we compare two annotation schemes?"
+        },
+        {
+          "role": "assistant",
+          "text": "Use a small agreement sample before expanding the annotation scheme."
+        }
+      ]
+    },
+    {
+      "id": "fictional-20",
+      "title": "Keeping original source text intact on reimport",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "How do we avoid duplicate records when importing the same export?"
+        },
+        {
+          "role": "assistant",
+          "text": "Stable source identities keep imports idempotent."
+        }
+      ]
+    },
+    {
+      "id": "fictional-21",
+      "title": "A color study in sage and slate",
+      "source": "ChatGPT",
+      "model": "GPT-4.1",
+      "project": "Little experiments",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Let’s explore a color palette for a reading app."
+        },
+        {
+          "role": "assistant",
+          "text": "A compact palette for quiet interfaces."
+        }
+      ]
+    },
+    {
+      "id": "fictional-22",
+      "title": "Notes on making a good index",
+      "source": "ChatGPT",
+      "model": "Unknown",
+      "project": "Commonplace",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "What makes an index useful rather than merely comprehensive?"
+        },
+        {
+          "role": "assistant",
+          "text": "An index is a set of useful routes back to the material."
+        }
+      ]
+    },
+    {
+      "id": "fictional-23",
+      "title": "Writing a reproducible search benchmark",
+      "source": "Codex",
+      "model": "GPT-5",
+      "project": "Atlas research",
+      "partial": false,
+      "archived": false,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Help me outline a reproducible search benchmark."
+        },
+        {
+          "role": "assistant",
+          "text": "Freeze the corpus, queries, judgments, and retrieval settings."
+        }
+      ]
+    },
+    {
+      "id": "fictional-24",
+      "title": "A prototype we chose to set aside",
+      "source": "Codex",
+      "model": "GPT-4.1",
+      "project": "Fieldnotes",
+      "partial": false,
+      "archived": true,
+      "mapping": "Fixed sample coordinates; no clustering",
+      "messages": [
+        {
+          "role": "user",
+          "text": "Let’s record why we set this interface prototype aside."
+        },
+        {
+          "role": "assistant",
+          "text": "Archived locally: the original discussion is preserved."
+        }
+      ]
+    }
+  ]
+}
